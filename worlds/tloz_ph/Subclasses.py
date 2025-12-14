@@ -135,7 +135,8 @@ direction_lookup = {
     3: "up",
     4: "down",
     5: "enter",
-    6: "exit"}
+    6: "exit"
+}
 type_lookup = {
     0: "none",
     1: "house",

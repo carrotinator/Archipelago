@@ -49,7 +49,7 @@ RAM_ADDRS = {
     "opened_clog": (0x0FC5BC, 1, "Main RAM"),
     "flipped_clog": (0x0FA37B, 1, "Main RAM"),
 
-    "in_short_cs": (0x1B6FE8, 1, "Main RAM"),
+    "in_short_cs": (0x1B55D4, 1, "Main RAM"),
 
 }
 
@@ -112,6 +112,8 @@ class PhantomHourglassClient(DSZeldaClient):
         self.boss_warp_entrance = None
         self.last_warp_stage = None
         self.item_location_combo = None
+        self.door_lock = False
+        self.torch_lock = False
 
     async def check_game_version(self, ctx: "BizHawkClientContext") -> bool:
         rom_name_bytes = (await bizhawk.read(ctx.bizhawk_ctx, [ROM_ADDRS["game_identifier"]]))[0]
@@ -313,6 +315,44 @@ class PhantomHourglassClient(DSZeldaClient):
         await self.update_treasure_tracker(ctx)
 
     async def process_in_game(self, ctx, read_result: dict):
+        # Skip cutscenes
+        cs_type_addr = 0x1B56C4  # what type of cutscene you're in
+        cs_lock_addr = 0x1B55DC  # Set to 0 to stop cutscene
+        cs_door_cancel_addr = 0x1BA8CC  # 0 when canceling door is safe. door is type 0x8D
+        in_cs_addr = 0x1B55D4 # 3 in cs, 1 in get item/1 frame around cs. read on main loop
+        torch_lock_addr = 0x1B6EB5  # 1 when panning to a torch, 0 when safe to unlock
+
+        # Current problems:
+        # - can't handle multiple cutscenes
+        # - spawning chests doesn't load the object data, just the model
+        # - B6 red door triggers early
+
+        # Door delay
+        if self.door_lock:
+            dont_unlock = await read_memory_value(ctx, cs_door_cancel_addr)
+            if not dont_unlock:
+                if self.current_scene != 0x2507:
+                    await write_memory_value(ctx, cs_lock_addr, 0, overwrite=True)
+                self.door_lock = False
+        elif self.torch_lock:
+            dont_unlock = await read_memory_value(ctx, torch_lock_addr)
+            if not dont_unlock:
+                await write_memory_value(ctx, cs_lock_addr, 0, overwrite=True)
+                self.torch_lock = False
+
+        # Main detection
+        elif read_result.get("in_short_cs", 0) == 3:
+            cs_type = await read_memory_value(ctx, cs_type_addr, silent=True)
+            if cs_type in [0x8D, 0x2C]:
+                print(f"Detected door")
+                self.door_lock = True
+            elif cs_type == 0x3C:
+                print(f"Detected torch+")
+                self.torch_lock = True
+            elif cs_type not in [0xFF, 0x38, 0x7E]:
+                await write_memory_value(ctx, cs_lock_addr, 0, overwrite=True)
+
+
 
         # Detect lowering of water and update ER Map
         if not self.lowered_water and self.current_stage == 0x24:

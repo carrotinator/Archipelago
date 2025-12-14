@@ -1,10 +1,8 @@
 
-from ..Subclasses import PHTransition, EntranceGroups, OPPOSITE_ENTRANCE_GROUPS
-
-
-
-
-
+if __name__ != "__main__":
+    from ..Subclasses import PHTransition, EntranceGroups, OPPOSITE_ENTRANCE_GROUPS, type_lookup
+else:
+    from worlds.tloz_ph.Subclasses import PHTransition, EntranceGroups, OPPOSITE_ENTRANCE_GROUPS, type_lookup
 
 ENTRANCE_DATA = {
     # "Name": {
@@ -2036,14 +2034,12 @@ entrance_id_to_region = {d.id: d.entrance_region for d in ENTRANCES.values()}
 
 
 if __name__ == "__main__":
-    sorted_entrances = sorted(ENTRANCES, key=lambda x: (ENTRANCES[x].island, ENTRANCES[x].category_group, ENTRANCES[x].direction, ENTRANCES[x].name))
-    for name in sorted_entrances:
-        if not "Unnamed" in name:
-            print(name)
 
-
-    # for name, data in ENTRANCES.items():
-    #     print(f"{name}:", "{")
-    #     for k, v in data.items():
-    #         print(f"\t{k}: {v}")
-    #     print("},")
+    sorted_entrances = sorted(ENTRANCES.values(), key=lambda x: (x.island, x.category_group, x.direction, x.name))
+    # print(f"{sorted_entrances}")
+    for index, entr_type in type_lookup.items():
+        print(f"\n{entr_type.capitalize()}")
+        for entr in sorted_entrances:
+            # print(entr.category_group.entrance_type(), index)
+            if entr.category_group.entrance_type() == index << 3:
+                print(f"{entr.name}")
