@@ -229,9 +229,12 @@ class TrackerCommandProcessor(ClientCommandProcessor):
         if self.ctx.stored_data and "_read_race_mode" in self.ctx.stored_data and self.ctx.stored_data["_read_race_mode"]:
             logger.info("Logical Path is disabled during Race Mode")
             return
-        if self.ctx.ui:
-            self.ctx.ui.last_autofillable_command = "/get_logical_path"
         get_logical_path(self.ctx, dest_name)
+    
+    @mark_raw
+    def _cmd_path(self, dest_name: str = ""):
+        """Alias for /get_logical_path"""
+        return self._cmd_get_logical_path(dest_name)
     
     @mark_raw
     def _cmd_explain(self,lookup_name:str=""):
