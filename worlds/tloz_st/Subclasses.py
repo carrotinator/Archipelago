@@ -1,5 +1,9 @@
-from .DSZeldaClient.subclasses import DSTransition
-from .DSZeldaClient.ItemClass import DSItem, receive_normal
+try:
+    from .DSZeldaClient.subclasses import DSTransition
+    from .DSZeldaClient.ItemClass import DSItem, receive_normal
+except ModuleNotFoundError:
+    from worlds.tloz_ph.DSZeldaClient.subclasses import DSTransition
+    from worlds.tloz_ph.DSZeldaClient.ItemClass import DSItem, receive_normal
 from enum import IntEnum
 
 

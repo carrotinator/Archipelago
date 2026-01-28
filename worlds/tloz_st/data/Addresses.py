@@ -1,4 +1,7 @@
-from ..DSZeldaClient.subclasses import Address, Pointer
+try:
+    from ..DSZeldaClient.subclasses import Address, Pointer
+except ModuleNotFoundError:
+    from worlds.tloz_ph.DSZeldaClient.subclasses import Address, Pointer
 
 addr_null = Address(0)
 

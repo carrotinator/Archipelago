@@ -1,9 +1,15 @@
 import random
-from .DSZeldaClient.DSZeldaClient import *
-from .DSZeldaClient.subclasses import AddrFromPointer
+try:
+    from worlds.tloz_ph.DSZeldaClient.DSZeldaClient import *
+    from worlds.tloz_ph.DSZeldaClient.subclasses import AddrFromPointer
+except ModuleNotFoundError:
+    from .DSZeldaClient.DSZeldaClient import *
+    from .DSZeldaClient.subclasses import AddrFromPointer
+from .Util import *
 from .data.Addresses import STAddr
 from .data.Items import ITEMS
 from .data.DynamicEntrances import DYNAMIC_ENTRANCES_BY_SCENE
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext
