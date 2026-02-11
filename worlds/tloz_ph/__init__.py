@@ -18,7 +18,6 @@ from .data import LOCATIONS_DATA
 from .data.Constants import *
 from .data.Items import ITEMS
 from .data.Regions import REGIONS
-from .data.LogicPredicates import *
 from .data.Entrances import ENTRANCES, entrance_id_to_region, EVENTS, entrance_id_to_entrance
 from .Subclasses import PHRegion, decode_entrance_groups, update_switch_logic, EntranceGroups, OPPOSITE_ENTRANCE_GROUPS
 from .Client import PhantomHourglassClient  # Unused, but required to register with BizHawkClient
@@ -159,6 +158,14 @@ class PhantomHourglassWorld(World):
                                        "ph_ut_events_{player}_{team}",
                                        "ph_disconnect_entrances_{player}_{team}",
                                        "ph_traversed_entrances_{player}_{team}"]
+    item_mapping: dict = {
+        i: "Rupees" for i in ITEM_GROUPS["Rupee Items"] } | {
+        i: "Treasure" for i in ITEM_GROUPS["Treasure Items"] } | {
+        i: "Beedle Points" for i in ITEM_GROUPS["Beedle Point Items"] } | {
+        "Power Gem": "Power Gem Pack",
+        "Wisdom Gem": "Wisdom Gem Pack",
+        "Courage Gem": "Courage Gem Pack" } | {
+        i: "Sand" for i in ITEM_GROUPS["Sand Items"] }
 
     def __init__(self, multiworld, player):
         super().__init__(multiworld, player)
@@ -179,6 +186,7 @@ class PhantomHourglassWorld(World):
         self.manual_er_pairings = []
         self.plando_er_pairings = []
         self.required_bosses = []
+        self.item_mapping_collect: dict[str, dict[str, int]] = {}
 
         self.entrances: dict[str, "Entrance"] = {}
         self.er_placement_state = None
@@ -260,6 +268,20 @@ class PhantomHourglassWorld(World):
             self.treasure_price_index = self.random.randint(0, 9)
 
         self.restrict_non_local_items()
+        self.create_item_mappings()
+
+    def create_item_mappings(self):
+        self.item_mapping_collect |= {
+            i: {"Rupees": ITEMS[i].value} for i in ITEM_GROUPS["Rupee Items"] } | {
+            i: {"Treasure": prices[self.treasure_price_index]} for i, prices in TREASURE_PRICES.values() } | {
+            i: {"Beedle Points": ITEMS[i].value} for i in ITEM_GROUPS["Beedle Point Items"] } | {
+            f"{spirit} Gem": {f"{spirit} Gem Pack": self.options.spirit_gem_packs.value} for spirit in ["Power", "Wisdom", "Courage"] } | {
+            "Phantom Hourglass": {"Sand": self.options.ph_starting_time},
+            "Sand of Hours": {"Sand": self.options.ph_time_increment},
+            "Sand of Hours (Boss)": {"Sand": 120},
+            "Sand of Hours (Small)": {"Sand": 60},
+            "Heart Container": {"Sand": self.options.ph_heart_time}
+        }
 
     def restrict_non_local_items(self):
         # Restrict non_local_items option in cases where it's incompatible with other options that enforce items
@@ -1322,6 +1344,30 @@ class PhantomHourglassWorld(World):
                     player_hint_data[loc_data["id"]] = ", ".join(entrance_list)
 
         hint_data[self.player] = player_hint_data
+
+    def collect(self, state: CollectionState, item: Item) -> bool:
+        # Code borrowed from Ishigh's early Rule Builder implementation
+        change = super().collect(state, item)
+        if not change:
+            return False
+
+        mapping = self.item_mapping_collect.get(item.name, None)
+        if mapping is not None:
+            #print(f"Mapping {mapping} {state.prog_items[self.player][mapping[0]]} for item {item.name}")
+            state.prog_items[self.player][mapping[0]] += mapping[1]
+
+        return True
+
+    def remove(self, state: CollectionState, item: Item) -> bool:
+        change = super().remove(state, item)
+        if not change:
+            return False
+
+        mapping = self.item_mapping_collect.get(item.name, None)
+        if mapping is not None:
+            state.prog_items[self.player][mapping[0]] -= mapping[1]
+
+        return True
 
     def fill_slot_data(self) -> dict:
         options = [

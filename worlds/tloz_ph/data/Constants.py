@@ -340,7 +340,7 @@ ITEM_GROUPS: dict[str, set[str]] = {
         "Sand of Hours",
         "Swordsman's Scroll",
     },
-    "Rupees": {
+    "Rupee Items": {
         "Green Rupee (1)",
         "Blue Rupee (5)",
         "Red Rupee (20)",
@@ -479,6 +479,18 @@ ITEM_GROUPS: dict[str, set[str]] = {
         "Map Warp: Isle of the Dead",
         "Map Warp: Ruins",
         "Map Warp: Maze",
+    },
+    "Beedle Point Items": {
+        "Beedle Points (10)",
+        "Beedle Points (20)",
+        "Beedle Points (50)"
+    },
+    "Sand Items": {
+        "Phantom Hourglass",
+        "Sand of Hours (Boss)",
+        "Sand of Hours (Small)",
+        "Sand of Hours",
+        "Heart Container"
     }
 }
 
