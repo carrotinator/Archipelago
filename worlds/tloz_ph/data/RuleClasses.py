@@ -17,14 +17,16 @@ def beedle_discount(state: CollectionState, player) -> float:
     return 1
 
 
-def beedle_eval(state: CollectionState, player, options, price) -> bool:
+def beedle_eval(state: CollectionState, player, options: tuple, price) -> bool:
     """
     Evaluate if you have enough rupees for beedle
     """
     if state.has("_UT_Glitched_Logic", player):
         return True
+    if can_farm_rupees(state, player):
+        return True
     # Multiplier only applies to non-linear items
-    multiplier = 0.7 if options.shop_hints else 1
+    multiplier = 0.7 if options[2] else 1
     other_costs = 500 * multiplier + 50
     discount = beedle_discount(state, player)  # Discount from points
     # Island shop items
@@ -34,14 +36,46 @@ def beedle_eval(state: CollectionState, player, options, price) -> bool:
             other_costs += 3000
     if state.has("Bombs (Progressive)", player):
         other_costs += 1000 * discount * multiplier  # Bomb bag is affected by discount
-    if options.randomize_masked_beedle:
+    if options[0]:
         other_costs += 1500 * multiplier
     if state.has("Freebie Card", player):
         other_costs -= 500 * discount  # Freebie card assumed to be used for the 500r wisdom gem.
-    return state.has("Rupees", player, price * discount + other_costs)
+    if price == 501:
+        print(f"{count_rupees(state, player)} >= {price} * {discount} + {other_costs} = {price * discount + other_costs}")
+    return count_rupees(state, player) >= price * discount + other_costs
 
+def can_farm_rupees(state, player):
+    return any([
+        all([
+            state.has("_has_treasure_teller", player),  # Can Sell Treasure
+            any([
+                all([
+                    state.has("_can_farm_totok", player),
+                    state.has("Sword (Progressive)", player, 2),
+                ]),
+                all([  # Can Farm Minigames
+                    state.multiworld.worlds[player].options.randomize_minigames,
+                    any([
+                        state.has("_can_play_archery", player),
+                        state.has("_can_play_cannon_game", player),
+                        state.has("_can_play_goron_race", player),
+                    ])
+                ])
+            ]),
+        ]),
+        all([  # Can farm harrow (and chooses to play with harrow)
+            state.has("_can_play_harrow", player),
+            state.multiworld.worlds[player].options.randomize_harrow
+        ]),
+    ])
 
-def buy_beedle_points_eval(state, player, options, points) -> bool:
+def count_rupees(state, player):
+    rupees = state.count("Rupees", player)
+    if state.has("_has_treasure_teller", player):
+        rupees += state.count("Treasure", player)
+    return rupees
+
+def buy_beedle_points_eval(state, player, options: tuple, points) -> bool:
     """
     Evaluate if you have enough rupees to buy beedle points
     """
@@ -54,8 +88,9 @@ def buy_beedle_points_eval(state, player, options, points) -> bool:
         cost -= 1000 * beedle_discount(state, player)
     return beedle_eval(state, player, options, cost)
 
+tloz_ph = PhantomHourglassWorld.game
 
-class PHShop(Rule[PhantomHourglassWorld], game="The Legend of Zelda - Phantom Hourglass"):
+class PHShop(Rule[PhantomHourglassWorld], game=tloz_ph):
     """
     Base class for shared code in shops
     """
@@ -66,57 +101,73 @@ class PHShop(Rule[PhantomHourglassWorld], game="The Legend of Zelda - Phantom Ho
         super().__init__()
 
     def _instantiate(self, world: PhantomHourglassWorld) -> Rule.Resolved:
+        options = (
+            world.options.randomize_masked_beedle.value,
+            world.options.randomize_beedle_membership.value,
+            world.options.shop_hints.value)
         return self.Resolved(
             self.price,
-            world.options,
+            options,
             player=world.player,
             caching_enabled=False)
 
     class Resolved(Rule.Resolved):
         price: int
-        options: PhantomHourglassOptions
+        options: tuple
 
 
-class IslandShop(PHShop):
+class IslandShop(PHShop, game=tloz_ph):
     class Resolved(Rule.Resolved):
         price: int
-        options: PhantomHourglassOptions
+        options: tuple
+
+        def calculate_costs(self, state):
+            other_costs = 0
+            if state.has("SW Sea Chart", self.player):
+                # Includes cannon island, but not salvage arm cause that also unlocks treasure shop
+                other_costs += 1550
+                if self.options[0]:
+                    other_costs += 1500
+                other_costs *= cost_multiplier
+            return other_costs
 
         @override
         def _evaluate(self, state: CollectionState) -> bool:
             if state.has("_UT_Glitched_Logic", self.player):
                 return True
-            other_costs = 0
-            if state.has("SW Sea Chart", self.player):
-                # Includes cannon island, but not salvage arm cause that also unlocks treasure shop
-                other_costs += 1550
-                if self.options.randomize_masked_beedle:
-                    other_costs += 1500
-                other_costs *= cost_multiplier
-            return state.has("Rupees", self.price+other_costs)
+            if can_farm_rupees(state, self.player):
+                return True
+            other_costs = self.calculate_costs(state)
+            return count_rupees(state, self.player) >= self.price+other_costs
+
+        def __str__(self):
+            return f"Has a bunch of Rupees (Island Shop)"
 
 
-class BeedleShop(PHShop):
+class BeedleShop(PHShop, game=tloz_ph):
     class Resolved(Rule.Resolved):
         price: int
-        options: PhantomHourglassOptions
+        options: tuple
 
         @override
         def _evaluate(self, state: CollectionState) -> bool:
             return beedle_eval(state, self.player, self.options, self.price)
 
+        def __str__(self):
+            return f"Has a bunch of Rupees (Beedle)"
 
-class HasBeedlePoints(PHShop):
+
+class HasBeedlePoints(PHShop, game=tloz_ph):
     class Resolved(Rule.Resolved):
         price: int
-        options: PhantomHourglassOptions
+        options: tuple
 
         @override
         def _evaluate(self, state: CollectionState):
             if state.has("_UT_Glitched_Logic", self.player):
                 return True
             points = self.price  # lol don't care
-            option = self.options.randomize_beedle_membership
+            option = self.options[1]
             if option == "randomize":
                 if self.price <= 20:  # Buying 20 points is always in logic
                     return buy_beedle_points_eval(state, self.player, self.options, points)
@@ -125,7 +176,10 @@ class HasBeedlePoints(PHShop):
                 return buy_beedle_points_eval(state, self.player, self.options, points)
             return False
 
-class IsUT(Rule[PhantomHourglassWorld], game="The Legend of Zelda - Phantom Hourglass"):
+        def __str__(self):
+            return f"Has {self.price} Beedle Points"
+
+class IsUT(Rule[PhantomHourglassWorld], game=tloz_ph):
     """
     Is Universal Tracker
     """
@@ -145,8 +199,11 @@ class IsUT(Rule[PhantomHourglassWorld], game="The Legend of Zelda - Phantom Hour
         def _evaluate(self, state: CollectionState):
             return getattr(state.multiworld, "generation_is_fake", False) == self.toggle
 
+        def __str__(self):
+            return f"Is Universal Tracker"
 
-class HasTime(Rule[PhantomHourglassWorld], game="The Legend of Zelda - Phantom Hourglass"):
+
+class HasTime(Rule[PhantomHourglassWorld], game=tloz_ph):
     """
     Determine if you have enough time
     """
@@ -161,11 +218,14 @@ class HasTime(Rule[PhantomHourglassWorld], game="The Legend of Zelda - Phantom H
         super().__init__()
 
     def _instantiate(self, world: PhantomHourglassWorld) -> Rule.Resolved:
+        options = {"ph_time_logic": world.options.ph_time_logic.value,
+                   "ph_required": world.options.ph_required.value}
+        options = (world.options.ph_time_logic.value, world.options.ph_required.value)
         return self.Resolved(
             self.time,
             self.room,
             self.floor_func,
-            world.options,
+            options,
             player=world.player,
             caching_enabled=False)
 
@@ -173,30 +233,31 @@ class HasTime(Rule[PhantomHourglassWorld], game="The Legend of Zelda - Phantom H
         time: int
         room: int or str
         floor_func: "Callable"
-        options: PhantomHourglassOptions
+        options: tuple
 
         @override
         def _evaluate(self, state: CollectionState):
-            time_option = self.options.ph_time_logic.value
+            time_option = self.options[0]
             if state.has("_UT_Glitched_Logic", self.player) or time_option == 5:
-                return True
-            if state.has("Phantom Hourglass", self.player):
                 return True
             if time_option > 2:
                 room_lookup = {3: 0, 4: 3}
                 return self.room > room_lookup[time_option]
-            if self.options.ph_required and not state.has("Phantom Hourglass", self.player):
+            if self.options[1] and not state.has("Phantom Hourglass", self.player):
                 return False
 
             total_sand = state.count("Sand", self.player)
             time_lookup = {0: 1, 1: 2, 2: 4, -1: 0.5}
-            multiplier = time_lookup.get(self.options.ph_time_logic.value, 1)
+            multiplier = time_lookup.get(self.options[0], 1)
 
             floor_time = self.floor_func(state, self.player) + self.time
 
             return total_sand >= floor_time // multiplier
 
-class TotOKSmallKeys(Rule[PhantomHourglassWorld], game="The Legend of Zelda - Phantom Hourglass"):
+        def __str__(self):
+            return f"Has enough Sand to reach floor {self.room} + {self.time}/time_logic_difficulty"
+
+class TotOKSmallKeys(Rule[PhantomHourglassWorld], game=tloz_ph):
     """
     Determine if you have enough time
     """
@@ -207,15 +268,18 @@ class TotOKSmallKeys(Rule[PhantomHourglassWorld], game="The Legend of Zelda - Ph
         super().__init__()
 
     def _instantiate(self, world: PhantomHourglassWorld) -> Rule.Resolved:
+        options = {"randomize_pedestal_items": world.options.randomize_pedestal_items.value,
+                   "logic": world.options.logic}
+        options = (world.options.randomize_pedestal_items.value, world.options.logic)
         return self.Resolved(
             self.base_count,
-            world.options,
+            options,
             player=world.player,
             caching_enabled=False)
 
     class Resolved(Rule.Resolved):
         base_count: int
-        options: "PhantomHourglassOptions"
+        options: tuple
 
         @override
         def _evaluate(self, state: CollectionState):
@@ -228,11 +292,11 @@ class TotOKSmallKeys(Rule[PhantomHourglassWorld], game="The Legend of Zelda - Ph
                 any([
                     state.has("Grappling Hook", self.player),
                     all([
-                        self.options.randomize_pedestal_items, # Not vanilla
+                        self.options[0], # Not vanilla
                         any([
                             ut_glitched,
-                            self.options.logic in ["hard", "glitched"],
-                            self.options.randomize_pedestal_items.value > 1,
+                            self.options[1] in ["hard", "glitched"],
+                            self.options[0] > 1,
                         ])
                     ])
                 ])
@@ -240,7 +304,10 @@ class TotOKSmallKeys(Rule[PhantomHourglassWorld], game="The Legend of Zelda - Ph
                 sub += 1
             return state.has("Small Key (Temple of the Ocean King)", self.base_count - sub)
 
-class LocationNotExcluded(Rule[PhantomHourglassWorld], game="The Legend of Zelda - Phantom Hourglass"):
+    def __str__(self):
+        return f"Has {self.base_count}-shortcuts TotOK Small Keys"
+
+class LocationNotExcluded(Rule[PhantomHourglassWorld], game=tloz_ph):
     loc: str
     def __init__(self, loc):
         self.loc = loc
@@ -252,6 +319,11 @@ class LocationNotExcluded(Rule[PhantomHourglassWorld], game="The Legend of Zelda
             player=world.player,
             caching_enabled=False)
 
+    @override
+    def __str__(self) -> str:
+        options = f", options={self.options}" if self.options else ""
+        return f"{self.__class__.__name__}({self.loc}{options})"
+
     class Resolved(Rule.Resolved):
         location: "Location"
 
@@ -259,24 +331,44 @@ class LocationNotExcluded(Rule[PhantomHourglassWorld], game="The Legend of Zelda
         def _evaluate(self, state: CollectionState):
             return self.location.progress_type != LocationProgressType.EXCLUDED
 
-class Not(Rule[PhantomHourglassWorld], game="The Legend of Zelda - Phantom Hourglass"):
-    invert_rule: Callable
-    def __init__(self, invert_rule, **kwargs):
-        self.invert_rule = invert_rule
-        self.kwargs = kwargs
-        super().__init__()
+        def __str__(self):
+            return f"Location {self.location} is not Excluded"
 
+class NotWayfarerTrade(Rule[PhantomHourglassWorld], game=tloz_ph):
     def _instantiate(self, world: PhantomHourglassWorld) -> Rule.Resolved:
         return self.Resolved(
-            self.invert_rule,
-            self.kwargs,
             player=world.player,
             caching_enabled=False)
 
-    class Resolved(Rule.Resolved):
-        invert_rule: Callable
-        kwargs: Any
+    def __str__(self):
+        return f"Not Has _wayfarer_trade"
 
+    class Resolved(Rule.Resolved):
         @override
         def _evaluate(self, state: CollectionState):
-            return not self.invert_rule(state, self.player, **self.kwargs)
+            return not state.has("_wayfarer_trade", self.player)
+
+        def __str__(self):
+            return f"Not Has _wayfarer_trade"
+
+class NotToCCrystals(Rule[PhantomHourglassWorld], game=tloz_ph):
+    def _instantiate(self, world: PhantomHourglassWorld) -> Rule.Resolved:
+        return self.Resolved(
+            player=world.player,
+            caching_enabled=False)
+
+    def __str__(self):
+        return "Not Has any of (Square Crystal (Temple of Courage), Square Crystals, Square Pedestal North (Temple of Courage))"
+
+    class Resolved(Rule.Resolved):
+        @override
+        def _evaluate(self, state: CollectionState):
+            shape, dung_name, diff = "Square", "Temple of Courage", "North"
+            return any([
+                state.has(f"{shape} Crystal ({dung_name})", self.player),
+                state.has(f"{shape} Crystals", self.player),
+                state.has(f"{shape} Pedestal {diff} ({dung_name})", self.player),
+            ])
+
+        def __str__(self):
+            return "Not Has any of (Square Crystal (Temple of Courage), Square Crystals, Square Pedestal North (Temple of Courage))"

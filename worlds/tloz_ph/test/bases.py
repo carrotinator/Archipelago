@@ -148,6 +148,7 @@ options_excluded_crystals = {"dungeons_required": 8,
                "randomize_boss_keys": "in_own_dungeon",
                # "shuffle_houses": "shuffle",
                "entrance_directionality": "disregard_all",
+                "ph_time_logic": "no_logic"
                }
 
 class TestPHGeneration(WorldTestBase):

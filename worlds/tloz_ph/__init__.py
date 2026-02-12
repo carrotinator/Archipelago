@@ -23,6 +23,7 @@ from .data.Entrances import ENTRANCES, entrance_id_to_region, EVENTS, entrance_i
 from .Subclasses import PHRegion, decode_entrance_groups, update_switch_logic, EntranceGroups, OPPOSITE_ENTRANCE_GROUPS
 from .Client import PhantomHourglassClient  # Unused, but required to register with BizHawkClient
 from .tracker.TrackerUtil import TRACKER_WORLD
+from rule_builder.cached_world import CachedRuleBuilderWorld
 
 logger = logging.getLogger("Client")
 dev_prints = False
@@ -130,7 +131,7 @@ def add_pedestal_items(place, option, excluded_dungeons):
 
     return res
 
-class PhantomHourglassWorld(World):
+class PhantomHourglassWorld(CachedRuleBuilderWorld):
     """
     The Legend of Zelda: Phantom Hourglass is the sea bound handheld sequel to the Wind Waker.
     """
@@ -187,7 +188,7 @@ class PhantomHourglassWorld(World):
         self.manual_er_pairings = []
         self.plando_er_pairings = []
         self.required_bosses = []
-        self.item_mapping_collect: dict[str, dict[str, int]] = {}
+        self.item_mapping_collect: dict[str, tuple[str, int]] = {}
 
         self.entrances: dict[str, "Entrance"] = {}
         self.er_placement_state = None
@@ -274,19 +275,19 @@ class PhantomHourglassWorld(World):
         if self.options.goal_requirements == "metal_hunt":
             self.required_metals = self.options.metal_hunt_required.value
         elif self.options.goal_requirements == "defeat_bosses":
-            self.required_metals = self.options.dungeons_required
+            self.required_metals = self.options.dungeons_required.value
 
     def create_item_mappings(self):
         self.item_mapping_collect |= {
-            i: {"Rupees": ITEMS[i].value} for i in ITEM_GROUPS["Rupee Items"] } | {
-            i: {"Treasure": prices[self.treasure_price_index]} for i, prices in TREASURE_PRICES.items() } | {
-            i: {"Beedle Points": ITEMS[i].value} for i in ITEM_GROUPS["Beedle Point Items"] } | {
-            f"{spirit} Gem": {f"{spirit} Gem Pack": self.options.spirit_gem_packs.value} for spirit in ["Power", "Wisdom", "Courage"] } | {
-            "Phantom Hourglass": {"Sand": self.options.ph_starting_time},
-            "Sand of Hours": {"Sand": self.options.ph_time_increment},
-            "Sand of Hours (Boss)": {"Sand": 120},
-            "Sand of Hours (Small)": {"Sand": 60},
-            "Heart Container": {"Sand": self.options.ph_heart_time}
+            i: ("Rupees", ITEMS[i].value) for i in ITEM_GROUPS["Rupee Items"] } | {
+            i: ("Treasure", prices[self.treasure_price_index]) for i, prices in TREASURE_PRICES.items() } | {
+            i: ("Beedle Points", ITEMS[i].value) for i in ITEM_GROUPS["Beedle Point Items"] } | {
+            f"{spirit} Gem": (f"{spirit} Gem Pack", self.options.spirit_gem_packs.value) for spirit in ["Power", "Wisdom", "Courage"] } | {
+            "Phantom Hourglass": ("Sand", self.options.ph_starting_time),
+            "Sand of Hours": ("Sand", self.options.ph_time_increment),
+            "Sand of Hours (Boss)": ("Sand", 120),
+            "Sand of Hours (Small)": ("Sand", 60),
+            "Heart Container": ("Sand", self.options.ph_heart_time)
         }
 
     def restrict_non_local_items(self):
@@ -1363,7 +1364,7 @@ class PhantomHourglassWorld(World):
             return False
 
         mapping = self.item_mapping_collect.get(item.name, None)
-        if mapping is not None:
+        if mapping is not None and (item.classification & ItemClassification.progression):
             #print(f"Mapping {mapping} {state.prog_items[self.player][mapping[0]]} for item {item.name}")
             state.prog_items[self.player][mapping[0]] += mapping[1]
 

@@ -41,7 +41,7 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
             ["Treasure Teller", "Mercay SE Treasure Teller", False, None],
             ["Mercay SE Treasure Teller", "Mercay SE", False, None],
         ["Mercay SE", "Mercay SE Ojibe", False, has_courage_crest],
-        ["Mercay SE", "Mercay NE", True, False],
+        ["Mercay SE", "Mercay NE", True, None],
         ["Mercay SE Ledge", "Mercay SE", False, None],
 
         ["Mercay NW Chus", "Mercay NW Bamboo", True, can_cut_bamboo],
@@ -193,7 +193,7 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
         ["NE Ocean", "Beedle", False, None],
 
         ["Beedle", "Beedle Gem", False, BeedleShop(500)],
-        ["Beedle", "Beedle Bomb Bag", False, beedle_bomb_bag],
+        ["Beedle", "Beedle Bomb Bag", False, has_bombs & BeedleShop(501)],
         ["Beedle", "Masked Ship Gem", False, BeedleShop(500)],
         ["Beedle", "Masked Ship HC", False, BeedleShop(500)],
 
@@ -579,7 +579,7 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
 
         # ================= Goron Temple ====================
         ["GT 1F", "GT 1F Upper", False, has_shovel],
-        ["GT 1F Upper", "GT 1F NW", False, has_explosives, has_hammer],
+        ["GT 1F Upper", "GT 1F NW", False, has_explosives | has_hammer],
         ["GT 1F NW", "GT 1F Bow", False, has_bow],
         ["GT 1F NW", "GT B1", False, has_explosives & has_sword & can_kill_eye_brute],
         ["GT B1", "GT B2", False, bombchu_switches],
@@ -747,7 +747,7 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
 
         ["Ruins NW Maze Lower Exit", "Ruins NW Boulders", False, None],
         ["Ruins NW Maze Upper Exit", "Ruins NW Boulders", False, None],
-        ["Ruins NW Boulders", "Ruins NW Dig", False, "shovel"],
+        ["Ruins NW Boulders", "Ruins NW Dig", False, has_shovel],
         ["Ruins NW Port Cliff", "Ruins NW Maze Lower Chest", False, ruins_water],
         ["Ruins NW Boulders", "Ruins NW Across Bridge", True, None],
         ["Ruins NW Boulders", "Bremeur's Temple", True, None],
@@ -886,7 +886,7 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
         ["Goal", "Goal Event", False, None],  # Event stuff
         ["Goal", "Goal Event Triforce", False, None],  # Event stuff
         ["Goal", "Goal Event Bellumbeck", False, None],  # Event stuff
-        ["TotOK B6 Midway", "Goal", False, goal_midway],
+        ["TotOK B6 Midway", "Goal", False, Filtered(Or(), options=goal_midway)],
         ["Menu", "Goal", False, win_on_metals(world.required_metals)],
 
     ]
@@ -941,7 +941,7 @@ def create_connections(world: "PhantomHourglassWorld", player: int, origin_name:
         for reg1, reg2, is_two_way, rule in logic_array:
             region_1 = world.get_region(reg1)
             region_2 = world.get_region(reg2)
-            print(f"Creating entrance: {reg1} -> {reg2}")
+            # print(f"Creating entrance: {reg1} -> {reg2}")
             create_entrance(region_1, region_2)
             if is_two_way:
                 create_entrance(region_2, region_1)

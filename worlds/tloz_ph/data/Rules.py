@@ -1,12 +1,9 @@
 from rule_builder.rules import *
 from ..Options import *
 from .Constants import *
-from typing import TYPE_CHECKING, Literal
+from typing import Literal
 from .RuleClasses import *
 from .LogicPredicates import floor_lookup
-
-if TYPE_CHECKING:
-    from ..__init__ import PhantomHourglassWorld
 
 # Options
 ut_glitched = Has("_UT_Glitched_Logic")
@@ -43,7 +40,7 @@ has_hammer = Has("Hammer")
 has_boomerang = Has("Boomerang")
 
 def has_spirit(spirit: Literal["Power", "Wisdom", "Courage"], count=1):
-    return Has(f"Spirit of {spirit}", count)
+    return Has(f"Spirit of {spirit} (Progressive)", count)
 
 def has_spirit_gems(spirit: Literal["Power", "Wisdom", "Courage"], count):
     return Has(f"{spirit} Gem", count) & has_spirit(spirit)
@@ -64,7 +61,7 @@ has_swordfish_shadows = Has("Swordfish Shadows")
 can_catch_rsf = has_lure | has_swordfish_shadows
 can_catch_stowfish = has_swordfish_shadows & (has_lure | ut_glitched)
 
-def require_sea_chart(quadrant):
+def require_sea_chart(quadrant: Literal["NW", "NE", "SW", "SE"]):
     return has_sea_chart(quadrant) | [OptionFilter(PhantomHourglassBoatRequiresSeaChart, 0)]
 
 def has_fish(fish):
@@ -93,7 +90,7 @@ has_swordless_damage = has_swordless_cave_damage | has_chus
 has_cave_damage = Or(has_sword, has_swordless_cave_damage)
 has_damage = has_cave_damage | has_chus
 has_fire_sword = has_sword & has_spirit("Power", 2)
-has_super_shield = has_shield & has_spirit("Wisdom", 2)
+has_super_shield = has_spirit("Wisdom", 2) # & has_shield
 has_beam_sword = has_sword & has_spirit("Courage", 2)
 has_stun_sword = has_sword & (has_boomerang | has_super_shield)
 can_cut_bamboo = has_sword | has_explosives
@@ -224,7 +221,7 @@ can_defeat_bellumbeck = has_phantom_sword & has_spirit("Courage")
 bannan_scroll = Has("_wayfarer_trade") & can_pass_sea_monster
 bannan_sea_monster = And(
     require_sea_chart("NW"),
-    can_pass_sea_monster | ut_glitched | Not(lambda state, player: state.has("_wayfarer_trade", player))
+    can_pass_sea_monster | ut_glitched | NotWayfarerTrade()
 )
 ghost_ship_access = And(
     require_sea_chart("NW"),
@@ -264,7 +261,7 @@ mp2_bypass_fore = Or(
     has_small_keys("Mountain Passage", 3),
     savescum_keys("Mountain Passage", 2),
     And(
-        vanilla_caves | keys_own_dungeon,
+        Filtered(Or(), options=vanilla_caves) | keys_own_dungeon,
         has_small_keys("Mountain Passage", 2),
         IsUT(False) | smart_keys
     )
@@ -282,7 +279,7 @@ mp3 = Or(
 )
 mp3_back = Or(
     has_small_keys("Mountain Passage", 3),
-    has_small_keys("Mountain Passage", 2) & (vanilla_caves | False_ | keys_own_dungeon),
+    has_small_keys("Mountain Passage", 2) & (Filtered(Or(), options=vanilla_caves) | keys_own_dungeon),
     savescum_keys("Mountain Passage", 1)
 )
 
@@ -331,7 +328,7 @@ def toc_crystals_state(state: CollectionState, player: int, diff: str):
     ])
 toc_door_2 = Or(
     toc_key_doors(3, 3, 2),
-    toc_key_doors(3, 2) & (pedestals_vanilla_any | Not(toc_crystals_state, diff="North")),
+    toc_key_doors(3, 2) & (pedestals_vanilla_any | NotToCCrystals()),
     IsUT() & Or(
         savescum_keys("Temple of Courage", 1) & has_hammer,
         not_glitched_logic & smart_keys & Or(
@@ -371,7 +368,7 @@ def toi_key_doors(glitched, not_glitched):
 toi_all_doors_ut = smart_keys & keys_own_dungeon & has_grapple & has_explosives & has_bow & quick_switches
 toi_3f_boomerang = quick_switches & (has_boomerang | has_grapple)
 toi_door_1 = toi_key_doors(3, 1) | (
-    IsUT & Or(
+    IsUT() & Or(
         savescum_keys(toi, 1),
         smart_keys & Or(
             And(
@@ -384,7 +381,7 @@ toi_door_1 = toi_key_doors(3, 1) | (
 )
 toi_door_2 = Or(
     toi_key_doors(3, 2),
-    IsUT & Or(
+    IsUT() & Or(
         Filtered(keys_own_dungeon & quick_switches, options=not_glitched_logic),
         savescum_keys(toi, 1),
     toi_all_doors_ut
@@ -424,8 +421,12 @@ mutoh_bk_chest = Or(
 mutoh_bk = has_boss_key(mt) | (ut_boss_keys_own_dungeon & mutoh_bk_chest)
 
 # TotOK
+totok = "Temple of the Ocean King"
 def totok_keys(count):
-    return TotOKSmallKeys(count)
+    return has_small_keys(totok, count) | (IsUT() & TotOKSmallKeys(count))
+
+def totok_deep_keys(count):
+    return has_small_keys(totok, count) | (has_small_keys(totok, count-1) & has_grapple) | (IsUT() & TotOKSmallKeys(count))
 
 def totok_shape_crystals(shape, diff):
     return has_shape_crystals("Temple of the Ocean King", shape, diff)
@@ -453,7 +454,7 @@ totok_b1_all_checks_ut = And(
 totok_1f_chart = (has_floor_time(0, 15)
                                & Or(totok_keys(1), totok_b1_all_checks_ut))
 # B2
-totok_b2 = has_floor_time(2) & (totok_keys(2), totok_b1_all_checks_ut)
+totok_b2 = has_floor_time(2) & (totok_keys(2) | totok_b1_all_checks_ut)
 totok_b2_key = Or(
     has_explosives & has_floor_time(2, 15),
     boomerang_glitch & has_floor_time(2, 20),
@@ -509,7 +510,7 @@ totok_b4_all_checks_ut = And(
 totok_b3_sw = has_floor_time(3, 7) & (totok_keys(4) | totok_b4_all_checks_ut)
 
 # B5
-totok_b5 = has_floor_time(5) & (totok_keys(5) | totok_b4_all_checks_ut)
+totok_b5 = has_floor_time(5) & (totok_deep_keys(5) | totok_b4_all_checks_ut)
 totok_b5_alt = bombchu_switches & totok_b5
 totok_b5_chest = can_kill_bubble & has_pot_range & has_floor_time(5, 25)
 totok_b5_alt_chest = (has_shovel | has_grapple) & has_floor_time(5, 7)
@@ -613,9 +614,9 @@ totok_b10_all_checks_ut = And(
 )
 
 # B11
-totok_b11 = has_explosives & has_floor_time(11) & (totok_keys(6) | totok_b10_all_checks_ut)
+totok_b11 = has_explosives & has_floor_time(11) & (totok_deep_keys(6) | totok_b10_all_checks_ut)
 totok_b11_phantom = has_phantom_sword & has_floor_time(11, 10)
-totok_b11_eyes = has_floor_time(11, 25),
+totok_b11_eyes = has_floor_time(11, 25)
 
 # B12
 def totok_b12_routes(normal=0, hammer=0):
