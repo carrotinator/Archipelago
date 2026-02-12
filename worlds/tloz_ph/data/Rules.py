@@ -196,22 +196,7 @@ bellum_access_wreck = [OptionFilter(PhantomHourglassBellumAccess, 3)]
 def charted_sea_monster(quadrant):
     return can_pass_sea_monster & require_sea_chart(quadrant)
 
-def has_metals(count):
-    return HasGroup("Metals", count)
-
-def win_on_metals(metals):
-    return Filtered(has_metals(metals), options=[OptionFilter(PhantomHourglassBellumAccess, PhantomHourglassBellumAccess.option_win)])
-
-# Time
-time_logic_none = ut_glitched | [OptionFilter(PhantomHourglassTimeLogic, 5)]
-time_require_ph = ut_glitched | [OptionFilter(PhantomHourglassTimeRequiresHourglass, 1)]
-
-def has_sand(time):
-    return Has("Sand", time)
-
-def has_floor_time(room, time=0):
-    floor_func = floor_lookup[room]
-    return HasTime(time, floor_func, room)
+win_on_metals = Filtered(HasRequiredMetals(), options=[OptionFilter(PhantomHourglassBellumAccess, PhantomHourglassBellumAccess.option_win)])
 
 # Specific locations, move to logic file?
 ember_grapple_chest = has_grapple | sword_glitch
@@ -421,6 +406,18 @@ mutoh_bk_chest = Or(
 mutoh_bk = has_boss_key(mt) | (ut_boss_keys_own_dungeon & mutoh_bk_chest)
 
 # TotOK
+# Time
+time_logic_none = ut_glitched | [OptionFilter(PhantomHourglassTimeLogic, 5)]
+time_require_ph = ut_glitched | [OptionFilter(PhantomHourglassTimeRequiresHourglass, 1)]
+
+def has_sand(time):
+    return Has("Sand", time)
+
+def has_floor_time(room, time=0):
+    floor_func = floor_lookup[room]
+    return HasTime(time, floor_func, room)
+
+
 totok = "Temple of the Ocean King"
 def totok_keys(count):
     return has_small_keys(totok, count) | (IsUT() & TotOKSmallKeys(count))
@@ -647,6 +644,5 @@ totok_b13 = And(
     has_floor_time(13)
 )
 totok_b13_chest = has_floor_time(13, 5)
-def totok_b13_door(metals):
-    return (has_phantom_sword & has_floor_time(13, 30)
-            & (bellum_access_staircase_plus | Filtered(has_metals(metals), options=bellum_access_b13)))
+totok_b13_door = (has_phantom_sword & has_floor_time(13, 30)
+                  & (bellum_access_staircase_plus | Filtered(HasRequiredMetals(), options=bellum_access_b13)))

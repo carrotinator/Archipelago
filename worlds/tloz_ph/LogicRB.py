@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from .Subclasses import PHRegion
     from .__init__ import PhantomHourglassWorld
 
-def make_overworld_logic(world: "PhantomHourglassWorld"):
+def make_overworld_logic():
     overworld_logic = [
 
         # Randomized start
@@ -172,10 +172,10 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
         ["TotOK B12", "TotOK B13", False, totok_b13],
 
         ["TotOK B13", "TotOK B13 Chest", False, totok_b13_chest],
-        ["TotOK B13", "TotOK B14", False, totok_b13_door(world.required_metals)],
-        ["TotOK Lobby", "TotOK B14", False, Filtered(has_metals(world.required_metals), options=bellum_access_warp)],
+        ["TotOK B13", "TotOK B14", False, totok_b13_door],
+        ["TotOK Lobby", "TotOK B14", False, Filtered(HasRequiredMetals(), options=bellum_access_warp)],
         # Bellum
-        ["TotOK B14", "Bellum", False, has_metals(world.required_metals)],
+        ["TotOK B14", "Bellum", False, HasRequiredMetals()],
         ["Bellum", "Ghost Ship Fight", False, can_defeat_bellum],
         ["Ghost Ship Fight", "Bellumbeck", False, has_cannon],
 
@@ -193,7 +193,7 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
         ["NE Ocean", "Beedle", False, None],
 
         ["Beedle", "Beedle Gem", False, BeedleShop(500)],
-        ["Beedle", "Beedle Bomb Bag", False, has_bombs & BeedleShop(501)],
+        ["Beedle", "Beedle Bomb Bag", False, has_bombs & BeedleShop(500)],
         ["Beedle", "Masked Ship Gem", False, BeedleShop(500)],
         ["Beedle", "Masked Ship HC", False, BeedleShop(500)],
 
@@ -481,7 +481,7 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
 
         ["Zauz's Island", "Zauz Dig", False, has_shovel],
         ["Zauz's Island", "Zauz's House", True, None],
-        ["Zauz's House", "Zauz's Blade", False, has_metals(world.options.zauz_required_metals.value)],
+        ["Zauz's House", "Zauz's Blade", False, HasZauzMetals()],
         ["Zauz's House", "Zauz's Crest", False, Has("_beat_ghost_ship")],
 
         # ================= Uncharted Island ====================
@@ -880,14 +880,14 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
         ["NE Ocean Salvage", "Salvage 31", False, has_map(31)],
 
         # Goal stuff
-        ["SW Ocean East", "Bellumbeck", False, can_defeat_bellumbeck & has_metals(world.required_metals) & bellum_access_wreck],
+        ["SW Ocean East", "Bellumbeck", False, can_defeat_bellumbeck & HasRequiredMetals() & bellum_access_wreck],
         ["Bellumbeck", "Beat Bellumbeck", False, can_defeat_bellumbeck],
         ["Beat Bellumbeck", "Goal", False, None],
         ["Goal", "Goal Event", False, None],  # Event stuff
         ["Goal", "Goal Event Triforce", False, None],  # Event stuff
         ["Goal", "Goal Event Bellumbeck", False, None],  # Event stuff
         ["TotOK B6 Midway", "Goal", False, Filtered(Or(), options=goal_midway)],
-        ["Menu", "Goal", False, win_on_metals(world.required_metals)],
+        ["Menu", "Goal", False, win_on_metals],
 
     ]
 
@@ -920,7 +920,7 @@ def create_connections(world: "PhantomHourglassWorld", player: int, origin_name:
 
     world.set_completion_rule(Has("_beaten_game"))
     all_logic = [
-        make_overworld_logic(world)
+        make_overworld_logic()
     ]
     # UT creates alias regions
     if getattr(world.multiworld, "generation_is_fake", False):
