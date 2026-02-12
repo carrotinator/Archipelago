@@ -1,8 +1,7 @@
-
+from BaseClasses import LocationProgressType, Location
 from rule_builder.rules import *
 from typing import TYPE_CHECKING
-if TYPE_CHECKING:
-    from ..__init__ import PhantomHourglassWorld, PhantomHourglassOptions
+from .. import PhantomHourglassWorld, PhantomHourglassOptions
 
 cost_multiplier = 0.7
 
@@ -130,17 +129,21 @@ class IsUT(Rule[PhantomHourglassWorld], game="The Legend of Zelda - Phantom Hour
     """
     Is Universal Tracker
     """
-    price: int
+    toggle: bool
+    def __init__(self, toggle=True):
+        self.toggle = toggle
 
     def _instantiate(self, world: PhantomHourglassWorld) -> Rule.Resolved:
         return self.Resolved(
+            self.toggle,
             player=world.player,
             caching_enabled=True)
 
     class Resolved(Rule.Resolved):
+        toggle: bool
         @override
         def _evaluate(self, state: CollectionState):
-            return getattr(state.multiworld, "generation_is_fake", False)
+            return getattr(state.multiworld, "generation_is_fake", False) == self.toggle
 
 
 class HasTime(Rule[PhantomHourglassWorld], game="The Legend of Zelda - Phantom Hourglass"):
@@ -236,3 +239,44 @@ class TotOKSmallKeys(Rule[PhantomHourglassWorld], game="The Legend of Zelda - Ph
             ]):
                 sub += 1
             return state.has("Small Key (Temple of the Ocean King)", self.base_count - sub)
+
+class LocationNotExcluded(Rule[PhantomHourglassWorld], game="The Legend of Zelda - Phantom Hourglass"):
+    loc: str
+    def __init__(self, loc):
+        self.loc = loc
+        super().__init__()
+
+    def _instantiate(self, world: PhantomHourglassWorld) -> Rule.Resolved:
+        return self.Resolved(
+            world.get_location(self.loc),
+            player=world.player,
+            caching_enabled=False)
+
+    class Resolved(Rule.Resolved):
+        location: "Location"
+
+        @override
+        def _evaluate(self, state: CollectionState):
+            return self.location.progress_type != LocationProgressType.EXCLUDED
+
+class Not(Rule[PhantomHourglassWorld], game="The Legend of Zelda - Phantom Hourglass"):
+    invert_rule: Callable
+    def __init__(self, invert_rule, **kwargs):
+        self.invert_rule = invert_rule
+        self.kwargs = kwargs
+        super().__init__()
+
+    def _instantiate(self, world: PhantomHourglassWorld) -> Rule.Resolved:
+        return self.Resolved(
+            self.invert_rule,
+            self.kwargs,
+            player=world.player,
+            caching_enabled=False)
+
+    class Resolved(Rule.Resolved):
+        invert_rule: Callable
+        kwargs: Any
+
+        @override
+        def _evaluate(self, state: CollectionState):
+            return not self.invert_rule(state, self.player, **self.kwargs)

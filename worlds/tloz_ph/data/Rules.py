@@ -151,6 +151,7 @@ def has_shape_crystals(dung_name, shape, diff=""):
 
 ut_vanilla_keys = smart_keys & vanilla_keys
 ut_keys_own_dungeon = smart_keys & keys_own_dungeon
+boss_keys_vanilla = [OptionFilter(PhantomHourglassRandomizeBossKeys, 0)]
 boss_keys_own_dungeon = [OptionFilter(PhantomHourglassRandomizeBossKeys, 1, "le")]
 ut_boss_keys_own_dungeon = boss_keys_own_dungeon & smart_keys
 
@@ -186,15 +187,23 @@ phantom_traps = (ut_glitched | [OptionFilter(PhantomHourglassPhantomCombatDiffic
 can_kill_phantoms = has_phantom_sword | phantom_grapple | phantom_stun
 can_kill_phantoms_traps = can_kill_phantoms | phantom_traps
 
-
 can_pass_sea_monster = has_cannon | [OptionFilter(PhantomHourglassSkipOceanFights, 1)]
 
+goal_midway = [OptionFilter(PhantomHourglassGoal, PhantomHourglassGoal.option_triforce_door)]
+
+bellum_access_b13 = [OptionFilter(PhantomHourglassBellumAccess, 0)]
+bellum_access_staircase_plus = [OptionFilter(PhantomHourglassBellumAccess, 1, "ge")]
+bellum_access_warp = [OptionFilter(PhantomHourglassBellumAccess, 2)]
+bellum_access_wreck = [OptionFilter(PhantomHourglassBellumAccess, 3)]
 
 def charted_sea_monster(quadrant):
     return can_pass_sea_monster & require_sea_chart(quadrant)
 
 def has_metals(count):
     return HasGroup("Metals", count)
+
+def win_on_metals(metals):
+    return Filtered(has_metals(metals), options=[OptionFilter(PhantomHourglassBellumAccess, PhantomHourglassBellumAccess.option_win)])
 
 # Time
 time_logic_none = ut_glitched | [OptionFilter(PhantomHourglassTimeLogic, 5)]
@@ -209,6 +218,210 @@ def has_floor_time(room, time=0):
 
 # Specific locations, move to logic file?
 ember_grapple_chest = has_grapple | sword_glitch
+oshus_gem = (has_phantom_blade & has_ph) | (Has("_beat_tow") & LocationNotExcluded("Crayk Boss Reward"))
+can_defeat_bellum = And(has_grapple, has_phantom_sword, has_bow, has_spirit("Courage"))
+can_defeat_bellumbeck = has_phantom_sword & has_spirit("Courage")
+bannan_scroll = Has("_wayfarer_trade") & can_pass_sea_monster
+bannan_sea_monster = And(
+    require_sea_chart("NW"),
+    can_pass_sea_monster | ut_glitched | Not(lambda state, player: state.has("_wayfarer_trade", player))
+)
+ghost_ship_access = And(
+    require_sea_chart("NW"),
+    [OptionFilter(PhantomHourglassFogSettings, 2)] | (
+        has_spirit("Power") & has_spirit("Wisdom") & has_spirit("Courage")
+    )
+)
+goron_chus = has_shovel & (
+    has_bow | has_grapple | (has_hammer & hard_logic)
+)
+ice_field = Has("_beat_toi") | (can_kill_dark_yook & has_bombs)
+ruins_water = Has("_ruins_lower_water")
+
+def savescum_keys(dung, count):
+    return ut_glitched & has_small_keys(dung, count)
+
+def simple_boss_key(dung):
+    return Or(has_boss_key(dung),
+              smart_keys & boss_keys_vanilla)
+
+# Mountain Passage
+mp_rat = can_kill_bat | (clever_pots & vanilla_caves)
+can_reach_mp2 = Or(
+    has_small_keys("Mountain Passage", 2),
+    Filtered(Or(
+        And(
+            smart_keys | IsUT(False),
+            mp_rat
+        ),
+        Filtered(has_small_keys("Mountain Passage", 1), options=vanilla_caves)
+    ), options=keys_own_dungeon),
+    savescum_keys("Mountain Passage", 1)
+)
+
+mp2_top = has_small_keys("Mountain Passage", 2) | (ut_glitched & has_small_keys("Mountain Passage", 1))
+mp2_bypass_fore = Or(
+    has_small_keys("Mountain Passage", 3),
+    savescum_keys("Mountain Passage", 2),
+    And(
+        vanilla_caves | keys_own_dungeon,
+        has_small_keys("Mountain Passage", 2),
+        IsUT(False) | smart_keys
+    )
+)
+mp2_bypass = Or(
+    has_small_keys("Mountain Passage", 3),
+    savescum_keys("Mountain Passage", 2),
+    hard_logic
+)
+mp3 = Or(
+    has_small_keys("Mountain Passage", 3),
+    savescum_keys("Mountain Passage", 1),
+    has_small_keys("Mountain Passage", 1) & ut_keys_own_dungeon,
+    keys_own_dungeon & IsUT(False) & mp_rat
+)
+mp3_back = Or(
+    has_small_keys("Mountain Passage", 3),
+    has_small_keys("Mountain Passage", 2) & (vanilla_caves | False_ | keys_own_dungeon),
+    savescum_keys("Mountain Passage", 1)
+)
+
+# ToF
+tof_maze = has_small_keys("Temple of Fire") | (ut_keys_own_dungeon & can_kill_bat)
+tof_3f = And(
+    has_small_keys("Temple of Fire", 2) | ut_keys_own_dungeon,
+    has_boomerang | has_hammer | clever_bombs | (hard_logic & has_chus & (has_bow | has_grapple))
+)
+tof_key_drop = has_boomerang | (has_grapple & hard_logic)
+tof_key_door = has_small_keys("Temple of Fire", 3) | (ut_keys_own_dungeon & tof_key_drop)
+tof_bk = has_boss_key("Temple of Fire") | (has_boomerang & ut_boss_keys_own_dungeon)
+
+# ToW
+tow_key_ut = IsUT() & has_shovel & (
+    vanilla_keys | (has_bombs & keys_own_dungeon)
+)
+tow_key = has_small_keys("Temple of Wind") | tow_key_ut
+tow_bk = has_bombs & (
+    has_boss_key("Temple of Wind") | (
+        ut_boss_keys_own_dungeon & tow_key_ut
+    )
+)
+
+# ToC
+def toc_key_doors(glitched, not_glitched, savescum=1):
+    return Or(has_small_keys("Temple of Courage", glitched) & glitched_logic,
+              has_small_keys("Temple of Courage", not_glitched) & not_glitched_logic,
+              savescum_keys("Temple of Courage", savescum))
+
+toc_door_1 = And(
+    has_damage,
+    Or(
+        toc_key_doors(3, 1),
+        ut_keys_own_dungeon & not_glitched_logic & (has_explosives | vanilla_keys)
+    )
+)
+def toc_crystal(diff):
+    return has_shape_crystals("Temple of Courage", "Square", diff)
+def toc_crystals_state(state: CollectionState, player: int, diff: str):
+    shape, dung_name = "Square", "Temple of Courage"
+    return any([
+        state.has(f"{shape} Crystal ({dung_name})", player),
+        state.has(f"{shape} Crystals", player),
+        state.has(f"{shape} Pedestal {diff} ({dung_name})", player),
+    ])
+toc_door_2 = Or(
+    toc_key_doors(3, 3, 2),
+    toc_key_doors(3, 2) & (pedestals_vanilla_any | Not(toc_crystals_state, diff="North")),
+    IsUT() & Or(
+        savescum_keys("Temple of Courage", 1) & has_hammer,
+        not_glitched_logic & smart_keys & Or(
+            keys_own_dungeon & has_explosives & has_grapple & has_bow,
+            vanilla_keys & (has_explosives | (has_bow & has_grapple))
+        )
+    )
+)
+toc_all_checks_door_3 = Or(
+    keys_own_dungeon & has_bow & has_explosives,
+    vanilla_keys & (hammer_glitch | (has_bow & (has_grapple | has_explosives)))
+)
+toc_door_3 = Or(
+    toc_key_doors(3, 3, 3),
+    IsUT() & Or(
+        smart_keys & toc_all_checks_door_3,
+        savescum_keys("Temple of Courage", 1) & has_hammer,
+        savescum_keys("Temple of Courage", 2) & has_grapple,
+    )
+)
+
+# GS
+gs_barrel = has_hammer | has_boomerang | has_grapple | has_shape_crystals("Ghost Ship", "Round") | (has_bombs & hard_logic)
+gs_triangle = has_shape_crystals("Ghost Ship", "Triangle") | (smart_keys & pedestals_vanilla_any)
+
+# GT
+gt_bk = has_boss_key("Goron Temple") | (ut_boss_keys_own_dungeon & has_chus)
+
+# ToI
+toi = "Temple of Ice"
+def toi_key_doors(glitched, not_glitched):
+    return Or(
+        has_small_keys(toi, not_glitched) & not_glitched_logic,
+        has_small_keys(toi, glitched) & glitched_logic
+    )
+
+toi_all_doors_ut = smart_keys & keys_own_dungeon & has_grapple & has_explosives & has_bow & quick_switches
+toi_3f_boomerang = quick_switches & (has_boomerang | has_grapple)
+toi_door_1 = toi_key_doors(3, 1) | (
+    IsUT & Or(
+        savescum_keys(toi, 1),
+        smart_keys & Or(
+            And(
+                toi_3f_boomerang & not_glitched_logic,
+                vanilla_keys | (keys_own_dungeon & has_explosives)
+            ),
+            toi_all_doors_ut
+        )
+    )
+)
+toi_door_2 = Or(
+    toi_key_doors(3, 2),
+    IsUT & Or(
+        Filtered(keys_own_dungeon & quick_switches, options=not_glitched_logic),
+        savescum_keys(toi, 1),
+    toi_all_doors_ut
+    )
+)
+toi_b2 = has_bow & has_grapple & Or(
+    quick_switches & Has("_toi_b1_switch"),
+    chu_glitch & has_boomerang
+)
+toi_bk = has_boss_key(toi) | (ut_boss_keys_own_dungeon & toi_all_doors_ut)
+
+# MT
+mt = "Mutoh's Temple"
+def mt_keys(glitched, not_glitched):
+    return Or(has_small_keys(mt, not_glitched) & not_glitched_logic,
+              has_small_keys(mt, glitched) & glitched_logic,
+              has_small_keys(mt, 1) & ut_glitched)
+mutoh_entrance = Or(
+    has_explosives,
+    has_hammer & hard_logic,
+    has_boomerang & (has_bow | has_sword)
+)
+mutoh_water = Or(
+    has_explosives & has_beam_sword & glitched_logic,  # bombchu skew
+    arrow_glitch,  # arrow despawn
+    And(
+        has_bow,
+        has_boomerang | has_beam_sword,
+        mt_keys(2, 1) | ut_keys_own_dungeon,
+    )
+)
+mutoh_bk_chest = Or(
+    has_small_keys(mt, 2),
+    ut_keys_own_dungeon,
+    savescum_keys(mt, 1)
+)
+mutoh_bk = has_boss_key(mt) | (ut_boss_keys_own_dungeon & mutoh_bk_chest)
 
 # TotOK
 def totok_keys(count):
@@ -433,3 +646,6 @@ totok_b13 = And(
     has_floor_time(13)
 )
 totok_b13_chest = has_floor_time(13, 5)
+def totok_b13_door(metals):
+    return (has_phantom_sword & has_floor_time(13, 30)
+            & (bellum_access_staircase_plus | Filtered(has_metals(metals), options=bellum_access_b13)))

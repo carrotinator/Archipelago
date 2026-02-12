@@ -5,7 +5,8 @@ from math import ceil
 from typing import List, Union, ClassVar, Any, Optional, Tuple, TYPE_CHECKING
 
 import settings
-from BaseClasses import Tutorial, Region, Location, LocationProgressType, Item, ItemClassification, Entrance
+from BaseClasses import Tutorial, Region, Location, LocationProgressType, Item, ItemClassification, Entrance, \
+    CollectionState
 from Fill import fill_restrictive, FillError
 from Options import Accessibility, OptionError
 from entrance_rando import randomize_entrances, bake_target_group_lookup, EntranceRandomizationError, disconnect_entrance_for_randomization
@@ -13,7 +14,7 @@ from worlds.AutoWorld import WebWorld, World
 
 from .Util import *
 from .Options import *
-from .Logic import create_connections
+
 from .data import LOCATIONS_DATA
 from .data.Constants import *
 from .data.Items import ITEMS
@@ -202,6 +203,7 @@ class PhantomHourglassWorld(World):
         self.ut_map_page_hidden_locations = {}
         self.ut_map_page_hidden_entrances = {}
         self.ut_map_page_hidden_events = {}
+        self.required_metals = 0
 
         self.is_ut = getattr(self.multiworld, "generation_is_fake", False)
 
@@ -269,11 +271,15 @@ class PhantomHourglassWorld(World):
 
         self.restrict_non_local_items()
         self.create_item_mappings()
+        if self.options.goal_requirements == "metal_hunt":
+            self.required_metals = self.options.metal_hunt_required.value
+        elif self.options.goal_requirements == "defeat_bosses":
+            self.required_metals = self.options.dungeons_required
 
     def create_item_mappings(self):
         self.item_mapping_collect |= {
             i: {"Rupees": ITEMS[i].value} for i in ITEM_GROUPS["Rupee Items"] } | {
-            i: {"Treasure": prices[self.treasure_price_index]} for i, prices in TREASURE_PRICES.values() } | {
+            i: {"Treasure": prices[self.treasure_price_index]} for i, prices in TREASURE_PRICES.items() } | {
             i: {"Beedle Points": ITEMS[i].value} for i in ITEM_GROUPS["Beedle Point Items"] } | {
             f"{spirit} Gem": {f"{spirit} Gem Pack": self.options.spirit_gem_packs.value} for spirit in ["Power", "Wisdom", "Courage"] } | {
             "Phantom Hourglass": {"Sand": self.options.ph_starting_time},
@@ -972,8 +978,13 @@ class PhantomHourglassWorld(World):
 
 
     def set_rules(self):
-        create_connections(self.multiworld, self.player, self.origin_region_name, self.options)
-        self.multiworld.completion_condition[self.player] = lambda state: state.has("_beaten_game", self.player)
+        try:
+            from .LogicRB import create_connections
+        except ModuleNotFoundError:
+            from .Logic import create_connections
+
+        create_connections(self, self.player, self.origin_region_name, self.options)
+        # self.multiworld.completion_condition[self.player] = lambda state: state.has("_beaten_game", self.player)
 
     def create_item(self, name: str) -> Item:
         classification = ITEMS[name].classification
