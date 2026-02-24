@@ -72,10 +72,8 @@ Warp to start now refills health and ammo!
 The Milk Bar on Mercay Island will also give free refills. How nice
 
 ## My ship is slow. How do i go faster?
-There are multiple ways of doing this, but my favorite is to create a cheat in bizhawk for address `021FA0A4` in 
-`ARM7 system bus`, and set to any speed value. Default max speed is ``0x0080``.  My favorite is `0x0200`, or 4x speed.
-Note that this forces a max speed, and makes turning weird- you'll need to toggle it on and off to do things precisely. 
-Highly recommend setting a hotkey for toggling all cheats!
+There are ship speed options built into the client. Use `/boat speed` to set your max speed, the default value is 266. You can also instant acceleration with `/boat snap_speed`. Boat options are saved in `host.yaml` and persist between sessions and seeds.
+Note that the boat is bad at going round corners at high speed. It can be a bit finicky to use.
 
 ## My game crashed/I quit without saving
 
