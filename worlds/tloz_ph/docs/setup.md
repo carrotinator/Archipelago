@@ -28,6 +28,7 @@
 
 ## Useful to know before you start
 - Since the game runs on live patching, you can't see what you found in game. Check your client to see what items you find.
+- You can change your maximum boat speed with `/boat speed` in the client.
 - You can warp to start by opening the collection screen and flipping the screen, then entering any transition. This will also refill you ammo and heal you.
 - If enabled in the yaml, there is a fast travel system. Open your sea chart and select an island you've previously visited to select a warp location, and enter any transition to warp to it's port.
 - Some locations can despawn. They usually have a backup system. Save and reenter the room to trigger it. Only works for save slot one.
