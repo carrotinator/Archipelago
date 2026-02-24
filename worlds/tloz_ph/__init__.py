@@ -67,8 +67,15 @@ class PhantomHourglassSettings(settings.Group):
         For use with universal tracker.
         Toggles if universal tracker can use unlocked shortcuts and map warps to find shorter paths for /get_logical_path.
         """
+    class BoatSpeed(int):
+        """Your boat's max speed. Default is 266."""
+
+    class BoatFastAccel(str):
+        """Makes your boat accelerate instantly after charting a route or changing gear."""
 
     ut_get_logical_path_shortcuts: Union[PHGetLogicalPathShortcuts, bool] = True
+    boat_speed: BoatSpeed = 0x10A
+    boat_snap_speed: Union[BoatFastAccel, bool] = True
 
 
 # Adds a consistent count of items to pool, independent of how many are from locations
@@ -1501,7 +1508,8 @@ class PhantomHourglassWorld(World):
 
             manage_ut_event("1f", "TotOK 1F Chart", "_UT_got_chart")
             for event_tag in stored_data:
-                connect_existing_regions(event_tag, *hidden_event_connect[event_tag])
+                if event_tag in hidden_event_connect:
+                    connect_existing_regions(event_tag, *hidden_event_connect[event_tag])
 
             # # Sent on getting location. Does not show event in UT
             # manage_ut_event("1f", "TotOK 1F Chart", "_UT_got_chart")

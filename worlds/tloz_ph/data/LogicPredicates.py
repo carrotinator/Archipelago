@@ -154,14 +154,11 @@ def ph_has_big_catch_lure(state, player):
 
 
 def ph_has_swordfish_shadows(state, player):
-    return state.has("Swordfish Shadows", player)
+    return state.has("Swordfish Shadows", player) and ph_has_big_catch_lure(state, player)
 
 
 def ph_can_catch_rsf(state, player):
-    return any([
-        ph_has_big_catch_lure(state, player),
-        ph_has_swordfish_shadows(state, player)
-    ])
+    return ph_has_big_catch_lure(state, player)
 
 
 def ph_ut_can_stowfish(state, player):

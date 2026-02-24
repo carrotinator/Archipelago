@@ -5,10 +5,93 @@ from .data.Items import ITEMS
 from .MapWarp import map_mode
 from .data.Entrances import entrance_id_to_entrance
 from .data.DynamicEntrances import DYNAMIC_ENTRANCES_BY_SCENE
+from typing import Literal
+from settings import get_settings
 
 if TYPE_CHECKING:
-    from worlds._bizhawk.context import BizHawkClientContext
+    from worlds._bizhawk.context import BizHawkClientContext, BizHawkClientCommandProcessor
     from .Subclasses import PHTransition
+    from . import PhantomHourglassSettings
+
+default_boat_speed = 0x10A
+
+def get_client_as_command_processor(self: "BizHawkClientCommandProcessor"):
+    ctx = self.ctx
+    from worlds._bizhawk.context import BizHawkClientContext
+    assert isinstance(ctx, BizHawkClientContext)
+    client = ctx.client_handler
+    assert isinstance(client, PhantomHourglassClient)
+    return client
+
+def cmd_boat_option(self: "BizHawkClientCommandProcessor",
+                     option: Literal["snap_speed", "speed", "options"] = "options",
+                     *args: str):
+    """
+    Change various train options. Currently implemented:
+      - speed <speed: int | "default" | "reset" | "list"> <gear>
+      - snap_speed (True): instantly switch to new speeds after charting or starting the engine.
+      - options: lists current option values
+    """
+    # Thanks to Silvris's mm2 implementation for help with bizhawk command processing
+    valid_options = ["snap_speed", "speed", "options"]
+    option = option.lower()
+    if option not in valid_options:
+        self.output(f"  \"{option}\" is not a valid option! {valid_options}")
+        return False
+
+    if option == "speed":
+        return cmd_boat_speed(self, *args)
+
+    value = args[0].lower() if args else "true"
+    valid_bool_values = {"0": False, "1": True, "false": False, "true": True, "default": True, "reset": True}
+    value_bool = valid_bool_values.get(value, None)
+    if value_bool is None:
+        self.output(f"  \"{value}\" is not a valid boolean!")
+        return False
+
+    client = get_client_as_command_processor(self)
+    if option == "options":
+        self.output(f"  Current boat options:")
+        self.output(f"    speed: {client.boat_speed}")
+        self.output(f"    snap_speed: {client.boat_snap_speed}")
+        return True
+
+    setattr(client, f"boat_{option}", value_bool)
+    host_settings: PhantomHourglassSettings = get_settings().get('tloz_ph_options')
+    host_settings.update({f"boat_{option}": value_bool})
+    self.output(f"  Set option {option} to {value_bool}")
+    return True
+
+def cmd_boat_speed(self: "BizHawkClientCommandProcessor",
+                    speed: int or str = "list"):
+
+    def set_speed(speed: int):
+        client.boat_speed = speed
+        client.update_boat_speed = True
+        self.output(f"  Setting boat speed: {speed}")
+        host_settings: PhantomHourglassSettings = get_settings().get('tloz_ph_options')
+        host_settings.update({f"boat_speed": speed})
+
+    client = get_client_as_command_processor(self)
+    special_speeds = ["list", "default", "reset"]
+    if speed in special_speeds:
+        if speed == "list":
+            self.output(f"  Current boat speed: {client.boat_speed}")
+            return True
+        elif speed in ["default", "reset"]:
+            set_speed(default_boat_speed)
+            return True
+
+    try:
+        speed = min(int(speed), 9999)
+        speed = max(speed, -9999)  # soft cap of 9999
+    except ValueError:
+        self.output(f"  \"{speed}\" is not a valid speed, must be an int or in {special_speeds}")
+        return False
+
+    client.train_speed = speed
+    set_speed(client.train_speed)
+    return True
 
 EQUIP_TIMER_OFFSET = 0x20
 
@@ -25,7 +108,7 @@ read_keys_always = [PHAddr.game_state, PHAddr.in_cutscene, PHAddr.loading_room,
 
 read_keys_deathlink = []
 read_keys_land = [PHAddr.getting_location, PHAddr.getting_ship_part, PHAddr.in_map]
-read_keys_sea = [PHAddr.shot_frog, PHAddr.boat_health, PHAddr.drawing_sea_route]
+read_keys_sea = [PHAddr.shot_frog, PHAddr.boat_health, PHAddr.drawing_sea_route, PHAddr.boat_gear]
 read_keys_salvage = [PHAddr.salvage_health]
 
 # datastore_keys
@@ -101,6 +184,11 @@ class PhantomHourglassClient(DSZeldaClient):
         self.addr_entrance = PHAddr.entrance
         self.addr_received_item_index = PHAddr.received_item_index
 
+        self.boat_speed = default_boat_speed
+        self.boat_snap_speed = True
+        self.update_boat_speed = True
+        self.last_gear = True
+
 
     async def check_game_version(self, ctx: "BizHawkClientContext") -> bool:
         rom_name_bytes = (await PHAddr.game_identifier.read_bytes(ctx))[0]
@@ -112,7 +200,19 @@ class PhantomHourglassClient(DSZeldaClient):
                 logger.error("You are using a US rom that is not supported yet. sorry!")
                 self.version_offset = -64
             return False
+
+        # Set commands
+        if "boat" not in ctx.command_processor.commands:
+            ctx.command_processor.commands["boat"] = cmd_boat_option
+
         return True
+
+    async def on_connect(self, ctx):
+        # Get train settings from host.yaml
+        host_settings: PhantomHourglassSettings = get_settings().get('tloz_ph_options')
+        print(f"SETTINGS: {host_settings.get('boat_speed', self.boat_speed)}")
+        self.boat_speed = host_settings.get("boat_speed", self.boat_speed)
+        self.boat_snap_speed = host_settings.get("boat_snap_speed", self.boat_snap_speed)
 
     async def set_special_starting_flags(self, ctx: "BizHawkClientContext") -> list[tuple[int, list, str]]:
         """
@@ -319,6 +419,21 @@ class PhantomHourglassClient(DSZeldaClient):
             self.death_warning_spam_protect = True
         elif not self.is_dead:
             self.death_warning_spam_protect = False
+
+        if self.current_stage == 0:
+            if read_result[PHAddr.drawing_sea_route]:
+                self.update_boat_speed = True
+
+            if self.last_gear != read_result[PHAddr.boat_gear]:
+                self.update_boat_speed = True
+
+            if self.update_boat_speed:
+                self.update_boat_speed = False
+                await PHAddr.boat_max_speed.overwrite(ctx, self.boat_speed, silent=True)
+                if self.boat_snap_speed:
+                    await PHAddr.boat_speed.overwrite(ctx, self.boat_speed * read_result[PHAddr.boat_gear]//2, silent=True)
+
+            self.last_gear = read_result[PHAddr.boat_gear]
 
 
     async def detect_warp_to_start(self, ctx, read_result: dict):

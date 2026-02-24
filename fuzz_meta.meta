@@ -14,11 +14,31 @@ The Legend of Zelda - Phantom Hourglass:
   exclude_locations: []
   priority_locations: []
   item_links: []
+  ut_events: 1
 
-  # entrance_directionality: 0
+  entrance_directionality: 0
   shuffle_between_islands: 0
-  # decouple_entrances: 0
+  decouple_entrances: 0
 
   ph_starting_time: 60
   ph_time_increment: 10
 
+triggers:
+  - option_category: The Legend of Zelda - Phantom Hourglass
+    option_name: shuffle_houses
+    option_result: shuffle_on_own_island
+    options:
+      The Legend of Zelda - Phantom Hourglass:
+        target_option: 0
+  - option_category: The Legend of Zelda - Phantom Hourglass
+    option_name: shuffle_caves
+    option_result: shuffle_on_own_island
+    options:
+      The Legend of Zelda - Phantom Hourglass:
+        target_option: 0
+  - option_category: The Legend of Zelda - Phantom Hourglass
+    option_name: shuffle_overworld_transitions
+    option_result: shuffle_on_own_island
+    options:
+      The Legend of Zelda - Phantom Hourglass:
+        target_option: 0
