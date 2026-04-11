@@ -387,16 +387,9 @@ class PhantomHourglassClient(DSZeldaClient):
         await self.update_potion_tracker(ctx)
         await self.update_treasure_tracker(ctx)
 
-    async def process_in_game(self, ctx: "BizHawkClientContext", read_result: dict):
-        # Detect lowering of water and update ER Map
-        if not self.lowered_water and self.current_stage == 0x24:
-            await self.lower_water(ctx, True)
-        await self.detect_ut_event(ctx, self.current_scene)
-
+    async def process_fast(self, ctx: "BizHawkClientContext", read_result: dict):
         if self.current_stage == 3 and read_result.get(PHAddr.salvage_health, 5) <= 1:
             await self.instant_repair_salvage_arm(ctx)
-
-        await self.save_scene(ctx, read_result, PHAddr.saving, save_scene_key, [0x46])
 
         # Map warp entrypoint
         if read_result.get(PHAddr.in_map, 0):
@@ -413,9 +406,11 @@ class PhantomHourglassClient(DSZeldaClient):
             self.map_warp = None
             logger.info(f"Map warp canceled due to death")
 
-        if self.is_dead and ctx.slot_data["shuffle_bosses"] and self.current_scene in BOSS_WARP_SCENE_LOOKUP and not self.death_warning_spam_protect:
+        if self.is_dead and ctx.slot_data[
+            "shuffle_bosses"] and self.current_scene in BOSS_WARP_SCENE_LOOKUP and not self.death_warning_spam_protect:
             if read_result[PHAddr.in_cutscene]:
-                logger.info(f"WARNING! Clicking continue in a boss room will put you out of logic. Please save and quit before continuing.")
+                logger.info(
+                    f"WARNING! Clicking continue in a boss room will put you out of logic. Please save and quit before continuing.")
             self.death_warning_spam_protect = True
         elif not self.is_dead:
             self.death_warning_spam_protect = False
@@ -431,10 +426,18 @@ class PhantomHourglassClient(DSZeldaClient):
                 self.update_boat_speed = False
                 await PHAddr.boat_max_speed.overwrite(ctx, self.boat_speed, silent=True)
                 if self.boat_snap_speed:
-                    await PHAddr.boat_speed.overwrite(ctx, self.boat_speed * read_result[PHAddr.boat_gear]//2, silent=True)
+                    await PHAddr.boat_speed.overwrite(ctx, self.boat_speed * read_result[PHAddr.boat_gear] // 2,
+                                                      silent=True)
 
             self.last_gear = read_result[PHAddr.boat_gear]
 
+    async def process_slow(self, ctx: "BizHawkClientContext", read_result: dict):
+        # Detect lowering of water and update ER Map
+        if not self.lowered_water and self.current_stage == 0x24:
+            await self.lower_water(ctx, True)
+        await self.detect_ut_event(ctx, self.current_scene)
+
+        await self.save_scene(ctx, read_result, PHAddr.saving, save_scene_key, [0x46])
 
     async def detect_warp_to_start(self, ctx, read_result: dict):
         # Opened clog warp to start check

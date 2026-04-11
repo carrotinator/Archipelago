@@ -30,6 +30,9 @@ dev_prints = False
 if TYPE_CHECKING:
     from .Subclasses import ERPlacementState, PHEntrance, PHRegion, PHTransition
 
+class PhantomHourglassItem(Item):
+    game = "Phantom Hourglass"
+
 class PhantomHourglassWeb(WebWorld):
     setup_en = Tutorial(
         "Phantom Hourglass Setup Guide",
@@ -170,7 +173,7 @@ class PhantomHourglassWorld(World):
     def __init__(self, multiworld, player):
         super().__init__(multiworld, player)
 
-        self.pre_fill_items: List[Item] = []
+        self.pre_fill_items: List[PhantomHourglassItem] = []
         self.required_dungeons = []
         self.boss_reward_items_pool = []
         self.boss_reward_location_names = []
@@ -323,7 +326,7 @@ class PhantomHourglassWorld(World):
         region = self.multiworld.get_region(region_name, self.player)
         location = Location(self.player, region_name + ".event", None, region)
         region.locations.append(location)
-        location.place_locked_item(Item(event_item_name, ItemClassification.progression, None, self.player))
+        location.place_locked_item(PhantomHourglassItem(event_item_name, ItemClassification.progression, None, self.player))
 
     def location_is_active(self, location_name, location_data):
         if not location_data.get("conditional", False):
@@ -961,7 +964,7 @@ class PhantomHourglassWorld(World):
         create_connections(self.multiworld, self.player, self.origin_region_name, self.options)
         self.multiworld.completion_condition[self.player] = lambda state: state.has("_beaten_game", self.player)
 
-    def create_item(self, name: str) -> Item:
+    def create_item(self, name: str) -> PhantomHourglassItem:
         classification = ITEMS[name].classification
         if name in self.extra_filler_items:
             self.extra_filler_items.remove(name)
@@ -975,7 +978,7 @@ class PhantomHourglassWorld(World):
             classification = ItemClassification.useful
 
         ap_code = self.item_name_to_id[name]
-        return Item(name, classification, ap_code, self.player)
+        return PhantomHourglassItem(name, classification, ap_code, self.player)
 
     def build_item_pool_dict(self):
         def force_vanilla():
@@ -1174,7 +1177,7 @@ class PhantomHourglassWorld(World):
         self.pre_fill_boss_rewards()
         self.pre_fill_dungeon_items()
 
-    def filter_confined_dungeon_items_from_pool(self, items: List[Item]):
+    def filter_confined_dungeon_items_from_pool(self, items: List[PhantomHourglassItem]):
         confined_dungeon_items = []
 
         # Confine small keys to own dungeon if option is enabled
