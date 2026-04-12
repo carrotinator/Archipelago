@@ -273,6 +273,8 @@ class PHAddr:
     # island_visible_ = Address()
     # island_visible_ = Address()
 
+    map_obj_table = Address(0x1B8968)  # size biig
+
 class PHSRAM:
     # SRAM
     mercay_se_chests = SRAM(0x3c4)

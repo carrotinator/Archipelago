@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from random import randint
 from .DSZeldaClient.DSZeldaClient import *
 from .DSZeldaClient.subclasses import (get_address_from_heap, storage_key, get_stored_data, AddrFromPointer)
@@ -92,6 +93,11 @@ def cmd_boat_speed(self: "BizHawkClientCommandProcessor",
     client.train_speed = speed
     set_speed(client.train_speed)
     return True
+
+def cmd_print_map_objects(self: "BizHawkClientCommandProcessor"):
+    """Debug print data on map objects"""
+    client = get_client_as_command_processor(self)
+    client.print_map_objs = True
 
 EQUIP_TIMER_OFFSET = 0x20
 
@@ -189,6 +195,8 @@ class PhantomHourglassClient(DSZeldaClient):
         self.update_boat_speed = True
         self.last_gear = True
 
+        self.print_map_objs = False
+
 
     async def check_game_version(self, ctx: "BizHawkClientContext") -> bool:
         rom_name_bytes = (await PHAddr.game_identifier.read_bytes(ctx))[0]
@@ -204,6 +212,8 @@ class PhantomHourglassClient(DSZeldaClient):
         # Set commands
         if "boat" not in ctx.command_processor.commands:
             ctx.command_processor.commands["boat"] = cmd_boat_option
+        if "dev_obj" not in ctx.command_processor.commands:
+            ctx.command_processor.commands["dev_obj"] = cmd_print_map_objects
 
         return True
 
@@ -438,6 +448,10 @@ class PhantomHourglassClient(DSZeldaClient):
         await self.detect_ut_event(ctx, self.current_scene)
 
         await self.save_scene(ctx, read_result, PHAddr.saving, save_scene_key, [0x46])
+
+        if self.print_map_objs:
+            self.print_map_objs = False
+            await self.print_map_data(ctx)
 
     async def detect_warp_to_start(self, ctx, read_result: dict):
         # Opened clog warp to start check
@@ -1253,3 +1267,77 @@ class PhantomHourglassClient(DSZeldaClient):
                 print(f"New file, cancel precision")
                 return True
         return False
+
+    async def print_map_data(self, ctx):
+        pointer_table: list[PHAddr] = []
+        for i in range(1000):  # safety shutoff
+            pointer = await Address.from_pointer(PHAddr.map_obj_table + 4*i, 4).read(ctx, silent=True)
+            if not pointer:
+                break
+            pointer_table.append(Address.from_pointer(pointer-0x2000000, 4))
+
+        length = len(pointer_table)
+        print(f"Generated pointer table with length {length}")
+        obj_types = await read_multiple(ctx, pointer_table, offset=4, keys=range(length))
+        obj_x = await read_multiple(ctx, pointer_table, offset=4 * 6, keys=range(length), signed=True)
+        obj_y = await read_multiple(ctx, pointer_table, offset=4 * 7, keys=range(length), signed=True)
+        obj_z = await read_multiple(ctx, pointer_table, offset=4 * 8, keys=range(length), signed=True)
+        item = await read_multiple(ctx, pointer_table, offset=4 * 9, keys=range(length))
+
+        typ_lookup = {
+            1: "Unspawned",
+            0x5: "House Entrance",
+            0x2D: "Closed Chest",
+            0x29: "Open Chest",
+            0x819: "Door",
+            0x9: "Solid",
+            0x6F: "Throwable",
+            0xD: "Readable or Entrance",
+            0xF: "Barrel in Cave",
+            0x19: "House",
+            0x49: "Grass",
+            0x80D: "Cave Exit",
+            0x44D: "Switch",
+            0x801: "Burried Laser Statue",
+            0x809: "Staircase",
+            0x81D: "Tap Door, lit Laser Statue",
+            0x4D: "Hammer Switch",
+            0xC1D: "Unlit Laser Statue"
+        }
+
+        typ_index = {v: i+1 for i, v in enumerate(typ_lookup)}
+
+        @dataclass
+        class MapObject:
+            index: int
+            typ: int
+            x: int
+            y: int
+            z: int
+            item: int
+            addr: Address
+
+            def __post_init__(self):
+                self.type_str = typ_lookup.get(self.typ, self.typ)
+
+            def __str__(self):
+                return f"\t{self.index}\t{self.type_str} ({self.x}, {self.y}, {self.z}) {hex(self.item)} {self.addr}"
+
+        map_objects: list[MapObject] = []
+        atr = [a.values() for a in [obj_types, obj_x, obj_y, obj_z, item]] + [pointer_table]
+        grass_counter = 0
+        for i, args in enumerate(zip(*atr)):
+            m = MapObject(i, *args)
+            map_objects.append(m)
+            if m.typ == 0x49:
+                grass_counter += 1
+                continue
+            if grass_counter:
+                print(f"\t{grass_counter} Grass objects")
+                grass_counter = 0
+            print(m)
+
+        for m in map_objects:
+            print(f"\t{m.index}¤{m.x}{'¤'*(typ_index.get(m.typ, 0)+1)}{-m.z}")
+
+
