@@ -19,7 +19,8 @@ LOCATIONS_DATA = {
         "sram_addr": SRAM(0x43c),
         "sram_value": 0x1,
         "id": 1,
-        "hint_entrance": "Sword Cave Exit"
+        "hint_entrance": "Sword Cave Exit",
+        "chest_offset": 1
     },
     "Mercay SW Clear Rocks": {
         "region_id": "Mercay SW",
@@ -49,6 +50,7 @@ LOCATIONS_DATA = {
         "sram_addr": PHSRAM.mercay_se_chests,
         "sram_value": 0x8,
         "id": 4,
+        "chest_offset": 114,
     },
     "Mercay NE Bonk Tree": {
         "region_id": "Mercay NE",
@@ -68,7 +70,8 @@ LOCATIONS_DATA = {
         "sram_addr": SRAM(0x418),
         "sram_value": 0x1,
         "id": 6,
-        "hint_entrance": "Eye Bridge Cave North Exit"
+        "hint_entrance": "Eye Bridge Cave North Exit",
+        "chest_offset": 2
     },
     "Mercay SE Ledge Chest West": {
         "region_id": "Mercay SE Ledge",
@@ -82,6 +85,7 @@ LOCATIONS_DATA = {
         "id": 7,
         "hint_entrance": ["Mercay SE Ledge North", "Mercay SE OOB West", "Mercay SE OOB North"],
         "hint_entrance_secondary": "Mercay NE Ledge Cave",
+        "chest_offset": 98
     },
     "Mercay SE Ledge Chest East": {
         "region_id": "Mercay SE Ledge",
@@ -95,6 +99,7 @@ LOCATIONS_DATA = {
         "id": 8,
         "hint_entrance": ["Mercay SE Ledge North", "Mercay SE OOB West", "Mercay SE OOB North"],
         "hint_entrance_secondary": "Mercay NE Ledge Cave",
+        "chest_offset": 99
     },
     "TotOK Lobby Phantom Hourglass": {
         "region_id": "TotOK Lobby",
@@ -115,7 +120,8 @@ LOCATIONS_DATA = {
         "sram_addr": SRAM(0x430),
         "sram_value": 0x1,
         "id": 10,
-        "hint_entrance": ["Long Bridge Cave West", "Long Bridge Cave East"]
+        "hint_entrance": ["Long Bridge Cave West", "Long Bridge Cave East"],
+        "chest_offset": 4
     },
     "Mercay NE Freedle Island Chest": {
         "region_id": "Mercay NW Freedle Island",
@@ -127,7 +133,8 @@ LOCATIONS_DATA = {
         "sram_addr": SRAM(0x3ac),
         "sram_value": 0x40,
         "id": 11,
-        "hint_entrance": "Mercay NE Freedle Island Cave"
+        "hint_entrance": "Mercay NE Freedle Island Cave",
+        "chest_offset": [54, 52, 53]  # 52 if you bomb the blocks...
     },
     "Mercay NE Freedle Gift Item": {
         "region_id": "Mercay NW Freedle Gift",
@@ -197,6 +204,7 @@ LOCATIONS_DATA = {
         "hint_entrance": "Mountain Passage 1F Exit",
         "hint_entrance_secondary": ["Mountain Passage 1F Staircase",
                           "Mountain Passage 2F Staircase","Mountain Passage 2F Exit"],
+        "chest_offset": 21
     },
     "Mountain Passage 1F Side Chest": {
         "region_id": "Mountain Passage 2",
@@ -212,6 +220,7 @@ LOCATIONS_DATA = {
         "do_special": "keylock",
         "hint_entrance": ["Mountain Passage 1F Exit", "Mountain Passage 1F Staircase"],
         "hint_entrance_secondary": ["Mountain Passage 2F Staircase","Mountain Passage 2F Exit"],
+        "chest_offset": 19
     },
     "Mountain Passage 1F Key Drop": {
         "region_id": "Mountain Passage 2",
@@ -2346,6 +2355,7 @@ LOCATIONS_DATA = {
         "dungeon": "Goron Temple",
         "id": 197,
         "hint_entrance": ["GT Exit", "GT Enter Boss"],
+        "chest_offset": 13
 
     },
     "Goron Temple 1F Bow Chest": {
@@ -2357,6 +2367,7 @@ LOCATIONS_DATA = {
         "dungeon": "Goron Temple",
         "id": 198,
         "hint_entrance": ["GT Exit", "GT Enter Boss"],
+        "chest_offset": 16
     },
     "Goron Temple B1 Bombchu Bag Chest": {
         "region_id": "GT B1",

@@ -1989,6 +1989,34 @@ map_type_lookup = {
 0x300: "sea"
 }
 
+model_resets = {
+    0x02: "Green Rupee (1)",
+    0x04: "Shield",
+    0x06: "Force Gem (B3)",
+    0x09: "Big Green Rupee (100)",
+    0x0A: "Heart Container",
+    0x0F: "Boss Key (Temple of Fire)",
+    0x18: "Blue Rupee (5)",
+    0x19: "Red Rupee (20)",
+    0x1A: "Big Red Rupee (200)",
+    0x1B: "Gold Rupee (300)",
+    0x21: "Square Crystal",
+    0x22: "Round Crystal",
+    0x23: "Triangle Crystal",
+    0x28: "Bow (Progressive)",
+    0x29: "Bombs (Progressive)",
+    0x2A: "Bombchus (Progressive)",
+    0x2D: "Power Gem",
+    0x2E: "Wisdom Gem",
+    0x2F: "Courage Gem",
+    0x75: "Red Potion",
+    0x76: "Purple Potion",
+    0x77: "Yellow Potion",
+    0x78: "Sand of Hours (Small)",
+    0x81: "Rupoor (-10)",
+    0x82: "Big Rupoor (-50)",
+}
+
 if __name__ == "__main__":
     for cat, value in CATEGORY_LOCATION_GROUPS.items():
         print(f"\t\"{cat}\": [")

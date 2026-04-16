@@ -11,7 +11,7 @@ from settings import get_settings
 
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext, BizHawkClientCommandProcessor
-    from .Subclasses import PHTransition
+    from .Subclasses import PHTransition, PHItem
     from . import PhantomHourglassSettings
 
 default_boat_speed = 0x10A
@@ -196,6 +196,7 @@ class PhantomHourglassClient(DSZeldaClient):
         self.last_gear = True
 
         self.print_map_objs = False
+        self.last_location = None  # Used for item model validation
 
 
     async def check_game_version(self, ctx: "BizHawkClientContext") -> bool:
@@ -504,6 +505,8 @@ class PhantomHourglassClient(DSZeldaClient):
         self.event_reads = []
         self.save_spam_protection = False  # Reset save spam protection
 
+        await self.set_chest_contents(ctx)
+
         # Yellow warp in TotOK saves keys
         # TODO: allow this to work with ER
         if self.last_scene is not None:
@@ -789,6 +792,12 @@ class PhantomHourglassClient(DSZeldaClient):
             else:
                 self.last_vanilla_item.pop()
                 logger.info(f"Got farmable location")
+
+        if "chest_offset" in location:
+            self.last_vanilla_item.pop()
+            model = ctx.slot_data.get("location_models", {}).get(str(location["id"]), 0x1E)
+            if model_resets.get(model):
+                self.last_vanilla_item.append(model_resets[model])
 
     async def receive_key_in_own_dungeon(self, ctx, item_name: str, write_keys_to_storage):
         # TotOK - adds to key increment if you get it in the dungeon, otherwise do as usual
@@ -1204,6 +1213,8 @@ class PhantomHourglassClient(DSZeldaClient):
                     entr = ENTRANCES[event_name]
                     await self.store_visited_entrances(ctx, entr, entr.vanilla_reciprocal)
 
+        self.last_location = location
+
     async def ut_bounce_scene(self, ctx, scene):
         if not ctx.slot_data["shuffle_houses"] and map_type_lookup.get(scene) == "house":
             print(f"Not map switching due to house: {hex(scene)}")
@@ -1277,6 +1288,7 @@ class PhantomHourglassClient(DSZeldaClient):
             pointer_table.append(Address.from_pointer(pointer-0x2000000, 4))
 
         length = len(pointer_table)
+        print(ctx.slot_data["location_models"])
         print(f"Generated pointer table with length {length}")
         obj_types = await read_multiple(ctx, pointer_table, offset=4, keys=range(length))
         obj_x = await read_multiple(ctx, pointer_table, offset=4 * 6, keys=range(length), signed=True)
@@ -1298,11 +1310,17 @@ class PhantomHourglassClient(DSZeldaClient):
             0x49: "Grass",
             0x80D: "Cave Exit",
             0x44D: "Switch",
-            0x801: "Burried Laser Statue",
+            0x801: "Buried Laser Statue",
             0x809: "Staircase",
             0x81D: "Tap Door, lit Laser Statue",
             0x4D: "Hammer Switch",
-            0xC1D: "Unlit Laser Statue"
+            0xC1D: "Unlit Laser Statue",
+            0x4F: "Bomb Flower",
+            0x20D: "Updraft",
+            0x209: "Dirt Pile",
+            0x429: "Lit Torch",
+            0x11d: "Pedestal",
+            0x40d: "Repeater"
         }
 
         typ_index = {v: i+1 for i, v in enumerate(typ_lookup)}
@@ -1318,7 +1336,7 @@ class PhantomHourglassClient(DSZeldaClient):
             addr: Address
 
             def __post_init__(self):
-                self.type_str = typ_lookup.get(self.typ, self.typ)
+                self.type_str = typ_lookup.get(self.typ, hex(self.typ))
 
             def __str__(self):
                 return f"\t{self.index}\t{self.type_str} ({self.x}, {self.y}, {self.z}) {hex(self.item)} {self.addr}"
@@ -1337,7 +1355,79 @@ class PhantomHourglassClient(DSZeldaClient):
                 grass_counter = 0
             print(m)
 
+        # Print google sheet format
         for m in map_objects:
             print(f"\t{m.index}¤{m.x}{'¤'*(typ_index.get(m.typ, 0)+1)}{-m.z}")
 
+    # Override shared implementation cause new model stuff does a lot
+    async def _process_received_items(self, ctx: "BizHawkClientContext", num_received_items: int, log_items=False) -> None:
+        next_item_id = ctx.items_received[num_received_items].item
+        item_name = self.item_id_to_name[next_item_id]
+        item_data: PHItem = self.item_data[item_name]
 
+        if log_items:
+            logger.info(f"Received Backlogged Item: {item_name}")
+
+        # Increment in-game items received count
+        write_list = self.addr_received_item_index.get_write_list(num_received_items+1)
+
+        async def old_item_handling():
+            _write_list = []
+            print(f"Vanilla item: {self.last_vanilla_item} for {item_name}")
+            # If same as vanilla item don't remove
+            if self.last_vanilla_item and item_name == self.last_vanilla_item[-1] and "always_process" not in item_data.tags:
+                self.last_vanilla_item.pop()
+                print(f"oops it's vanilla or dummy! {self.last_vanilla_item}")
+            elif self.current_scene not in getattr(item_data, "blocked_scenes", []):
+                _write_list += await item_data.receive_item(self, ctx, num_received_items)
+            return _write_list
+
+        if self.last_location:
+            # Handle chests with swapped items
+            if self.last_location.get("chest_offset", None) is not None:
+                if self.last_vanilla_item:
+                    self.last_vanilla_item.pop()
+                if (item_data.ghost_model or item_data.model is None) and self.current_scene not in getattr(item_data, "blocked_scenes", []):
+                    write_list += await item_data.receive_item(self, ctx, num_received_items)
+                if item_data.model_reset:
+                    if item_data.model_reset in item_data:
+                        item_name = item_data.model_reset
+                    self.last_vanilla_item.append(item_name)
+
+            else:
+                write_list += await old_item_handling()
+            self.last_location = None
+
+        else:  # Old item handling for other cases
+            write_list += await old_item_handling()
+
+        # Write the new item to memory!
+        print("Write list:")
+        for addr, v, domain in write_list:
+            print(f"  {hex(addr)}: {v} ({domain})")
+        # print(f"Write list: {write_list}")
+        await bizhawk.write(ctx.bizhawk_ctx, write_list)
+
+        await self.receive_item_post_processing(ctx, item_name, item_data)
+
+    async def set_chest_contents(self, ctx):
+        write_list = []
+        for loc, data in self.locations_in_scene.items():
+            model = ctx.slot_data.get("location_models", {}).get(str(data["id"]), 0x1E)
+            chest_offset = data.get("chest_offset", None)
+            if chest_offset is not None:
+                chest_offset = [chest_offset] if isinstance(chest_offset, int) else chest_offset
+                for offset in chest_offset:
+                    pointer_addr = PHAddr.map_obj_table + 4*offset
+                    pointer = await Address.from_pointer(pointer_addr, 3).read(ctx)
+                    chest_content_addr = Address.from_pointer(pointer + 9*4, 1)  # chest item is offset 9
+                    if len(chest_offset) > 1:
+                        vanilla_item_model = self.item_data[data["vanilla_item"]].model
+                        if await chest_content_addr.read(ctx) == vanilla_item_model:
+                            write_list.append(chest_content_addr.get_inner_write_list(model))
+                            print(f"Writing {model} to addr {chest_content_addr} for loc {loc}")
+                            break
+                    else:
+                        write_list.append(chest_content_addr.get_inner_write_list(model))
+                        print(f"Writing {model} to addr {chest_content_addr} for loc {loc}")
+        await bizhawk.write(ctx.bizhawk_ctx, write_list)
