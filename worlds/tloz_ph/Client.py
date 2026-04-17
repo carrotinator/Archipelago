@@ -1417,12 +1417,13 @@ class PhantomHourglassClient(DSZeldaClient):
             chest_offset = data.get("chest_offset", None)
             if chest_offset is not None:
                 chest_offset = [chest_offset] if isinstance(chest_offset, int) else chest_offset
+                vanilla_item_model = self.item_data[data["vanilla_item"]].model
+                print(f"\tVanilla model {hex(vanilla_item_model)} offsets {chest_offset}")
                 for offset in chest_offset:
                     pointer_addr = PHAddr.map_obj_table + 4*offset
                     pointer = await Address.from_pointer(pointer_addr, 3).read(ctx)
                     chest_content_addr = Address.from_pointer(pointer + 9*4, 1)  # chest item is offset 9
                     if len(chest_offset) > 1:
-                        vanilla_item_model = self.item_data[data["vanilla_item"]].model
                         if await chest_content_addr.read(ctx) == vanilla_item_model:
                             write_list.append(chest_content_addr.get_inner_write_list(model))
                             print(f"Writing {model} to addr {chest_content_addr} for loc {loc}")

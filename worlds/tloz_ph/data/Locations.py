@@ -32,6 +32,7 @@ LOCATIONS_DATA = {
         "sram_addr": SRAM(0x20ca),
         "sram_value": 0x40,
         "id": 2,
+        "gift_addr": Address(0x2152CC)
     },
     "Mercay SW Tree Dig": {
         "region_id": "Mercay SW Dig Spot",
@@ -144,7 +145,8 @@ LOCATIONS_DATA = {
         "x_max": 0x25000,
         "vanilla_item": "Treasure Map #12 (Dee Ess N)",
         "id": 12,
-        "hint_entrance": "Mercay NE Freedle Island Cave"
+        "hint_entrance": "Mercay NE Freedle Island Cave",
+        "gift_addr": Address(0x21618c)
     },
     "Mercay SE Ojibe (Docks Guy) Item": {
         "region_id": "Mercay SE Ojibe",
@@ -154,6 +156,7 @@ LOCATIONS_DATA = {
         "value": 0x2,
         "vanilla_item": "Treasure Map #9 (Cannon W)",
         "id": 13,
+        "gift_addr": Address(0x2165FC)
     },
     "Shipyard Chest": {
         "region_id": "Shipyard",
@@ -162,7 +165,8 @@ LOCATIONS_DATA = {
         "vanilla_item": "Ship Part",
         # "post_dungeon": "Temple of Fire", hard code
         "id": 14,
-        "hint_entrance": "Shipyard Exit"
+        "hint_entrance": "Shipyard Exit",
+        "chest_offset": 1
     },
     "Oshus Spirit Gem": {
         "region_id": "Oshus Gem",
@@ -173,7 +177,8 @@ LOCATIONS_DATA = {
         "value": 0x2,
         "delay_reset": True,
         "id": 15,
-        "hint_entrance": "Oshus' Exit"
+        "hint_entrance": "Oshus' Exit",
+        # "gift_addr": 0x2153FC  # Resets after getting phantom sword, annoying...
     },
     "Oshus Phantom Sword": {
         "region_id": "Oshus Phantom Blade",
@@ -412,6 +417,7 @@ LOCATIONS_DATA = {
         "id": 29,
         "do_special": "ut_event",
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 23
     },
     "TotOK 1F Linebeck Key": {
         "region_id": "TotOK 1F",
@@ -435,6 +441,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 31,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 34
     },
     "TotOK B1 Small Key": {
         "region_id": "TotOK B1 Key",
@@ -456,6 +463,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 33,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 9,
     },
     "TotOK B1 Phantom Chest": {
         "region_id": "TotOK B1 Phantom",
@@ -469,6 +477,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 34,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 10,
     },
     "TotOK B2 Bombchu Chest": {
         "region_id": "TotOK B2 Chu",
@@ -482,6 +491,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 35,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 17,
     },
     "TotOK B2 Phantom Chest": {
         "region_id": "TotOK B2 Phantom",
@@ -495,6 +505,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 36,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 18,
     },
     "TotOK B2 Small Key": {
         "region_id": "TotOK B2 Key",
@@ -516,6 +527,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 38,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 20,
     },
     "TotOK B3 Phantom Chest": {
         "region_id": "TotOK B3 Phantom",
@@ -529,6 +541,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 39,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 21,
     },
     "TotOK B3 NW Chest": {
         "region_id": "TotOK B3 NW Chest",
@@ -542,6 +555,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 40,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 6,
     },
     "TotOK B3 SW Chest": {
         "region_id": "TotOK B3 SW Chest",
@@ -556,6 +570,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 41,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 8,
     },
     "TotOK B3 SE Chest": {
         "region_id": "TotOK B3 SE Chest",
@@ -569,6 +584,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 42,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 7,
     },
     "TotOK B3 Small Key": {
         "region_id": "TotOK B3 Key",
@@ -587,6 +603,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 44,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 3,
     },
     "TotOK B4 Phantom Eye Chest": {
         "region_id": "TotOK B4 Eyes",
@@ -599,6 +616,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 45,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 3,
     },
     "TotOK B4 Phantom Chest": {
         "region_id": "TotOK B4 Phantom",
@@ -611,6 +629,7 @@ LOCATIONS_DATA = {
         "delay_pickup": "TotOK B4 Small Key",
         "id": 46,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 4,
     },
     "TotOK B4 Small Key": {
         "region_id": "TotOK B4 Key",
@@ -631,6 +650,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 48,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 12,
     },
     "TotOK B5 Chest": {
         "region_id": "TotOK B5 Chest",
@@ -642,6 +662,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 49,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 11,
     },
     "TotOK B6 Phantom Chest": {
         "region_id": "TotOK B6 Phantom",
@@ -654,6 +675,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 50,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 3,
     },
     "TotOK B6 Bow Chest": {
         "region_id": "TotOK B6 Bow",
@@ -664,6 +686,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 51,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 2,
     },
     "TotOK B6 Courage Crest": {
         "region_id": "TotOK B6 Crest",
@@ -688,6 +711,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 53,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 4,
     },
     "TotOK B7 Peg Chest": {
         "region_id": "TotOK B7 Switch",
@@ -700,6 +724,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 54,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 5,
     },
     "TotOK B7 Phantom Chest": {
         "region_id": "TotOK B7 Phantom",
@@ -712,6 +737,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 55,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 3,
     },
     "TotOK B8 2 Crystals Chest": {
         "region_id": "TotOK B8 2 Crystals Chest",
@@ -723,6 +749,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 56,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 5,
     },
     "TotOK B8 Phantom Chest": {
         "region_id": "TotOK B8 Phantom",
@@ -737,6 +764,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 57,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 4,
     },
     "TotOK B9 NW Chest": {
         "region_id": "TotOK B9 Corner Chest",
@@ -748,6 +776,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 58,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 33,
     },
     "TotOK B9 Wizzrobe Chest": {
         "region_id": "TotOK B9 Wizzrobes",
@@ -761,6 +790,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 59,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 34,
     },
     "TotOK B9 Phantom Chest": {
         "region_id": "TotOK B9 Phantom",
@@ -773,6 +803,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 60,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 35,
     },
     "TotOK B9.5 Sea Chart Chest": {
         "region_id": "TotOK B10",
@@ -782,6 +813,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 61,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 1,
     },
     "TotOK B10 Hammer Switch Chest": {
         "region_id": "TotOK B10 Hammer",
@@ -797,6 +829,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 62,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 28,
     },
     "TotOK B10 Phantom Chest": {
         "region_id": "TotOK B10 Phantom",
@@ -813,6 +846,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 63,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 23,
     },
     "TotOK B10 Phantom Eye Chest": {
         "region_id": "TotOK B10 Eyes",
@@ -823,6 +857,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 64,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 31,
     },
     "TotOK B10 Small Key": {
         "region_id": "TotOK B10 Key",
@@ -843,6 +878,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 66,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 80,
     },
     "TotOK B11 Phantom Chest": {
         "region_id": "TotOK B11 Phantom",
@@ -855,6 +891,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 67,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 15,
     },
     "TotOK B12 NE Chest": {
         "region_id": "TotOK B12 NW Chest",
@@ -866,6 +903,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 68,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 9,
     },
     "TotOK B12 NW Chest": {
         "region_id": "TotOK B12 NE Chest",
@@ -877,6 +915,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 69,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 8,
     },
     "TotOK B12 Hammer Chest": {
         "region_id": "TotOK B12 Hammer",
@@ -887,6 +926,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 70,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 33,
     },
     "TotOK B12 Kill Everything Chest": {
         "region_id": "TotOK B12 Ghost",
@@ -898,6 +938,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 71,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 34,
     },
     "TotOK B12 Phantom Chest": {
         "region_id": "TotOK B12 Phantom",
@@ -912,6 +953,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 72,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 10,
     },
     "TotOK B13 Sea Chart Chest": {
         "region_id": "TotOK B13 Chest",
@@ -923,6 +965,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of the Ocean King",
         "id": 73,
         "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 3,
     },
 
     # ========== Ocean SW ============

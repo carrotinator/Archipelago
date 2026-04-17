@@ -337,6 +337,7 @@ ITEMS_DATA = {
         "value": 0x1,
         "tags": ["incremental"],
         "id": 32,
+        "model": 0x2D
     },
     "Wisdom Gem": {
         "classification": DEPRIORITIZED_SKIP_BALANCING_FALLBACK,
@@ -344,6 +345,7 @@ ITEMS_DATA = {
         "value": 0x1,
         "tags": ["incremental"],
         "id": 33,
+        "model": 0x2E
     },
     "Courage Gem": {
         "classification": DEPRIORITIZED_SKIP_BALANCING_FALLBACK,
@@ -351,6 +353,7 @@ ITEMS_DATA = {
         "value": 0x1,
         "tags": ["incremental"],
         "id": 34,
+        "model": 0x2F
     },
     "Power Gem Pack": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -459,11 +462,13 @@ ITEMS_DATA = {
         "classification": ItemClassification.filler,
         "tags": ["incremental"],
         "id": 47,
+        "model": 0x7D
     },
     "Ship Part": {
         "classification": ItemClassification.filler,
         "tags": ["ship_part"],
         "id": 48,
+        "model": 0x7E
     },
     "Potion": {
         "classification": ItemClassification.filler,
@@ -616,6 +621,7 @@ ITEMS_DATA = {
         "value": 0x80,
         "id": 67,
         "hint_on_receive": ["Ocean SW Salvage #1 Molida SW"],
+        "model": 0x52
     },
     "Treasure Map #2 (Mercay NE)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -623,6 +629,7 @@ ITEMS_DATA = {
         "value": 0x10,
         "id": 68,
         "hint_on_receive": ["Ocean SW Salvage #2 Mercay NE"],
+        "model": 0x4F
     },
     "Treasure Map #3 (Gusts SW)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -630,6 +637,7 @@ ITEMS_DATA = {
         "value": 0x20,
         "id": 69,
         "hint_on_receive": ["Ocean NW Salvage #3 Gusts SW"],
+        "model": 0x58
     },
     "Treasure Map #4 (Bannan SE)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -637,6 +645,7 @@ ITEMS_DATA = {
         "value": 0x80,
         "id": 70,
         "hint_on_receive": ["Ocean NW Salvage #4 Bannan SE"],
+        "model": 0x5a
     },
     "Treasure Map #5 (Molida N)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -644,6 +653,7 @@ ITEMS_DATA = {
         "value": 0x40,
         "id": 71,
         "hint_on_receive": ["Ocean SW Salvage #5 Molida N"],
+        "model": 0x51
     },
     "Treasure Map #6 (Bannan W)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -651,6 +661,7 @@ ITEMS_DATA = {
         "value": 0x1,
         "id": 72,
         "hint_on_receive": ["Ocean NW Salvage #6 Bannan W"],
+        "model": 0x53
     },
     "Treasure Map #7 (Gusts E)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -658,6 +669,7 @@ ITEMS_DATA = {
         "value": 0x8,
         "id": 73,
         "hint_on_receive": ["Ocean NW Salvage #7 Gusts E"],
+        "model": 0x56
     },
     "Treasure Map #8 (Mercay SE)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -665,6 +677,7 @@ ITEMS_DATA = {
         "value": 0x8,
         "id": 74,
         "hint_on_receive": ["Ocean SW Salvage #8 Mercay SE"],
+        "model": 0x4E
     },
     "Treasure Map #9 (Cannon W)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -672,6 +685,7 @@ ITEMS_DATA = {
         "value": 0x2,
         "id": 75,
         "hint_on_receive": ["Ocean SW Salvage #9 Cannon W"],
+        "model": 0x4C,
     },
     "Treasure Map #10 (Gusts SE)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -679,6 +693,7 @@ ITEMS_DATA = {
         "value": 0x10,
         "id": 76,
         "hint_on_receive": ["Ocean NW Salvage #10 Gusts SE"],
+        "model": 0x57
     },
     "Treasure Map #11 (Gusts N)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -686,6 +701,7 @@ ITEMS_DATA = {
         "value": 0x2,
         "id": 77,
         "hint_on_receive": ["Ocean NW Salvage #11 Gusts N"],
+        "model": 0x54
     },
     "Treasure Map #12 (Dee Ess N)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -693,6 +709,7 @@ ITEMS_DATA = {
         "value": 0x20,
         "id": 78,
         "hint_on_receive": ["Ocean SE Salvage #12 Dee Ess N"],
+        "model": 0x60
     },
     "Treasure Map #13 (Harrow E)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -700,6 +717,7 @@ ITEMS_DATA = {
         "value": 0x4,
         "id": 79,
         "hint_on_receive": ["Ocean SE Salvage #13 Harrow E"],
+        "model": 0x5d
     },
     "Treasure Map #14 (Goron NW)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -707,6 +725,7 @@ ITEMS_DATA = {
         "value": 0x1,
         "id": 80,
         "hint_on_receive": ["Ocean SE Salvage #14 Goron NW"],
+        "model": 0x5b
     },
     "Treasure Map #15 (Goron W)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -714,6 +733,7 @@ ITEMS_DATA = {
         "value": 0x2,
         "id": 81,
         "hint_on_receive": ["Ocean SE Salvage #15 Goron W"],
+        "model": 0x5c
     },
     "Treasure Map #16 (Goron NE)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -721,6 +741,7 @@ ITEMS_DATA = {
         "value": 0x10,
         "id": 82,
         "hint_on_receive": ["Ocean SE Salvage #16 Goron NE"],
+        "model": 0x5f
     },
     "Treasure Map #17 (Frost S)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -728,6 +749,7 @@ ITEMS_DATA = {
         "value": 0x40,
         "id": 83,
         "hint_on_receive": ["Ocean SE Salvage #17 Frost S"],
+        "model": 0x61
     },
     "Treasure Map #18 (Cannon S)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -735,6 +757,7 @@ ITEMS_DATA = {
         "value": 0x4,
         "id": 84,
         "hint_on_receive": ["Ocean SW Salvage #18 Cannon S"],
+        "model": 0x4D
     },
     "Treasure Map #19 (Gusts NE)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -742,6 +765,7 @@ ITEMS_DATA = {
         "value": 0x4,
         "id": 85,
         "hint_on_receive": ["Ocean NW Salvage #19 Gusts NE"],
+        "model": 0x55
     },
     "Treasure Map #20 (Bannan E)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -749,6 +773,7 @@ ITEMS_DATA = {
         "value": 0x40,
         "id": 86,
         "hint_on_receive": ["Ocean NW Salvage #20 Bannan E"],
+        "model": 0x59
     },
     "Treasure Map #21 (Molida NW)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -756,6 +781,8 @@ ITEMS_DATA = {
         "value": 0x20,
         "id": 87,
         "hint_on_receive": ["Ocean SW Salvage #21 Molida NW"],
+        "model": 0x50
+
     },
     "Treasure Map #22 (Harrow S)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -763,6 +790,7 @@ ITEMS_DATA = {
         "value": 0x8,
         "id": 88,
         "hint_on_receive": ["Ocean SE Salvage #22 Harrow S"],
+        "model": 0x5e
     },
     "Treasure Map #23 (Frost NW)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -770,6 +798,7 @@ ITEMS_DATA = {
         "value": 0x80,
         "id": 89,
         "hint_on_receive": ["Ocean SE Salvage #23 Frost NW"],
+        "model": 0x62
     },
     "Treasure Map #24 (Ruins W)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -777,6 +806,7 @@ ITEMS_DATA = {
         "value": 0x20,
         "id": 90,
         "hint_on_receive": ["Ocean NE Salvage #24 Ruins W"],
+        "model": 0x68
     },
     "Treasure Map #25 (Dead E)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -784,6 +814,7 @@ ITEMS_DATA = {
         "value": 0x4,
         "id": 91,
         "hint_on_receive": ["Ocean NE Salvage #25 Dead E"],
+        "model": 0x65
     },
     "Treasure Map #26 (Ruins SW)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -791,6 +822,7 @@ ITEMS_DATA = {
         "value": 0x2,
         "id": 92,
         "hint_on_receive": ["Ocean NE Salvage #26 Ruins SW"],
+        "model": 0x64
     },
     "Treasure Map #27 (Maze E)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -798,6 +830,7 @@ ITEMS_DATA = {
         "value": 0x8,
         "id": 93,
         "hint_on_receive": ["Ocean NE Salvage #27 Maze E"],
+        "model": 0x66
     },
     "Treasure Map #28 (Ruins NW)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -805,6 +838,7 @@ ITEMS_DATA = {
         "value": 0x1,
         "id": 94,
         "hint_on_receive": ["Ocean NE Salvage #28 Ruins NW"],
+        "model": 0x63
     },
     "Treasure Map #29 (Maze W)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -812,6 +846,7 @@ ITEMS_DATA = {
         "value": 0x10,
         "id": 95,
         "hint_on_receive": ["Ocean NE Salvage #29 Maze W"],
+        "model": 0x67
     },
     "Treasure Map #30 (Ruins S)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -819,6 +854,7 @@ ITEMS_DATA = {
         "value": 0x40,
         "id": 96,
         "hint_on_receive": ["Ocean NE Salvage #30 Ruins S"],
+        "model": 0x69
     },
     "Treasure Map #31 (Dead S)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -826,6 +862,7 @@ ITEMS_DATA = {
         "value": 0x80,
         "id": 97,
         "hint_on_receive": ["Ocean NE Salvage #31 Dead S"],
+        "model": 0x6a
     },
 
     # Keys
