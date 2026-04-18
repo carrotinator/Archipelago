@@ -68,6 +68,7 @@ calculating logic at all! Good luck!
 - [Goron Temple early](https://www.youtube.com/watch?v=tUjm0CZAEVU) (Hard Logic)
 
 ## Goron Temple
+- [Shovel Skip](https://youtu.be/X2MFuyanFhE?si=eYJJzl0lscf-AF7B) (Glitched Logic)
 - Hammer clips (Glitched logic)
 - B2 early shortcut [rock roll](https://www.youtube.com/watch?v=FrdBA7idCWI) [BCL](https://www.youtube.com/watch?v=BUWBODrGF-0) (Doesn't effect logic)
 - [Boss key early](https://www.youtube.com/watch?v=BUWBODrGF-0) (Doesn't effect logic)
