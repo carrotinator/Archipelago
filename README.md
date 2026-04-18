@@ -1,3 +1,9 @@
+# Phantom Hourglass AP Specific Info
+- [Setup Guide](https://github.com/carrotinator/Archipelago/blob/main/worlds/tloz_ph/docs/setup.md)
+- [FAQ and Credits](https://github.com/carrotinator/Archipelago/blob/main/worlds/tloz_ph/docs/faq_and_credits.md)
+- [Tricks and Skips](https://github.com/carrotinator/Archipelago/blob/main/worlds/tloz_ph/docs/tricks_and_skips.md)
+- [Wiki with location guides and other stuff](https://github.com/carrotinator/Archipelago/wiki)
+
 # [Archipelago](https://archipelago.gg) ![Discord Shield](https://discordapp.com/api/guilds/731205301247803413/widget.png?style=shield) | [Install](https://github.com/ArchipelagoMW/Archipelago/releases)
 
 Archipelago provides a generic framework for developing multiworld capability for game randomizers. In all cases,
