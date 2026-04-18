@@ -87,7 +87,7 @@ calculating logic at all! Good luck!
 - B1 Jump to boomerang switches and hit with bow (Hard Logic)
 - B2 Hammer clip for early boss key (Glitched Logic)
 
-# Mutoh's Temple
+## Mutoh's Temple
 - 1F Skip one side with hammer (All Settings)
 - B1 [Arrow despawn](https://www.youtube.com/watch?v=XvgpXRtiq0w) for puzzle and small key skips (Glitched Logic)
 - B1 [Hammer pad skew](https://www.youtube.com/watch?v=qZzMGVTJMHE) and Spirit of Power level 1 can skip bow. Works with both bombs and chus (Glitched Logic)
