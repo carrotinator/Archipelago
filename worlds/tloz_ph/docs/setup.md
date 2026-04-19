@@ -22,9 +22,10 @@
 6. Launch the vanilla game in bizhawk, and open the lua console. Add the `connector_bizhawk_generic.lua` script that can be found in `Archipelago\data\lua`. 
 7. You are now ready to play! Start a new savefile and go! You can check that everything worked by checking if the bridge has been repaired.
 
-## External patches
+## External patches and enhancements
 - Works with controller patches!
 - Works with player model patches. [Guide](https://gamebanana.com/tuts/19109) for making them.
+- [moonlight-n3ds](https://github.com/zoeyjodon/moonlight-N3DS) can be used to controll bizhawk with a modded 3ds
 
 ## Useful to know before you start
 - Since the game runs on live patching, you can't see what you found in game. Check your client to see what items you find.
