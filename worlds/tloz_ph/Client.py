@@ -540,6 +540,19 @@ class PhantomHourglassClient(DSZeldaClient):
 
         # Open pedestal doors. sucks that you can't trigger it with dynaflags. slow code but game is slower
         if ctx.slot_data.get("randomize_pedestal_items", 0) > 0:
+            async def open_door(start_offset, check_offset, comp_value):
+                door = await self.find_map_object(ctx, start_offset, check_offset, comp_value)
+                print(f"Opening door {door}")
+                await door.overwrite(ctx, 0x1000, offset=4 * 26)  # Open
+                await door.overwrite(ctx, 0, offset=4 * 15)  # disable collision
+                await door.unset_bits(ctx, 0x10, offset=4 * 1)  # remove map icon
+
+            async def lower_spikes(start_offset, check_offset, comp_value, width):
+                spike, offset = await self.find_map_object(ctx, start_offset, check_offset, comp_value, return_index=True)
+                reads: list[Address] = [Address.from_pointer(PHAddr.map_obj_table + 4 * (offset-i-1), size=3) for i in range(width-1)]
+                spikes = [spike] + list((await read_multiple(ctx, reads)).values())
+                print(f"Lowering Spike objects: {spikes}")
+                await write_multiple(ctx, [Address.from_pointer(a+4*i, size=4) for a in spikes for i in [1]], [0]*width)
 
             # === TotOK ===
             if current_scene == 0x2503:  # B3
@@ -549,10 +562,12 @@ class PhantomHourglassClient(DSZeldaClient):
                 if (self.item_count(ctx, "Round Crystal (Temple of the Ocean King)")
                         or self.item_count(ctx, "Round Pedestal B8 (Temple of the Ocean King)")
                         or self.item_count(ctx, "Round Crystals")):
+                    await lower_spikes(8, 6, 0xFFFF6800, 2)
                     await PHAddr.totok_b8_state.set_bits(ctx, 0x2)
                 if (self.item_count(ctx, "Triangle Crystal (Temple of the Ocean King)")
                         or self.item_count(ctx, "Triangle Crystals")
                         or self.item_count(ctx, "Triangle Pedestal B8 (Temple of the Ocean King)")):
+                    await lower_spikes(12, 6, 14336, 3)
                     await PHAddr.totok_b8_state.set_bits(ctx, 0x4)
             elif current_scene == 0x250C:  # B9
                 if (self.item_count(ctx, "Round Crystal (Temple of the Ocean King)")
@@ -565,9 +580,10 @@ class PhantomHourglassClient(DSZeldaClient):
                     await PHAddr.totok_b9_state.set_bits(ctx, 0x8)
                 if (self.item_count(ctx, "Square Crystal (Temple of the Ocean King)")
                         or self.item_count(ctx, "Square Crystals")):
-                    await PHAddr.totok_b9_state.set_bits(ctx,  0x22)
+                    await PHAddr.totok_b9_state.set_bits(ctx,  0x02)
+                    await lower_spikes(10, 6, 0xFFFF3800, 3)
                 if self.item_count(ctx, "Square Pedestal West (Temple of the Ocean King)"):
-                    await PHAddr.totok_b9_state.set_bits(ctx,  0x20)
+                    await lower_spikes(10, 6, 0xFFFF3800, 3)
                 if self.item_count(ctx, "Square Pedestal Center (Temple of the Ocean King)"):
                     await PHAddr.totok_b9_state.set_bits(ctx,  0x2)
             elif current_scene == 0x2510:  # B12
@@ -587,20 +603,23 @@ class PhantomHourglassClient(DSZeldaClient):
                 if (self.item_count(ctx, "Square Pedestal North (Temple of Courage)")
                         or self.item_count(ctx, "Square Crystal (Temple of Courage)")
                         or self.item_count(ctx, "Square Crystals")):
-                    await PHAddr.toc_crystal_state.set_bits(ctx, 0x10)
+                    await open_door(38, 6, 0xFFFFBFFC)
                 if (self.item_count(ctx, "Square Pedestal South (Temple of Courage)")
                         or self.item_count(ctx, "Square Crystal (Temple of Courage)")
                         or self.item_count(ctx, "Square Crystals")):
-                    await self.stage_flag_address.set_bits(ctx, 0x80)
+                    await open_door(85, 6, 0xFFFF2FFC)
 
             # === Ghost Ship ===
             elif current_scene == 0x2900:
                 if (self.item_count(ctx, "Triangle Crystal (Ghost Ship)")
                         or self.item_count(ctx, "Triangle Crystals")):
-                    await self.stage_flag_address.set_bits(ctx, 0x8, offset=1)
+                    # await self.stage_flag_address.set_bits(ctx, 0x8, offset=1)
+                    await lower_spikes(90, 6, 47104, 4)
+                    await lower_spikes(85, 6, 38912, 3)
                 if (self.item_count(ctx, "Round Crystal (Ghost Ship)")
                         or self.item_count(ctx, "Round Crystals")):
-                    await self.stage_flag_address.set_bits(ctx, 0x2, offset=3)
+                    await lower_spikes(28, 6, 22528, 4)
+                    # await self.stage_flag_address.set_bits(ctx, 0x2, offset=3)
 
     async def write_totok_midway_keys(self, ctx):
         data = DUNGEON_KEY_DATA[372]
@@ -805,10 +824,11 @@ class PhantomHourglassClient(DSZeldaClient):
                 self.last_vanilla_item.pop()
                 logger.info(f"Got farmable location")
 
-        if "chest_offset" in location:
+        if "chest_offset" in location or "gift_addr" in location:
             self.last_vanilla_item.pop()
             model = ctx.slot_data.get("location_models", {}).get(str(location["id"]), 0x1E)
             if model_resets.get(model):
+                print(f"\tResetting model: {model_resets[model]}")
                 self.last_vanilla_item.append(model_resets[model])
 
     async def receive_key_in_own_dungeon(self, ctx, item_name: str, write_keys_to_storage):
@@ -1396,13 +1416,12 @@ class PhantomHourglassClient(DSZeldaClient):
 
         if self.last_location:
             # Handle chests with swapped items
-            if self.last_location.get("chest_offset", None) is not None:
-                if self.last_vanilla_item:
-                    self.last_vanilla_item.pop()
+            if "chest_offset" in self.last_location or "gift_addr" in self.last_location:
+                print(f"Handling Item: {item_name} ghost? {item_data.ghost_model} reset? {item_data.model_reset} last_vanilla: {self.last_vanilla_item}")
                 if (item_data.ghost_model or item_data.model is None) and self.current_scene not in getattr(item_data, "blocked_scenes", []):
                     write_list += await item_data.receive_item(self, ctx, num_received_items)
-                if item_data.model_reset:
-                    self.last_vanilla_item.append(item_data.name)
+                if self.last_vanilla_item and not item_data.model_reset:
+                    self.last_vanilla_item.pop()
 
             else:
                 write_list += await old_item_handling()
@@ -1421,15 +1440,21 @@ class PhantomHourglassClient(DSZeldaClient):
         await self.receive_item_post_processing(ctx, item_name, item_data)
 
     @staticmethod
-    async def find_map_object(ctx, start_offset, check_offset, comp_value) -> Address | None:
+    async def find_map_object(ctx: "BizHawkClientContext", start_offset: int,
+                              check_offset: int, comp_value: int | list,
+                              size=4, return_index=False) -> Address | tuple[Address, int] | None:
         check_list = list(range(start_offset + 1))
         check_list.reverse()
         for offset in check_list[:30]:
             pointer_addr = PHAddr.map_obj_table + 4 * offset
             pointer = await Address.from_pointer(pointer_addr, 3).read(ctx)
-            chest_content_addr = Address.from_pointer(pointer + check_offset * 4, 4)  # chest item is offset 9
-            if await chest_content_addr.read(ctx) == comp_value:
-                return Address.from_pointer(pointer)
+            comp_addr = Address.from_pointer(pointer + check_offset * 4, size)  # chest item is offset 9
+            comp_read = await comp_addr.read(ctx)
+            # print(f"comp read: {comp_read} == {comp_value}")
+            if (isinstance(comp_value, list) and comp_read in comp_value) or comp_read == comp_value:
+                if return_index:
+                    return Address.from_pointer(pointer, size=4), offset
+                return Address.from_pointer(pointer, size=4)
         print(f"Could not find matching map object, probably restarted client in already loaded room.")
         return None
 
@@ -1438,11 +1463,11 @@ class PhantomHourglassClient(DSZeldaClient):
         for loc, data in self.locations_in_scene.items():
             model = ctx.slot_data.get("location_models", {}).get(str(data["id"]), 0x1E)
             chest_offset = data.get("chest_offset", None)
-            gift_addr: Address = data.get("gift_addr", None)
+            gift_addr = data.get("gift_addr", None)
             if chest_offset is not None:
-                vanilla_item_model = self.item_data[data["vanilla_item"]].model
-                print(f"\tVanilla model {hex(vanilla_item_model)} offsets {chest_offset}")
-                chest_obj = await self.find_map_object(ctx, chest_offset, 9, model)
+                vanilla_item_model = self.item_data[data["vanilla_item"]].vanilla_model
+                print(f"\tVanilla model {vanilla_item_model} offsets {chest_offset}")
+                chest_obj = await self.find_map_object(ctx, chest_offset, 9, vanilla_item_model, size=1)
                 if chest_obj:
                     chest_content_addr = Address.from_pointer(chest_obj + 9 * 4, 1)
                     write_list.append(chest_content_addr.get_inner_write_list(model))
@@ -1451,5 +1476,8 @@ class PhantomHourglassClient(DSZeldaClient):
                     logger.info(f"Could not find chests for item swapping, probably restarted client in already loaded room.")
 
             if gift_addr is not None:
-                write_list.append(gift_addr.get_inner_write_list(model))
+                gift_addr: list[Address] = gift_addr if isinstance(gift_addr, list) else [gift_addr]
+                for addr in gift_addr:
+                    print(f"\tSetting read item model: {loc} {hex(model)}")
+                    write_list.append(addr.get_inner_write_list(model))
         await bizhawk.write(ctx.bizhawk_ctx, write_list)

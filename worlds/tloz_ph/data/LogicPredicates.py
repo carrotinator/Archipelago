@@ -497,7 +497,7 @@ def ph_can_farm_rupees(state: CollectionState, player: int):
 
 def ph_island_shop(state, player, price):
     other_costs = 0
-    if ph_has_sea_chart(state, player, "SW"):
+    if state.can_reach_region("Beedle", player):
         # Includes cannon island, but not salvage arm cause that also unlocks treasure shop
         other_costs += 1550
         if ph_option_randomize_masked_beedle(state, player):

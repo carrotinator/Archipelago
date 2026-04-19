@@ -93,6 +93,9 @@ ITEMS_DATA = {
         "inventory_id": 4,
         "tags": ["progressive_overwrite"],
         "model": 0x29,
+        "vanilla_model": [0x29, 0x7],
+        "ghost_model": True,
+        "model_reset": True
     },
     "Bombchus (Progressive)": {
         "classification": ItemClassification.progression,
@@ -104,6 +107,9 @@ ITEMS_DATA = {
         "id": 7,
         "inventory_id": 7,
         "model": 0x2a,
+        "vanilla_model": [0x2a, 0xE],
+        "ghost_model": True,
+        "model_reset": True
     },
     "Bow (Progressive)": {
         "classification": ItemClassification.progression,
@@ -115,6 +121,9 @@ ITEMS_DATA = {
         "id": 8,
         "inventory_id": 5,
         "model": 0x28,
+        "vanilla_model": [0x28, 0x8],
+        "ghost_model": True,
+        "model_reset": True
     },
     "Grappling Hook": {
         "classification": ItemClassification.progression,
@@ -462,13 +471,13 @@ ITEMS_DATA = {
         "classification": ItemClassification.filler,
         "tags": ["incremental"],
         "id": 47,
-        "model": 0x7D
+        "vanilla_model": [0x7D, 0x86]
     },
     "Ship Part": {
         "classification": ItemClassification.filler,
         "tags": ["ship_part"],
         "id": 48,
-        "model": 0x7E
+        "vanilla_model": [0x7E, 0x85]
     },
     "Potion": {
         "classification": ItemClassification.filler,
@@ -872,6 +881,7 @@ ITEMS_DATA = {
         "tags": ["incremental"],
         "id": 98,
         "model": 0x5,
+        "vanilla_model": 0x1,
         "ghost_model": True,
     },
     "Small Key (Temple of the Ocean King)": {
@@ -880,6 +890,7 @@ ITEMS_DATA = {
         "tags": ["incremental", "always_process"],
         "id": 99,
         "model": 0x5,
+        "vanilla_model": 0x1,
         "ghost_model": True,
     },
     "Small Key (Temple of Fire)": {
@@ -888,6 +899,7 @@ ITEMS_DATA = {
         "tags": ["incremental"],
         "id": 100,
         "model": 0x5,
+        "vanilla_model": 0x1,
         "ghost_model": True,
     },
     "Small Key (Temple of Wind)": {
@@ -896,6 +908,7 @@ ITEMS_DATA = {
         "tags": ["incremental"],
         "id": 101,
         "model": 0x5,
+        "vanilla_model": 0x1,
         "ghost_model": True,
     },
     "Small Key (Temple of Courage)": {
@@ -904,6 +917,7 @@ ITEMS_DATA = {
         "tags": ["incremental"],
         "id": 102,
         "model": 0x5,
+        "vanilla_model": 0x1,
         "ghost_model": True,
     },
     "Small Key (Temple of Ice)": {
@@ -912,6 +926,7 @@ ITEMS_DATA = {
         "tags": ["incremental"],
         "id": 103,
         "model": 0x5,
+        "vanilla_model": 0x1,
         "ghost_model": True,
     },
     "Small Key (Mutoh's Temple)": {
@@ -920,6 +935,7 @@ ITEMS_DATA = {
         "tags": ["incremental"],
         "id": 104,
         "model": 0x5,
+        "vanilla_model": 0x1,
         "ghost_model": True,
     },
     "Boss Key (Temple of Fire)": {
@@ -1170,7 +1186,7 @@ ITEMS_DATA = {
         "address": PHAddr.adv_flags_4,
         "value": 0x2,
         "id": 119,
-        "model": 0x5,
+        "model": 0x1C,
     },
     "Sun Key": {
         "classification": ItemClassification.progression,

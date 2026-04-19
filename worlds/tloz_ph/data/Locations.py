@@ -1203,7 +1203,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of Fire",
         "id": 93,
         "hint_entrance": ["ToF Exit", "ToF Enter Boss"],
-        "chest_offset": 73
+        "chest_offset": 74
     },
     "Temple of Fire 2F Boomerang Chest": {
         "region_id": "ToF 2F",
@@ -1474,7 +1474,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of Courage",
         "id": 115,
         "hint_entrance": ["ToC Exit", "ToC Enter Boss"],
-        "chest_offset": 73
+        "chest_offset": 77
     },
     "Temple of Courage 1F Raised Platform Chest": {
         "region_id": "ToC 1F",
@@ -1486,7 +1486,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of Courage",
         "id": 116,
         "hint_entrance": ["ToC Exit", "ToC Enter Boss"],
-        "chest_offset": 101
+        "chest_offset": 105
     },
     "Temple of Courage 1F Map Room Chest East": {
         "region_id": "ToC 1F Map Room",
@@ -1499,7 +1499,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of Courage",
         "id": 117,
         "hint_entrance": ["ToC Exit", "ToC Enter Boss"],
-        "chest_offset": 80
+        "chest_offset": 95
     },
     "Temple of Courage 1F Map Room Chest West": {
         "region_id": "ToC 1F Map Room",
@@ -1511,7 +1511,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of Courage",
         "id": 118,
         "hint_entrance": ["ToC Exit", "ToC Enter Boss"],
-        "chest_offset": 91
+        "chest_offset": 84
     },
     "Temple of Courage 1F Pols Voice Key": {
         "region_id": "ToC 1F West",
@@ -1571,7 +1571,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of Courage",
         "id": 123,
         "hint_entrance": ["ToC Exit", "ToC Enter Boss"],
-        "chest_offset": 83
+        "chest_offset": 84
     },
     "Temple of Courage 2F Spike Corridor Chest": {
         "region_id": "ToC 2F Spike Corridor",
@@ -1618,7 +1618,7 @@ LOCATIONS_DATA = {
         "dungeon": "Temple of Courage",
         "id": 127,
         "hint_entrance": ["ToC Exit", "ToC Enter Boss"],
-        "chest_offset": 75
+        "chest_offset": 76
     },
     "Temple of Courage 3F Before Boss Chest": {
         "region_id": "ToC 3F Chest",
@@ -1704,7 +1704,8 @@ LOCATIONS_DATA = {
         "value": 0x1,
         "id": 134,
         "hint_entrance": "Spirit Shrine Exit",
-        "hint_entrance_secondary": "Spirit Board Ship"
+        "hint_entrance_secondary": "Spirit Board Ship",
+        # "gift_addr": Address(0x20D274)  # Need better detection
     },
     "Spirit Shrine Power Upgrade Level 2": {
         "region_id": "Spirit Power 2",
@@ -1715,7 +1716,8 @@ LOCATIONS_DATA = {
         "value": 0x8,
         "id": 135,
         "hint_entrance": "Spirit Shrine Exit",
-        "hint_entrance_secondary": "Spirit Board Ship"
+        "hint_entrance_secondary": "Spirit Board Ship",
+        # "gift_addr": Address(0x20D27C)
     },
     "Spirit Shrine Wisdom Upgrade Level 1": {
         "region_id": "Spirit Wisdom 1",
@@ -1726,7 +1728,8 @@ LOCATIONS_DATA = {
         "value": 0x2,
         "id": 136,
         "hint_entrance": "Spirit Shrine Exit",
-        "hint_entrance_secondary": "Spirit Board Ship"
+        "hint_entrance_secondary": "Spirit Board Ship",
+        # "gift_addr": Address(0x20D254)
     },
     "Spirit Shrine Wisdom Upgrade Level 2": {
         "region_id": "Spirit Wisdom 2",
@@ -1737,7 +1740,8 @@ LOCATIONS_DATA = {
         "value": 0x10,
         "id": 137,
         "hint_entrance": "Spirit Shrine Exit",
-        "hint_entrance_secondary": "Spirit Board Ship"
+        "hint_entrance_secondary": "Spirit Board Ship",
+        # "gift_addr": Address(0x20D25C)
     },
     "Spirit Shrine Courage Upgrade Level 1": {
         "region_id": "Spirit Courage 1",
@@ -1748,7 +1752,8 @@ LOCATIONS_DATA = {
         "value": 0x80,
         "id": 138,
         "hint_entrance": "Spirit Shrine Exit",
-        "hint_entrance_secondary": "Spirit Board Ship"
+        "hint_entrance_secondary": "Spirit Board Ship",
+        # "gift_addr": Address(0x20D224)
     },
     "Spirit Shrine Courage Upgrade Level 2": {
         "region_id": "Spirit Courage 2",
@@ -1759,7 +1764,8 @@ LOCATIONS_DATA = {
         "value": 0x4,
         "id": 139,
         "hint_entrance": "Spirit Shrine Exit",
-        "hint_entrance_secondary": "Spirit Board Ship"
+        "hint_entrance_secondary": "Spirit Board Ship",
+        # "gift_addr": Address(0x20D22c)
     },
 
     # ========== Ocean NW ============
@@ -2262,7 +2268,7 @@ LOCATIONS_DATA = {
         "dungeon": "Ghost Ship",
         "id": 179,
         "hint_entrance": ["GS Exit", "Ghost Ship Cubus Sisters Reunion"],
-        "chest_offset": 73
+        "chest_offset": 75
     },
     "Ghost Ship B2 Third Sister Right Chest": {
         "region_id": "Ghost Ship B2 Chests",
@@ -2439,6 +2445,7 @@ LOCATIONS_DATA = {
         "x_max": 0xc350,
         "id": 194,
         "hint_entrance": "Goron North Dead End",
+        "chest_offset": 5
     },
     "Goron Island NE Spike Chest": {
         "region_id": "Goron NE Spike Chest",
@@ -2737,7 +2744,7 @@ LOCATIONS_DATA = {
         "y": 0x1333,
         "x_max": -150000,
         "id": 218,
-        "chest_offset": 28
+        "chest_offset": 7
     },
     "Isle of Frost SW Chief's Sign Dig": {
         "region_id": "Frost SW Dig",

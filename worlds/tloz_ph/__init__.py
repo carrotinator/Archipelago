@@ -1341,7 +1341,7 @@ class PhantomHourglassWorld(World):
             item = loc.item
             if item is None: continue
             loc_data = LOCATIONS_DATA.get(loc.name, {})
-            if not loc_data or 'chest_offset' not in loc_data:
+            if not loc_data or not ('chest_offset' in loc_data or 'gift_addr' in loc_data):
                 continue
             if item.game in ["Phantom Hourglass"]:
                 if ITEMS[item.name].model is not None:
