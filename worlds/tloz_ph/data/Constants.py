@@ -1448,22 +1448,26 @@ BOSS_DOOR_DATA = {
     0x1C: {
         "name": "Temple of Fire",
         "address": PHAddr.tof_doors,
-        "value": 0x1
+        "value": 0x1,
+        "map_obj_comp": (20, 8, 45052)  # starting offset, attr offest of comp, comp value
     },
     0x1D: {
         "name": "Temple of Wind",
         "address": PHAddr.tow_doors,
-        "value": 0x400
+        "value": 0x400,
+        "map_obj_comp": (105, 8, 0xffff5ffc)
     },
     0x1E: {
         "name": "Temple of Courage",
         "address": PHAddr.toc_boss_door,
-        "value": 0x2
+        "value": 0x2,
+        "map_obj_comp": (68, 8, 0xFFFFFFFC)
     },
     0x20: {
         "name": "Goron Temple",
         "address": PHAddr.gt_boss_door,
-        "value": 0x1
+        "value": 0x1,
+        "map_obj_comp": (3, 8, 0x7FFC)
     },
     0x1F: {
         "name": "Temple of Ice",

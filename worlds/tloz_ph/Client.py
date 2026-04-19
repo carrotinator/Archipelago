@@ -535,6 +535,9 @@ class PhantomHourglassClient(DSZeldaClient):
             if await PHAddr.adv_flags_22.read(ctx) & 0x8:
                 await PHAddr.wayfarer_chest.set_bits(ctx, 0x80)
 
+        if current_scene in [0x1c02, 0x1d00]:
+            await self.open_boss_door(ctx)
+
         # Open pedestal doors. sucks that you can't trigger it with dynaflags. slow code but game is slower
         if ctx.slot_data.get("randomize_pedestal_items", 0) > 0:
 
@@ -745,9 +748,18 @@ class PhantomHourglassClient(DSZeldaClient):
 
         # Unlock boss door if have bk
         data = BOSS_DOOR_DATA.get(stage, False)
-        if data and ctx.slot_data.get("boss_key_behaviour", True):
-            if self.item_count(ctx, f"Boss Key ({data['name']})"):
-                await data["address"].set_bits(ctx, data["value"])
+        if data and ctx.slot_data.get("boss_key_behaviour", True) and self.item_count(ctx, f"Boss Key ({data['name']})"):
+            await data["address"].set_bits(ctx, data["value"])
+
+    async def open_boss_door(self, ctx):
+        data = BOSS_DOOR_DATA.get(self.current_stage, False)
+        if data and ctx.slot_data.get("boss_key_behaviour", True) and self.item_count(ctx, f"Boss Key ({data['name']})"):
+            boss_door = await self.find_map_object(ctx, *data["map_obj_comp"])
+            if not boss_door:
+                return
+            open_state = Address.from_pointer(boss_door+2*4)
+            if await open_state.read(ctx) == 0:
+                await open_state.overwrite(ctx, 3)
 
     # Enter stage
     async def enter_special_key_room(self, ctx, stage, scene_id) -> bool:
@@ -1390,9 +1402,7 @@ class PhantomHourglassClient(DSZeldaClient):
                 if (item_data.ghost_model or item_data.model is None) and self.current_scene not in getattr(item_data, "blocked_scenes", []):
                     write_list += await item_data.receive_item(self, ctx, num_received_items)
                 if item_data.model_reset:
-                    if item_data.model_reset in item_data:
-                        item_name = item_data.model_reset
-                    self.last_vanilla_item.append(item_name)
+                    self.last_vanilla_item.append(item_data.name)
 
             else:
                 write_list += await old_item_handling()
@@ -1410,25 +1420,36 @@ class PhantomHourglassClient(DSZeldaClient):
 
         await self.receive_item_post_processing(ctx, item_name, item_data)
 
+    @staticmethod
+    async def find_map_object(ctx, start_offset, check_offset, comp_value) -> Address | None:
+        check_list = list(range(start_offset + 1))
+        check_list.reverse()
+        for offset in check_list[:30]:
+            pointer_addr = PHAddr.map_obj_table + 4 * offset
+            pointer = await Address.from_pointer(pointer_addr, 3).read(ctx)
+            chest_content_addr = Address.from_pointer(pointer + check_offset * 4, 4)  # chest item is offset 9
+            if await chest_content_addr.read(ctx) == comp_value:
+                return Address.from_pointer(pointer)
+        print(f"Could not find matching map object, probably restarted client in already loaded room.")
+        return None
+
     async def set_chest_contents(self, ctx):
         write_list = []
         for loc, data in self.locations_in_scene.items():
             model = ctx.slot_data.get("location_models", {}).get(str(data["id"]), 0x1E)
             chest_offset = data.get("chest_offset", None)
+            gift_addr: Address = data.get("gift_addr", None)
             if chest_offset is not None:
-                chest_offset = [chest_offset] if isinstance(chest_offset, int) else chest_offset
                 vanilla_item_model = self.item_data[data["vanilla_item"]].model
                 print(f"\tVanilla model {hex(vanilla_item_model)} offsets {chest_offset}")
-                for offset in chest_offset:
-                    pointer_addr = PHAddr.map_obj_table + 4*offset
-                    pointer = await Address.from_pointer(pointer_addr, 3).read(ctx)
-                    chest_content_addr = Address.from_pointer(pointer + 9*4, 1)  # chest item is offset 9
-                    if len(chest_offset) > 1:
-                        if await chest_content_addr.read(ctx) == vanilla_item_model:
-                            write_list.append(chest_content_addr.get_inner_write_list(model))
-                            print(f"Writing {model} to addr {chest_content_addr} for loc {loc}")
-                            break
-                    else:
-                        write_list.append(chest_content_addr.get_inner_write_list(model))
-                        print(f"Writing {model} to addr {chest_content_addr} for loc {loc}")
+                chest_obj = await self.find_map_object(ctx, chest_offset, 9, model)
+                if chest_obj:
+                    chest_content_addr = Address.from_pointer(chest_obj + 9 * 4, 1)
+                    write_list.append(chest_content_addr.get_inner_write_list(model))
+                    print(f"Writing {model} to addr {chest_content_addr} for loc {loc}")
+                else:
+                    logger.info(f"Could not find chests for item swapping, probably restarted client in already loaded room.")
+
+            if gift_addr is not None:
+                write_list.append(gift_addr.get_inner_write_list(model))
         await bizhawk.write(ctx.bizhawk_ctx, write_list)

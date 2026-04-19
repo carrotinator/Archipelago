@@ -139,8 +139,6 @@ class PHAddr:
     adv_flags_50 = Address(0x1b55ae)
     adv_flags_51 = Address(0x1b55af)
     
-    
-    
     small_key_storage_1 = Address(0x1BA64E)
     small_key_storage_2 = Address(0x1BA64F)
     custom_storage = Address(0x1BA661)

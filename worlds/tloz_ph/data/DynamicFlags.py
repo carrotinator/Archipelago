@@ -688,8 +688,8 @@ DYNAMIC_FLAGS = {
         "on_scenes": [0x100A],
         "not_has_locations": ["Goron Chief Post Dungeon Item"],
         "has_locations": ["Dongorongo Boss Reward", "Goron Chief Goron Quiz"],
-        "set_if_true": [(PHAddr.flags_metals, 0x40)],
-        "reset_flags": ["RESET remove Crimzonine"]
+        "set_if_true": [(PHAddr.flags_metals, 0x40), (PHAddr.adv_flags_18, 0x8)],
+        "reset_flags": ["RESET remove Crimzonine", "RESET goron chief gongoron"]
     },
     "Goron Island Crimzonine": {
         "on_scenes": [0x1002, 0x1003],
@@ -709,6 +709,10 @@ DYNAMIC_FLAGS = {
     "RESET Beat goron temple goron chief": {
         # "on_scenes": [0x1003],
         "set_if_true": [(PHAddr.adv_flags_23, 0x2)]
+    },
+    "RESET goron chief gongoron": {
+        "not_has_locations": ["Goron Temple B1 Kill Eyeslugs Chest"],
+        "unset_if_true": [(PHAddr.adv_flags_18, 0x8)]
     },
     "Play goron game on dee ess after temple": {
         "on_scenes": [0x1B00],

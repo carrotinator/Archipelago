@@ -29,6 +29,7 @@ async def receive_boss_key(client: "PhantomHourglassClient", ctx: "BizHawkClient
         last_value = await data["address"].read(ctx)
         new_value = last_value | data["value"]
         res += data["address"].get_write_list(new_value)
+        await client.open_boss_door(ctx)
     return res
 
 async def receive_potion(client: "PhantomHourglassClient", ctx: "BizHawkClientContext", item: "PHItem", _):
