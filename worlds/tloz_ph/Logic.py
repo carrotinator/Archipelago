@@ -300,6 +300,9 @@ def make_overworld_logic():
         # 3F
         ["ToF 3F", "ToF 3F Key Drop", False, "tof_key_drop"],
         ["ToF 3F", "ToF 3F Key Door", False, "tof_3f_key_door"],
+        ["ToF 3F", "ToF 3F OOB", False, "grapple_glitch"],
+            ["ToF 3F OOB", "ToF 3F Boss Key", False, None],
+            ["ToF 3F OOB", "ToF 4F", False, None],
         ["ToF 3F Key Door", "ToF 3F Boss Key", False, "boomerang"],
         ["ToF 3F Key Door", "ToF 4F", True, "tof_bk"],
         ["ToF 4F", "Blaaz", True, None],

@@ -1103,8 +1103,8 @@ LOCATIONS_DATA = {
         "item_override": "Cannon",
         "stage_id": 0x13,
         "floor_id": 0xb,
-        "address": PHAddr.inventory_6,
-        "value": 0x2,
+        "address": PHAddr.adv_flags_6,
+        "value": 0x1,
         "id": 85,
         "hint_entrance": ["Eddo's Exit", "Eddo's Interior Door"],
         "hint_entrance_secondary": ["Cannon Bomb Garden Cave", "Cannon Bee Cave", "Cannon Board Ship"],
@@ -2101,7 +2101,8 @@ LOCATIONS_DATA = {
         "z_max": -0x61a8,
         "sram_addr": PHSRAM.bannan,
         "sram_value": 0x4,
-        "delay_pickup": ["Bannan Island East Grapple Dig", "Bannan Island East Grapple Chest West"],
+        # "delay_pickup": ["Bannan Island East Grapple Dig", "Bannan Island East Grapple Chest West"],
+        "read_object": True,  # this is the new delay pickup for chests
         "id": 166,
         "hint_entrance": "Bannan East Cave",
         "hint_entrance_secondary": ["Bannan West Hut", "Bannan West Board Ship"],
@@ -2117,7 +2118,8 @@ LOCATIONS_DATA = {
         "z_max": -0x61a8,
         "sram_addr": PHSRAM.bannan,
         "sram_value": 0x2,
-        "delay_pickup": ["Bannan Island East Grapple Dig", "Bannan Island East Grapple Chest East"],
+        # "delay_pickup": ["Bannan Island East Grapple Dig", "Bannan Island East Grapple Chest East"],
+        "read_object": True,
         "id": 167,
         "hint_entrance": "Bannan East Cave",
         "hint_entrance_secondary": ["Bannan West Hut", "Bannan West Board Ship"],
@@ -2132,6 +2134,8 @@ LOCATIONS_DATA = {
         "x_max": 0x186a0,
         "z_max": -0x61a8,
         "id": 168,
+        "address": PHAddr.treasure_maps_2,
+        "value": 0x8,
         "hint_entrance": "Bannan East Cave",
         "hint_entrance_secondary": ["Bannan West Hut", "Bannan West Board Ship"],
     },
@@ -2283,7 +2287,8 @@ LOCATIONS_DATA = {
         "delay_pickup": "Ghost Ship B2 Third Sister Left Chest",
         "id": 180,
         "hint_entrance": ["GS Exit", "Ghost Ship Cubus Sisters Reunion"],
-        "chest_offset": 43
+        "chest_offset": 43,
+        "read_object": True,
     },
     "Ghost Ship B2 Third Sister Left Chest": {
         "region_id": "Ghost Ship B2 Chests",
@@ -2297,7 +2302,8 @@ LOCATIONS_DATA = {
         "delay_pickup": "Ghost Ship B2 Third Sister Right Chest",
         "id": 181,
         "hint_entrance": ["GS Exit", "Ghost Ship Cubus Sisters Reunion"],
-        "chest_offset": 14
+        "chest_offset": 14,
+        "read_object": True,
     },
     "Ghost Ship B2 Spike Chest": {
         "region_id": "Ghost Ship B2 Chests",
@@ -2481,7 +2487,7 @@ LOCATIONS_DATA = {
         "dungeon": "Goron Temple",
         "id": 197,
         "hint_entrance": ["GT Exit", "GT Enter Boss"],
-        "chest_offset": 13
+        "chest_offset": 18
 
     },
     "Goron Temple 1F Bow Chest": {
@@ -2824,7 +2830,8 @@ LOCATIONS_DATA = {
         "sram_addr": PHSRAM.frost,
         "sram_value": 0x2,
         "id": 225,
-        "chest_offset": 8
+        "chest_offset": 8,
+        "read_object": True,
     },
     "Isle of Frost SE South Ledge East Chest": {
         "region_id": "Frost SE Upper Chests",
@@ -2835,7 +2842,8 @@ LOCATIONS_DATA = {
         "sram_addr": PHSRAM.frost,
         "sram_value": 0x4,
         "id": 226,
-        "chest_offset": 9
+        "chest_offset": 9,
+        "read_object": True,
     },
     "Isle of Frost SE Corner Chest": {
         "region_id": "Frost SE Upper Chests",
@@ -3032,7 +3040,8 @@ LOCATIONS_DATA = {
         "id": 243,
         "hint_entrance": "Rupoor Cave Exit",
         "hint_entrance_secondary": ["IotD Board Ship", "IotD Pyramid"],
-        "chest_offset": 3
+        "chest_offset": 3,
+        "read_object": True,
     },
     "Rupoor Cave 4": {
         "region_id": "Rupoor Cave",
@@ -3047,7 +3056,8 @@ LOCATIONS_DATA = {
         "id": 244,
         "hint_entrance": "Rupoor Cave Exit",
         "hint_entrance_secondary": ["IotD Board Ship", "IotD Pyramid"],
-        "chest_offset": 4
+        "chest_offset": 4,
+        "read_object": True,
     },
     "Rupoor Cave 2": {
         "region_id": "Rupoor Cave",
@@ -3062,7 +3072,8 @@ LOCATIONS_DATA = {
         "id": 245,
         "hint_entrance": "Rupoor Cave Exit",
         "hint_entrance_secondary": ["IotD Board Ship", "IotD Pyramid"],
-        "chest_offset": 2
+        "chest_offset": 2,
+        "read_object": True,
     },
     "Rupoor Cave 3": {
         "region_id": "Rupoor Cave",
@@ -3077,7 +3088,8 @@ LOCATIONS_DATA = {
         "id": 246,
         "hint_entrance": "Rupoor Cave Exit",
         "hint_entrance_secondary": ["IotD Board Ship", "IotD Pyramid"],
-        "chest_offset": 1
+        "chest_offset": 1,
+        "read_object": True,
     },
     "Stone Treasure Cave Chest": {
         "region_id": "Stone Treasure Cave",

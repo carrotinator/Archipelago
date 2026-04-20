@@ -827,6 +827,7 @@ class PhantomHourglassClient(DSZeldaClient):
         if "chest_offset" in location or "gift_addr" in location:
             self.last_vanilla_item.pop()
             model = ctx.slot_data.get("location_models", {}).get(str(location["id"]), 0x1E)
+            print(f"Got swapped item model as vanilla item {hex(model)}: {model_resets.get(model)}")
             if model_resets.get(model):
                 print(f"\tResetting model: {model_resets[model]}")
                 self.last_vanilla_item.append(model_resets[model])
@@ -1443,20 +1444,31 @@ class PhantomHourglassClient(DSZeldaClient):
     async def find_map_object(ctx: "BizHawkClientContext", start_offset: int,
                               check_offset: int, comp_value: int | list,
                               size=4, return_index=False) -> Address | tuple[Address, int] | None:
+
+        async def check_multi(l) -> tuple[Address | None, int]:
+            read_list = [Address.from_pointer(PHAddr.map_obj_table + 4 * (offset-_i), size=3) for _i in range(l)]
+            objects = (await read_multiple(ctx, read_list)).values()
+            checks = await read_multiple(ctx, [Address.from_pointer(a+check_offset*4, size=size) for a in objects])
+            _i = 0
+            print(f"\tobjects: {objects}")
+            print(f"\tchecks: {checks}")
+            for _i, check in enumerate(zip(objects, checks.values())):
+                o, c = check
+                print(f"\t\tcomparing: {c} == {comp_value}")
+                if (isinstance(comp_value, list) and c in comp_value) or c == comp_value:
+                    return Address.from_pointer(o, size=3), _i
+            return None, _i
+
         check_list = list(range(start_offset + 1))
         check_list.reverse()
-        for offset in check_list[:30]:
-            pointer_addr = PHAddr.map_obj_table + 4 * offset
-            pointer = await Address.from_pointer(pointer_addr, 3).read(ctx)
-            comp_addr = Address.from_pointer(pointer + check_offset * 4, size)  # chest item is offset 9
-            comp_read = await comp_addr.read(ctx)
-            # print(f"comp read: {comp_read} == {comp_value}")
-            if (isinstance(comp_value, list) and comp_read in comp_value) or comp_read == comp_value:
-                if return_index:
-                    return Address.from_pointer(pointer, size=4), offset
-                return Address.from_pointer(pointer, size=4)
+        batch_size = 8
+        for chunk, offset in enumerate(check_list[:35:batch_size]):
+            remaining = min(len(check_list[chunk*batch_size:]), batch_size)
+            ret, chunk_index = await check_multi(remaining)
+            if ret:
+                return (ret, offset - chunk_index) if return_index else ret
         print(f"Could not find matching map object, probably restarted client in already loaded room.")
-        return None
+        return (None, 0) if return_index else None
 
     async def set_chest_contents(self, ctx):
         write_list = []
@@ -1464,7 +1476,14 @@ class PhantomHourglassClient(DSZeldaClient):
             model = ctx.slot_data.get("location_models", {}).get(str(data["id"]), 0x1E)
             chest_offset = data.get("chest_offset", None)
             gift_addr = data.get("gift_addr", None)
-            if chest_offset is not None:
+
+            if gift_addr is not None:
+                gift_addr: list[Address] = gift_addr if isinstance(gift_addr, list) else [gift_addr]
+                for addr in gift_addr:
+                    print(f"\tSetting read item model: {loc} {hex(model)}")
+                    write_list.append(addr.get_inner_write_list(model))
+
+            elif chest_offset is not None:
                 vanilla_item_model = self.item_data[data["vanilla_item"]].vanilla_model
                 print(f"\tVanilla model {vanilla_item_model} offsets {chest_offset}")
                 chest_obj = await self.find_map_object(ctx, chest_offset, 9, vanilla_item_model, size=1)
@@ -1475,9 +1494,16 @@ class PhantomHourglassClient(DSZeldaClient):
                 else:
                     logger.info(f"Could not find chests for item swapping, probably restarted client in already loaded room.")
 
-            if gift_addr is not None:
-                gift_addr: list[Address] = gift_addr if isinstance(gift_addr, list) else [gift_addr]
-                for addr in gift_addr:
-                    print(f"\tSetting read item model: {loc} {hex(model)}")
-                    write_list.append(addr.get_inner_write_list(model))
         await bizhawk.write(ctx.bizhawk_ctx, write_list)
+
+    async def get_object_read_addr(self, ctx, location) -> Address | None:
+        vanilla_item_model = self.item_data[location["vanilla_item"]].vanilla_model
+        chest_object = await self.find_map_object(ctx, location["chest_offset"], 9, vanilla_item_model, size=1)
+        LOCATIONS_DATA[location['name']] |= {
+            "value": 0x29,  # read for open chest
+            "exact_read": True,
+            "gift_addr": Address.from_pointer(chest_object+4*9)  # saves refinding object for model swaps
+        }
+        return Address.from_pointer(chest_object+4)
+
+

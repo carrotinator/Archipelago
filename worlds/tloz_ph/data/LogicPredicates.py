@@ -1606,11 +1606,19 @@ def ph_goron_south_reverse(state, player):
     ])
 
 def ph_goron_entrance(state, player):
-    return all([
-        ph_has_shovel(state, player),
-        any([
-            ph_has_explosives(state, player),
-            ph_has_hammer(state, player)
+    return any([
+        all([
+            ph_has_shovel(state, player),
+            any([
+                ph_has_explosives(state, player),
+                ph_has_hammer(state, player),
+            ])
+        ]),
+        all([
+            ph_option_glitched_logic(state, player),
+            ph_has_bow(state, player),
+            ph_has_grapple(state, player),
+            ph_has_chus(state, player)
         ])
     ])
 

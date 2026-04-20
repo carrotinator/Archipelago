@@ -370,6 +370,8 @@ ITEMS_DATA = {
         "value": "pack_size",
         "tags": ["monotone_incremental"],
         "id": 35,
+        "model": 0x2D,
+        "ghost_model": True
     },
     "Wisdom Gem Pack": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -377,6 +379,8 @@ ITEMS_DATA = {
         "value": "pack_size",
         "tags": ["monotone_incremental"],
         "id": 36,
+        "model": 0x2E,
+        "ghost_model": True
     },
     "Courage Gem Pack": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -384,6 +388,8 @@ ITEMS_DATA = {
         "value": "pack_size",
         "tags": ["monotone_incremental"],
         "id": 37,
+        "model": 0x2F,
+        "ghost_model": True
     },
 
     # Rupees and filler
@@ -517,6 +523,7 @@ ITEMS_DATA = {
         "refill": "Bombs (Progressive)",
         "id": 54,
         "model": 0x7,
+        "reset_model": True
     },
     "Refill: Arrows": {
         "classification": ItemClassification.filler,
@@ -525,6 +532,7 @@ ITEMS_DATA = {
         "refill": "Bow (Progressive)",
         "id": 55,
         "model": 0x8,
+        "reset_model": True
     },
     "Refill: Bombchus": {
         "classification": ItemClassification.filler,
@@ -532,7 +540,8 @@ ITEMS_DATA = {
         "address": PHAddr.chu_count,
         "refill": "Bombchus (Progressive)",
         "id": 56,
-        "model": 0xE
+        "model": 0xE,
+        "reset_model": True
     },
     "Salvage Repair Kit": {
         "classification": ItemClassification.filler,
@@ -1244,151 +1253,211 @@ ITEMS_DATA = {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 127,
+        "model": 0x74,
+        "reset_model": True
     },
     "Additional Rare Metal": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 128,
+        "model": 0x74,
+        "reset_model": True
     },
     "Verdanine": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 129,
+        "model": 0x74,
+        "reset_model": True
     },
     "Lavendine": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 130,
+        "model": 0x73,
+        "reset_model": True
     },
     "Amberine": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 131,
+        "model": 0x72,
+        "reset_model": True
     },
     "Vermilline": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 132,
+        "model": 0x72,
+        "reset_model": True
     },
     "Burgundine": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 133,
+        "model": 0x72,
+        "reset_model": True
     },
     "Crystaline": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 134,
+        "model": 0x73,
+        "reset_model": True
     },
     "Carrotine": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 135,
+        "model": 0x72,
+        "reset_model": True
     },
     "Olivine": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 136,
+        "model": 0x74,
+        "reset_model": True
     },
     "Chartreusine": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 137,
+        "model": 0x74,
+        "reset_model": True
     },
     "Violetine": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 138,
+        "model": 0x73,
+        "reset_model": True
     },
     "Ceruline": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 139,
+        "model": 0x73,
+        "reset_model": True
     },
     "Fuchsianine": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 140,
+        "model": 0x72,
+        "reset_model": True
     },
-    "Saffrine": {
+    "Saffrine": {  # oops duplicate
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 141,
+        "model": 0x72,
+        "reset_model": True
     },
     "Sepianine": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 142,
+        "model": 0x72,
+        "reset_model": True
     },
     "Apricotine": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 143,
+        "model": 0x72,
+        "reset_model": True
     },
     "Scarletine": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 144,
+        "model": 0x72,
+        "reset_model": True
     },
     "Coraline": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 145,
+        "model": 0x72,
+        "reset_model": True
     },
     "Magentine": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 146,
+        "model": 0x72,
+        "reset_model": True
     },
     "Cyanine": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 147,
+        "model": 0x73,
+        "reset_model": True
     },
     "Mauvine": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 148,
+        "model": 0x73,
+        "reset_model": True
     },
     "Indigorine": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 149,
+        "model": 0x73,
+        "reset_model": True
     },
     "Junipine": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 150,
+        "model": 0x72,
+        "reset_model": True
     },
     "Viridine": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 151,
+        "model": 0x74,
+        "reset_model": True
     },
     "Limeinine": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 152,
+        "model": 0x74,
+        "reset_model": True
     },
     "Mintine": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 153,
+        "model": 0x74,
+        "reset_model": True
     },
     "Umberine": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 154,
+        "model": 0x74,
+        "reset_model": True
     },
     "Lilacine": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 155,
+        "model": 0x73,
+        "reset_model": True
     },
     "Saffronine": {
         "classification": ItemClassification.progression,
         "dummy": True,
         "id": 156,
+        "model": 0x72,
+        "reset_model": True
     },
 
     # Trade Quest
