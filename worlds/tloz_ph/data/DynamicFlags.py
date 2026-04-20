@@ -1302,12 +1302,14 @@ DYNAMIC_FLAGS = {
     },
     "Ember respawn blaaz": {
         "on_scenes": [0x2B00],
+        "on_entrance": [0],
         "not_has_locations": ["Blaaz Boss Reward"],
         "unset_if_true": [(PHAddr.flags_bosses_0, 0x20)],
     },
     "Molida respawn crayk": {
         "on_scenes": [0x2C00],
         "not_has_locations": ["Crayk Boss Reward"],
+        "on_entrance": [0],
         "unset_if_true": [(PHAddr.flags_bosses_0, 0x80)],
     },
     # Regal necklace backup removal

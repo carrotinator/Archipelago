@@ -270,7 +270,7 @@ LOCATIONS_DATA = {
         "delay_reset": True,
         "id": 21,
         "hint_entrance": ["Mercay Shop Exit", "Molida Shop Exit", "Goron Shop Exit"],
-        "gift_addr": Address(0x26e324)
+        "gift_addr": "island_shop"
     },
     "Island Shop Quiver": {
         "region_id": "Island Shop Quiver",
@@ -284,7 +284,7 @@ LOCATIONS_DATA = {
         "delay_reset": True,
         "id": 22,
         "hint_entrance": ["Mercay Shop Exit", "Molida Shop Exit", "Goron Shop Exit"],
-        "gift_addr": Address(0x26e324)
+        "gift_addr": "island_shop"
     },
     "Island Shop Bombchu Bag": {
         "region_id": "Island Shop Bombchu Bag",
@@ -298,7 +298,7 @@ LOCATIONS_DATA = {
         "delay_reset": True,
         "id": 23,
         "hint_entrance": ["Mercay Shop Exit", "Molida Shop Exit", "Goron Shop Exit"],
-        "gift_addr": Address(0x26e324)
+        "gift_addr": "island_shop"
     },
     "Island Shop Heart Container": {
         "region_id": "Island Shop Heart Container",
@@ -2336,7 +2336,7 @@ LOCATIONS_DATA = {
         "dungeon": "Ghost Ship",
         "id": 183,
         "hint_entrance": ["GS Exit", "Ghost Ship Cubus Sisters Reunion"],
-        "chest_offset": 1
+        "chest_offset": 5
     },
     "Cubus Sisters Ghost Key": {
         "region_id": "Post Cubus Sisters",
@@ -2415,8 +2415,9 @@ LOCATIONS_DATA = {
         "stage_id": 0x10,
         "floor_id": 0x2,
         "vanilla_item": "Treasure Map #16 (Goron NE)",
-        # "address": PHAddr.treasure_maps_2,
-        # "value": 0x10,
+        "address": PHAddr.adv_flags_34,
+        "delay_reset": True,
+        "value": 0x20,
         "x_min": -60000,
         "z_max": 45000,
         "id": 190,
@@ -2446,7 +2447,7 @@ LOCATIONS_DATA = {
         "value": 0x10,
         "id": 192,
         "hint_entrance": "Goron Chief House Exit",
-        "gift_addr": Address(0x212860)
+        "gift_addr": Address(0x2133a4)
     },
     "Goron Island NE Bombchu Switch Chest": {
         "region_id": "Goron NE Chu Chest",
@@ -3444,7 +3445,8 @@ LOCATIONS_DATA = {
         "id": 273,
         "hint_entrance": "Maze Board Ship",
         "chest_offset": 33,
-        "reload_chests": (PHAddr.link_z, 0xc350, "gt")
+        "reload_chests": (PHAddr.link_z, 0xc350, "gt"),
+        "delay_reset": True
     },
     "Maze Island Normal": {
         "region_id": "Maze Island Minigame Normal",
@@ -3457,7 +3459,8 @@ LOCATIONS_DATA = {
         "id": 274,
         "hint_entrance": "Maze Board Ship",
         "chest_offset": 34,
-        "reload_chests": (PHAddr.link_z, 0xc350, "gt")
+        "reload_chests": (PHAddr.link_z, 0xc350, "gt"),
+        "delay_reset": True
     },
     "Maze Island Expert": {
         "region_id": "Maze Island Minigame Expert",
@@ -3470,7 +3473,8 @@ LOCATIONS_DATA = {
         "id": 275,
         "hint_entrance": "Maze Board Ship",
         "chest_offset": 35,
-        "reload_chests": (PHAddr.link_z, 0xc350, "gt")
+        "reload_chests": (PHAddr.link_z, 0xc350, "gt"),
+        "delay_reset": True
     },
     "Maze Island Bonus Reward": {
         "region_id": "Maze Island Minigame Expert",

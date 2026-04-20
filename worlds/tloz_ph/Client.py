@@ -461,7 +461,8 @@ class PhantomHourglassClient(DSZeldaClient):
         if self.chest_reload_watches:
             trigger_reload = False
             for addr, value, *comp in self.chest_reload_watches:
-                prev = await addr.read(ctx)
+                signed = addr in [PHAddr.link_x, PHAddr.link_y, PHAddr.link_z]
+                prev = await addr.read(ctx, signed=signed)
                 comp = "eq" if not comp else comp[0]
                 if any([
                     comp in ["gt"] and prev > value,
@@ -472,7 +473,11 @@ class PhantomHourglassClient(DSZeldaClient):
                     break
             if trigger_reload:
                 self.chest_reload_watches.clear()
+                print(f"Reloading chests!")
                 await self.set_chest_contents(ctx)
+        if self.is_dead and not self.chest_reload_watches:
+            self.chest_reload_watches.append((self.health_address, 0, "gt"))
+            print(f"Setting Chest reload for death: {self.chest_reload_watches}")
 
 
 
@@ -1012,7 +1017,7 @@ class PhantomHourglassClient(DSZeldaClient):
             if self.current_scene != self.goal_room:
                 return game_clear
             if self.current_scene == 0x3300 and not self.defeated_bellum:
-                if await PHAddr.defeated_bellum.read(ctx) == 1:
+                if await PHAddr.defeated_bellum.read(ctx, silent=True) == 1:
                     self.defeated_bellum = True
 
             game_clear = self.defeated_bellum  # finished game
@@ -1521,13 +1526,15 @@ class PhantomHourglassClient(DSZeldaClient):
             gift_addr = data.get("gift_addr", None)
 
             if gift_addr is not None:
+                # print("gift_addr", isinstance(gift_addr, str), gift_addr, loc)
                 if isinstance(gift_addr, str) and gift_addr == "island_shop":
                     # Shops are special
                     if set_shop:
                         continue
                     shop_lookup = {0xB: 0x26e324, 0xC: 0x263964, 0x10: 0x2692d4}
                     shop_addr = Address.from_pointer(shop_lookup[self.current_stage])
-                    vanilla_item = shop_addr.read(ctx)
+                    vanilla_item = await shop_addr.read(ctx, silent=True)
+                    print(f"Shop item lookup: {shop_addr} {vanilla_item} {shop_location_lookup.get(vanilla_item)}")
                     if shop_location_lookup.get(vanilla_item) == loc:
                         write_list.append(shop_addr.get_inner_write_list(model))
                         set_shop = True

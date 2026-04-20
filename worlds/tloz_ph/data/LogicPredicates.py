@@ -1184,6 +1184,14 @@ def ph_mercay_passage_rat(state, player):
 def ph_nyave_fight(state, player):
     return any([ph_has_cave_damage(state, player), ph_clever_pots(state, player)])
 
+def ph_gust_ledge(state, player):
+    return any([
+        ph_has_shovel(state, player),
+        all([
+            ph_can_grapple_glitch(state, player),
+            ph_has_chus(state, player)
+        ])
+    ])
 
 def ph_bannan_scroll(state, player):
     return all([
@@ -3159,5 +3167,6 @@ RULE_DICT = {
     "totok_b13_chest": ph_totok_b13_chest,
     "b13_door": ph_totok_b13_door,
     # State Rules
-    "has": ph_has
+    "has": ph_has,
+    "gust_ledge": ph_gust_ledge
 }

@@ -432,7 +432,7 @@ def make_overworld_logic():
         ["Gust South Cliffs", "Gust North Temple Road", True, None],
         ["Gust South Cliffs", "Gust North Above Temple", True, None],
         ["Gust North Above Temple", "Gust South NW", True, None],
-        ["Gust South NW", "Gust South NW Chest", False, "shovel"],
+        ["Gust South NW", "Gust South NW Chest", False, "gust_ledge"],
         ["Gust South NW", "Gust South NW Ledge", False, "shovel"],
         ["Gust South NW Ledge", "Gust South NW", False, None],
         ["Gust South NW Ledge", "Gust South NW Chest", False, "grapple"],
