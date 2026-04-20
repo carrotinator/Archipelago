@@ -1162,7 +1162,7 @@ def ph_mp3_back(state, player):
         all([
             any([
                 ph_option_vanilla_caves(state, player),
-                ph_option_keys_in_own_dungeon(state, player)
+                # ph_option_keys_in_own_dungeon(state, player) # Reverse mp 2f
             ]),
             ph_has_small_keys(state, player, "Mountain Passage", 2),
         ]),

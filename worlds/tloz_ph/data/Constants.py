@@ -1471,12 +1471,14 @@ BOSS_DOOR_DATA = {
     0x1F: {
         "name": "Temple of Ice",
         "address": PHAddr.toi_doors,
-        "value": 0x80
+        "value": 0x80,
+        "map_obj_comp": (1, 6, 32764)
     },
     0x21: {
         "name": "Mutoh's Temple",
         "address": PHAddr.mt_doors,
-        "value": 0x1
+        "value": 0x1,
+        "map_obj_comp": (1, 8, 4092)
     },
 }
 
@@ -2019,6 +2021,13 @@ model_resets = {
     0x78: "Sand of Hours (Small)",
     0x81: "Rupoor (-10)",
     0x82: "Big Rupoor (-50)",
+}
+
+shop_location_lookup = {
+    0x2d: "Island Shop Power Gem",
+    0x28: "Island Shop Quiver",
+    0x2a: "Island Shop Bombchu Bag",
+    0xa: "Island Shop Heart Container"
 }
 
 if __name__ == "__main__":

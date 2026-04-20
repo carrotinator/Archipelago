@@ -156,7 +156,7 @@ LOCATIONS_DATA = {
         "value": 0x2,
         "vanilla_item": "Treasure Map #9 (Cannon W)",
         "id": 13,
-        "gift_addr": Address(0x2165FC)
+        # "gift_addr": Address(0x2165FC)  # Need a better detection method for this...
     },
     "Shipyard Chest": {
         "region_id": "Shipyard",
@@ -178,7 +178,7 @@ LOCATIONS_DATA = {
         "delay_reset": True,
         "id": 15,
         "hint_entrance": "Oshus' Exit",
-        # "gift_addr": 0x2153FC  # Resets after getting phantom sword, annoying...
+        "gift_addr": 0x2153FC  # Resets after getting phantom sword, annoying...
     },
     "Oshus Phantom Sword": {
         "region_id": "Oshus Phantom Blade",
@@ -189,7 +189,8 @@ LOCATIONS_DATA = {
         "address": PHAddr.inventory_5,
         "value": 0x20,
         "id": 16,
-        "hint_entrance": "Oshus' Exit"
+        "hint_entrance": "Oshus' Exit",
+        "reload_chests": True
     },
 
     # ========== Mountain Passage ============
@@ -268,7 +269,8 @@ LOCATIONS_DATA = {
         "island_shop": True,
         "delay_reset": True,
         "id": 21,
-        "hint_entrance": ["Mercay Shop Exit", "Molida Shop Exit", "Goron Shop Exit"]
+        "hint_entrance": ["Mercay Shop Exit", "Molida Shop Exit", "Goron Shop Exit"],
+        "gift_addr": Address(0x26e324)
     },
     "Island Shop Quiver": {
         "region_id": "Island Shop Quiver",
@@ -281,7 +283,8 @@ LOCATIONS_DATA = {
         "island_shop": True,
         "delay_reset": True,
         "id": 22,
-        "hint_entrance": ["Mercay Shop Exit", "Molida Shop Exit", "Goron Shop Exit"]
+        "hint_entrance": ["Mercay Shop Exit", "Molida Shop Exit", "Goron Shop Exit"],
+        "gift_addr": Address(0x26e324)
     },
     "Island Shop Bombchu Bag": {
         "region_id": "Island Shop Bombchu Bag",
@@ -294,7 +297,8 @@ LOCATIONS_DATA = {
         "island_shop": True,
         "delay_reset": True,
         "id": 23,
-        "hint_entrance": ["Mercay Shop Exit", "Molida Shop Exit", "Goron Shop Exit"]
+        "hint_entrance": ["Mercay Shop Exit", "Molida Shop Exit", "Goron Shop Exit"],
+        "gift_addr": Address(0x26e324)
     },
     "Island Shop Heart Container": {
         "region_id": "Island Shop Heart Container",
@@ -306,7 +310,8 @@ LOCATIONS_DATA = {
         "value": 0x80,
         "island_shop": True,
         "id": 24,
-        "hint_entrance": ["Mercay Shop Exit", "Molida Shop Exit", "Goron Shop Exit"]
+        "hint_entrance": ["Mercay Shop Exit", "Molida Shop Exit", "Goron Shop Exit"],
+        "gift_addr": "island_shop"
     },
 
     # ========== Beedle ============
@@ -320,6 +325,7 @@ LOCATIONS_DATA = {
         "value": 0x4,
         "delay_reset": True,
         "id": 25,
+        "gift_addr": Address(0x266e7c)
     },
     "Beedle Shop Wisdom Gem": {
         "region_id": "Beedle Gem",
@@ -330,6 +336,7 @@ LOCATIONS_DATA = {
         "value": 0x20,
         "delay_reset": True,
         "id": 26,
+        "gift_addr": Address(0x2674fc)
     },
     "Masked Beedle Heart Container": {
         "region_id": "Masked Ship HC",
@@ -341,6 +348,7 @@ LOCATIONS_DATA = {
         "conditional": True,
         "delay_reset": True,
         "id": 27,
+        "gift_addr": Address(0x266e7c)
     },
     "Masked Beedle Courage Gem": {
         "region_id": "Masked Ship Gem",
@@ -352,6 +360,7 @@ LOCATIONS_DATA = {
         "conditional": True,
         "delay_reset": True,
         "id": 28,
+        "gift_addr": Address(0x2674fc)
     },
     "Beedle Membership Bronze": {
         "region_id": "Beedle Bronze Membership",
@@ -1272,6 +1281,7 @@ LOCATIONS_DATA = {
         "id": 99,
         "hint_entrance": "Blaaz Exit",
         "hint_entrance_secondary": "ToF Exit",
+        "chest_offset": 2
     },
     "Blaaz Boss Reward": {
         "region_id": "Post Blaaz",
@@ -1289,7 +1299,7 @@ LOCATIONS_DATA = {
                        "event_name": "EVENT: Defeat Blaaz"},
         "hint_entrance": "Blaaz Exit",
         "hint_entrance_secondary": "ToF Exit",
-        "chest_offset": 2
+        "reload_chests": True
     },
 
     # ========== Molida Island ============
@@ -1645,7 +1655,7 @@ LOCATIONS_DATA = {
         "do_special": {"event_type": "ut_connect",
                        "event_name": "EVENT: Defeat Crayk"},
         "hint_entrance": "Crayk Exit",
-        "hint_entrance_secondary": "ToC Exit",
+        "hint_entrance_secondary": "ToC Exit"
     },
     "Crayk Sand of Hours": {
         "region_id": "Post Crayk",
@@ -1659,6 +1669,7 @@ LOCATIONS_DATA = {
         "id": 130,
         "hint_entrance": "Crayk Exit",
         "hint_entrance_secondary": "ToC Exit",
+        "reload_chests": True
     },
     "Crayk Heart Container": {
         "region_id": "Post Crayk",
@@ -1952,6 +1963,7 @@ LOCATIONS_DATA = {
         "id": 156,
         "hint_entrance": "Cyclok Exit",
         "hint_entrance_secondary": "ToW Exit",
+        "reload_chests": True
     },
     "Cyclok Boss Reward": {
         "region_id": "Post Cyclok",
@@ -1968,7 +1980,7 @@ LOCATIONS_DATA = {
         "do_special": {"event_type": "ut_connect",
                        "event_name": "EVENT: Defeat Cyclok"},
         "hint_entrance": "Cyclok Exit",
-        "hint_entrance_secondary": "ToW Exit",
+        "hint_entrance_secondary": "ToW Exit"
     },
     "Cyclok Heart Container": {
         "region_id": "Post Cyclok",
@@ -2393,6 +2405,7 @@ LOCATIONS_DATA = {
         "value": 0x80,
         "post_dungeon": "Ghost Ship",
         "id": 189,
+        "gift_addr": Address(0x215dfc)
     },
 
     # ========== Goron Island ============
@@ -2402,8 +2415,10 @@ LOCATIONS_DATA = {
         "stage_id": 0x10,
         "floor_id": 0x2,
         "vanilla_item": "Treasure Map #16 (Goron NE)",
-        "address": PHAddr.treasure_maps_2,
-        "value": 0x10,
+        # "address": PHAddr.treasure_maps_2,
+        # "value": 0x10,
+        "x_min": -60000,
+        "z_max": 45000,
         "id": 190,
         "do_special": {"event_type": "ut_connect",
                        "event_name": "EVENT: Goron SW Kill Yellow Chus"},
@@ -2569,6 +2584,7 @@ LOCATIONS_DATA = {
         "id": 204,
         "hint_entrance": "Dongo Exit",
         "hint_entrance_secondary": "GT Exit",
+        "reload_chests": True
     },
     "Dongorongo Heart Container": {
         "region_id": "Post Dongorongo",
@@ -2593,7 +2609,7 @@ LOCATIONS_DATA = {
         "do_special": {"event_type": "ut_connect",
                        "event_name": "EVENT: Defeat Dongorongo"},
         "hint_entrance": "Dongo Exit",
-        "hint_entrance_secondary": "GT Exit",
+        "hint_entrance_secondary": "GT Exit"
     },
 
     # ========== Harrow Island ============
@@ -2987,6 +3003,7 @@ LOCATIONS_DATA = {
         "id": 239,
         "hint_entrance": "Gleeok Exit",
         "hint_entrance_secondary": "ToI Exit",
+        "reload_chests": True
     },
     "Gleeok Heart Container": {
         "region_id": "Post Gleeok",
@@ -3011,7 +3028,7 @@ LOCATIONS_DATA = {
         "do_special": {"event_type": "ut_connect",
                        "event_name": "EVENT: Defeat Gleeok"},
         "hint_entrance": "Gleeok Exit",
-        "hint_entrance_secondary": "ToI Exit",
+        "hint_entrance_secondary": "ToI Exit"
     },
 
     # ========== Ocean NE ============
@@ -3331,6 +3348,7 @@ LOCATIONS_DATA = {
         "id": 266,
         "hint_entrance": "Eox Exit",
         "hint_entrance_secondary": "MT Exit",
+        "reload_chests": True
     },
     "Eox Heart Container": {
         "region_id": "Post Eox",
@@ -3355,7 +3373,7 @@ LOCATIONS_DATA = {
         "do_special": {"event_type": "ut_connect",
                        "event_name": "EVENT: Defeat Eox"},
         "hint_entrance": "Eox Exit",
-        "hint_entrance_secondary": "MT Exit",
+        "hint_entrance_secondary": "MT Exit"
     },
 
     # ========== Maze Island ============
@@ -3425,7 +3443,8 @@ LOCATIONS_DATA = {
         "conditional": True,
         "id": 273,
         "hint_entrance": "Maze Board Ship",
-        "chest_offset": 33
+        "chest_offset": 33,
+        "reload_chests": (PHAddr.link_z, 0xc350, "gt")
     },
     "Maze Island Normal": {
         "region_id": "Maze Island Minigame Normal",
@@ -3437,7 +3456,8 @@ LOCATIONS_DATA = {
         "conditional": True,
         "id": 274,
         "hint_entrance": "Maze Board Ship",
-        "chest_offset": 34
+        "chest_offset": 34,
+        "reload_chests": (PHAddr.link_z, 0xc350, "gt")
     },
     "Maze Island Expert": {
         "region_id": "Maze Island Minigame Expert",
@@ -3449,7 +3469,8 @@ LOCATIONS_DATA = {
         "conditional": True,
         "id": 275,
         "hint_entrance": "Maze Board Ship",
-        "chest_offset": 35
+        "chest_offset": 35,
+        "reload_chests": (PHAddr.link_z, 0xc350, "gt")
     },
     "Maze Island Bonus Reward": {
         "region_id": "Maze Island Minigame Expert",

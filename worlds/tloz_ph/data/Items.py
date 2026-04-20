@@ -632,6 +632,8 @@ ITEMS_DATA = {
         "value": 0x4,
         "set_bit": [(PHAddr.treasure_maps_0, 0x1)],
         "id": 66,
+        "model": 0x2F,
+        "reset_model": True
     },
     "Treasure Map #1 (Molida SW)": {
         "classification": DEPRIORITIZED_FALLBACK,

@@ -273,6 +273,8 @@ class PHAddr:
 
     map_obj_table = Address(0x1B8968)  # size biig
 
+    defeated_bellum = Address(0x1b5774)
+
 class PHSRAM:
     # SRAM
     mercay_se_chests = SRAM(0x3c4)
