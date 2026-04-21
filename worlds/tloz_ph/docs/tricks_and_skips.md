@@ -2,7 +2,7 @@
 Thanks to the [glitches spreadsheet](https://docs.google.com/spreadsheets/d/18NCGJjt9wil1gnRB2rZO9DIv_5etKmRf0sAH66i5SVQ/edit?usp=sharing) for collecting everything relevant to the vanilla game!
 
 ## Mercay island
-- [Swordless/bombless Mountain Passage](https://www.youtube.com/watch?v=6_J14xLnVWM). Savewarping from the back entrance of Mountain Passage also works (Glitched Logic)
+- [Swordless/bombless Mountain Passage](https://www.youtube.com/watch?v=6_J14xLnVWM). Savewarping from the back entrance of Mountain Passage also works (Glitched Logic for savewarp, cucco jump is TAS difficulty)
 - [Mercay out of bounds](https://www.youtube.com/watch?v=IcyfYE68LUQ). (Glitched Logic)
 
 ## TotOK
@@ -46,6 +46,7 @@ calculating logic at all! Good luck!
 ## Temple of Fire
 - Hit 1F spin switch with things other than sword: bombs, chus and boomerang (Hard Logic)
 - [Rat key early](https://www.youtube.com/watch?v=OJ-CwmYvWrc) (really tricky to kill rat with just boomerang, doesn't effect logic if killed with hammer clip)
+- [3F Out of Bounds](https://youtu.be/Z1OuvLaDUEg) (Glitched Logic)
 
 ## Temple of Courage
 - 1F Hammer clip all the switches (Glitched Logic)
@@ -55,7 +56,12 @@ calculating logic at all! Good luck!
 - B1 Boomerang Skip with Spirit of Courage (Not Implemented)
 
 ## Nyave's Ship
-- Kill miblins with barrels (Hard Logic)
+- Kill miniblins with barrels (Hard Logic)
+
+## Isle of Gust
+- Gust South NW Chest without shovel
+  - from west entrance with grapple (Normal Logic)
+  - from east entrance with grapple and bombchu camera lock (Glitched Logic)
 
 ## Temple of Wind
 - [Boss key early](https://www.youtube.com/watch?v=16hl9_mOLds) (not implemented)
@@ -80,7 +86,7 @@ calculating logic at all! Good luck!
 ## Temple of Ice
 - 1F [Color Switch early](https://www.youtube.com/watch?v=na6olZJgE3M) (Hard Logic)
   - Can be done with just boomerang!
-- 3F Hit entrance switch with bomb held over head (All Settings)
+- 3F Hit entrance switch with bomb held over head (Normal Logic)
 - 3F hit boomerang switches with bow (Hard Logic)
 - 1F shortcut hammer clip (Glitched Logic)
 - B1 Hammer clip color switch (Glitched logic)
