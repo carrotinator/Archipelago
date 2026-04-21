@@ -178,7 +178,7 @@ LOCATIONS_DATA = {
         "delay_reset": True,
         "id": 15,
         "hint_entrance": "Oshus' Exit",
-        "gift_addr": 0x2153FC  # Resets after getting phantom sword, annoying...
+        "gift_addr": Address(0x2153FC)  # Resets after getting phantom sword, annoying...
     },
     "Oshus Phantom Sword": {
         "region_id": "Oshus Phantom Blade",
@@ -1455,7 +1455,8 @@ LOCATIONS_DATA = {
         "delay_reset": True,
         "conditional": True,
         "id": 113,
-        "hint_entrance": "Romanos' Exit"
+        "hint_entrance": "Romanos' Exit",
+        "gift_addr": Address(0x20b674)
     },
     "Archery Minigame 2000": {
         "region_id": "Archery Game",
@@ -1468,7 +1469,8 @@ LOCATIONS_DATA = {
         "delay_reset": True,
         "conditional": True,
         "id": 114,
-        "hint_entrance": "Romanos' Exit"
+        "hint_entrance": "Romanos' Exit",
+        "gift_addr": Address(0x20b684)
     },
 
     # ========== Temple of Courage ============
@@ -1665,7 +1667,7 @@ LOCATIONS_DATA = {
         "address": PHAddr.flags_bosses_0,
         "value": 0x80,
         "boss_room": "Temple of Courage",
-        "delay_reset": True,
+        # "delay_reset": True,
         "id": 130,
         "hint_entrance": "Crayk Exit",
         "hint_entrance_secondary": "ToC Exit",
@@ -1959,7 +1961,7 @@ LOCATIONS_DATA = {
         "address": PHAddr.flags_bosses_0,
         "value": 0x40,
         "boss_room": "Temple of Wind",
-        "delay_reset": True,
+        # "delay_reset": True,
         "id": 156,
         "hint_entrance": "Cyclok Exit",
         "hint_entrance_secondary": "ToW Exit",
@@ -2487,6 +2489,7 @@ LOCATIONS_DATA = {
         "address": PHAddr.adv_flags_23,
         "value": 0x2,
         "post_dungeon": "Goron Temple",
+        "delay_reset": True,
         "id": 196,
         "hint_entrance": "Goron Chief House Exit",
         "gift_addr": Address(0x213c9c)
@@ -2581,7 +2584,7 @@ LOCATIONS_DATA = {
         "address": PHAddr.adv_flags_31,
         "value": 0x4,
         "boss_room": "Goron Temple",
-        "delay_reset": True,
+        # "delay_reset": True,
         "id": 204,
         "hint_entrance": "Dongo Exit",
         "hint_entrance_secondary": "GT Exit",
@@ -3000,7 +3003,7 @@ LOCATIONS_DATA = {
         "address": PHAddr.adv_flags_31,
         "value": 0x8,
         "boss_room": "Temple of Ice",
-        "delay_reset": True,
+        # "delay_reset": True,
         "id": 239,
         "hint_entrance": "Gleeok Exit",
         "hint_entrance_secondary": "ToI Exit",
@@ -3345,7 +3348,7 @@ LOCATIONS_DATA = {
         "address": PHAddr.adv_flags_31,
         "value": 0x10,
         "boss_room": "Mutoh's Temple",
-        "delay_reset": True,
+        # "delay_reset": True,
         "id": 266,
         "hint_entrance": "Eox Exit",
         "hint_entrance_secondary": "MT Exit",

@@ -199,7 +199,7 @@ ITEMS_DATA = {
         "classification": DEPRIORITIZED_SKIP_BALANCING_FALLBACK,
         "address": PHAddr.phantom_hourglass_max,
         "value": 0x1c20,
-        "tags": ["incremental", "backup_filler"],
+        "tags": ["monotone_incremental", "backup_filler"],
         "size": 4,
         "id": 18,
         "model": 0x78,
@@ -209,7 +209,7 @@ ITEMS_DATA = {
         "classification": DEPRIORITIZED_SKIP_BALANCING_FALLBACK,
         "address": PHAddr.phantom_hourglass_max,
         "value": 0xe10,
-        "tags": ["incremental", "backup_filler"],
+        "tags": ["monotone_incremental", "backup_filler"],
         "size": 4,
         "id": 19,
         "model": 0x78,
@@ -1505,6 +1505,7 @@ ITEMS_DATA = {
         "id": 161,
         "model": 0x44,
         "ghost_model": True,
+        "blocked_scenes": [0x160A]
     },
 
     # Letters and cards

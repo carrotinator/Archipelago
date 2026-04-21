@@ -623,7 +623,7 @@ DYNAMIC_FLAGS = {
         "on_scenes": [0x1],
         "on_entrance": [5],
         "unset_if_true": [(PHAddr.flags_fog_spirits, 0x10)],
-        "set_if_true": [(PHAddr.flags_clear_fog, 0x80), (PHAddr.flags_fog_done, 0x10)]
+        "set_if_true": [(PHAddr.flags_clear_fog, 0x80), (PHAddr.flags_fog_done, 0x10), (PHAddr.adv_flags_12, 0x4)]
     },
     "Dungeon rando dummy spirit flag removal": {
         "on_scenes": [0x1],
@@ -833,11 +833,14 @@ DYNAMIC_FLAGS = {
     },
 
     # Zauz
+    "Zauz resets": {
+        "on_scenes": [0x160A],
+        "reset_flags": ["RESET Zauz remove phantom blade", "RESET add triforce crest"]
+    },
     "Zauz remove phantom blade": {
         "on_scenes": [0x160A],
         "not_has_locations": ["Zauz's House Phantom Blade"],
         "unset_if_true": [(PHAddr.adv_flags_22, 0x20)],
-        "reset_flags": ["RESET Zauz remove phantom blade"]
     },
     "RESET Zauz remove phantom blade": {
         # "on_scenes": [0x1600],
@@ -847,14 +850,12 @@ DYNAMIC_FLAGS = {
     "Zauz remove triforce crest": {
         "on_scenes": [0x160A],
         "not_has_locations": ["Ghost Ship Rescue Tetra"],
-        "unset_if_true": [(PHAddr.flags_fog_done, 0x10), (PHAddr.adv_flags_4, 2), (PHAddr.flags_clear_fog, 0x80)],
-        "reset_flags": ["RESET Zauz remove triforce crest"]
+        "unset_if_true": [(PHAddr.flags_fog_done, 0x10), (PHAddr.adv_flags_4, 2), (PHAddr.flags_clear_fog, 0x80)]
     },
     "Zauz add triforce crest": {
         "on_scenes": [0x160A],
         "has_locations": ["Ghost Ship Rescue Tetra"],
         "set_if_true": [(PHAddr.flags_fog_done, 0x10), (PHAddr.adv_flags_4, 2), (PHAddr.flags_clear_fog, 0x80)],
-        "reset_flags": ["RESET add triforce crest"]
     },
     "RESET Zauz remove triforce crest": {
         # "on_scenes": [0x1600],
@@ -946,7 +947,8 @@ DYNAMIC_FLAGS = {
     "Oshus Allow Sword Craft": {
         "on_scenes": [0xB0A],
         "has_items": [("Phantom Hourglass", 1), ("Phantom Blade", 1)],
-        "unset_if_true": [(PHAddr.adv_flags_22, 0x40)]
+        "unset_if_true": [(PHAddr.adv_flags_22, 0x40)],
+        "not_on_entrance": [0x2]
     },
     "Reset Oshus": {
         "on_scenes": [0xB0A],

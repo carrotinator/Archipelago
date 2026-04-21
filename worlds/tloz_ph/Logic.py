@@ -694,7 +694,7 @@ def make_overworld_logic():
         ["ToI B2 North", "ToI B2 BK Chest", False, "hammer_clip"],
         ["ToI B2 North", "ToI B2 East", False, None],
         ["ToI B2 East", "ToI B2 Bow", False, "bow"],
-        ["ToI B2 East", "ToI B2 East Arena", False, "toi_key_doors", 3, 3],
+        ["ToI B2 East", "ToI B2 East Arena", False, "toi_key_door_3"],
         ["ToI B2 East Arena", "ToI B2 BK Chest", False, None],
 
         # ================= NE Ocean ====================

@@ -562,7 +562,8 @@ class PhantomHourglassClient(DSZeldaClient):
             if await PHAddr.adv_flags_22.read(ctx) & 0x8:
                 await PHAddr.wayfarer_chest.set_bits(ctx, 0x80)
 
-        if current_scene in [0x1c02, 0x1d00]:
+        # Open boss door
+        if current_scene in BOSS_DOOR_DATA:
             await self.open_boss_door(ctx)
 
         # Open pedestal doors. sucks that you can't trigger it with dynaflags. slow code but game is slower
@@ -793,13 +794,13 @@ class PhantomHourglassClient(DSZeldaClient):
                   f"adr: {self.stage_flag_address}")
             await self.stage_flag_address.set_bits(ctx, flags)
 
-        # Unlock boss door if have bk
-        data = BOSS_DOOR_DATA.get(stage, False)
-        if data and ctx.slot_data.get("boss_key_behaviour", True) and self.item_count(ctx, f"Boss Key ({data['name']})"):
-            await data["address"].set_bits(ctx, data["value"])
+        # # Unlock boss door if have bk
+        # data = BOSS_DOOR_DATA.get(stage, False)
+        # if data and ctx.slot_data.get("boss_key_behaviour", True) and self.item_count(ctx, f"Boss Key ({data['name']})"):
+        #     await data["address"].set_bits(ctx, data["value"])
 
     async def open_boss_door(self, ctx):
-        data = BOSS_DOOR_DATA.get(self.current_stage, False)
+        data = BOSS_DOOR_DATA.get(self.current_scene, False)
         if data and ctx.slot_data.get("boss_key_behaviour", True) and self.item_count(ctx, f"Boss Key ({data['name']})"):
             boss_door = await self.find_map_object(ctx, *data["map_obj_comp"])
             if not boss_door:
@@ -852,13 +853,13 @@ class PhantomHourglassClient(DSZeldaClient):
                 self.last_vanilla_item.pop()
                 logger.info(f"Got farmable location")
 
-        if "chest_offset" in location or "gift_addr" in location:
-            self.last_vanilla_item.pop()
-            model = ctx.slot_data.get("location_models", {}).get(str(location["id"]), 0x1E)
-            print(f"Got swapped item model as vanilla item {hex(model)}: {model_resets.get(model)}")
-            if model_resets.get(model):
-                print(f"\tResetting model: {model_resets[model]}")
-                self.last_vanilla_item.append(model_resets[model])
+        # if "chest_offset" in location or "gift_addr" in location:
+        #     self.last_vanilla_item.pop()
+        #     model = ctx.slot_data.get("location_models", {}).get(str(location["id"]), 0x1E)
+        #     print(f"Got swapped item model as vanilla item {hex(model)}: {model_resets.get(model)}")
+        #     if model_resets.get(model):
+        #         print(f"\tResetting model: {model_resets[model]}")
+        #         self.last_vanilla_item.append(model_resets[model])
 
     async def receive_key_in_own_dungeon(self, ctx, item_name: str, write_keys_to_storage):
         # TotOK - adds to key increment if you get it in the dungeon, otherwise do as usual
@@ -1568,4 +1569,17 @@ class PhantomHourglassClient(DSZeldaClient):
         }
         return Address.from_pointer(chest_object+4)
 
+    async def _set_vanilla_item(self, ctx, location, vanilla_item: str | None = None):
+        if "chest_offset" in location or "gift_addr" in location:
+            model = ctx.slot_data.get("location_models", {}).get(str(location["id"]), 0x1E)
+            print(f"Got swapped item model as vanilla item {hex(model)}: {model_resets.get(model)}")
+            if model_resets.get(model):
+                print(f"\tResetting model: {model_resets[model]}")
+                self.last_vanilla_item.append(model_resets[model])
+            return
+        await super()._set_vanilla_item(ctx, location, vanilla_item)
 
+    async def process_in_game(self, ctx: "BizHawkClientContext", read_result: dict):
+        if read_result[PHAddr.in_cutscene] != 0xD8:
+            return
+        await super().process_in_game(ctx, read_result)

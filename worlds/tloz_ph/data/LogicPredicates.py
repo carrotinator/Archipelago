@@ -1449,7 +1449,7 @@ def ph_toc_key_door_2(state, player):
             ph_toc_key_doors(state, player, 3, 2),
             any([
                 ph_option_pedestals_vanilla_any(state, player),
-                not ph_has_shape_crystal(state, player, "Temple of Courage", "North")
+                # not ph_has_shape_crystal(state, player, "Temple of Courage", "North")
             ])
         ]),
         # UT stuff
@@ -1841,7 +1841,10 @@ def ph_toi_key_door_3(state, player):
         ph_toi_all_key_doors_ut(state, player),
         all([
             ph_UT_glitched_logic(state, player),
-            ph_has_small_keys(state, player, "Temple of Ice", 1)
+            ph_has_small_keys(state, player, "Temple of Ice", 1),
+            ph_has_hammer(state, player),
+            ph_has_grapple(state, player),
+            ph_has_explosives(state, player)
         ])
     ])
 

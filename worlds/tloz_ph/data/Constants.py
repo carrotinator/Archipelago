@@ -1444,41 +1444,41 @@ DUNGEON_KEY_DATA = {
 }
 
 BOSS_DOOR_DATA = {
-    0x1C: {
+    0x1C02: {
         "name": "Temple of Fire",
         "address": PHAddr.tof_doors,
         "value": 0x1,
         "map_obj_comp": (20, 8, 45052)  # starting offset, attr offest of comp, comp value
     },
-    0x1D: {
+    0x1D00: {
         "name": "Temple of Wind",
         "address": PHAddr.tow_doors,
         "value": 0x400,
         "map_obj_comp": (105, 8, 0xffff5ffc)
     },
-    0x1E: {
+    0x1E02: {
         "name": "Temple of Courage",
         "address": PHAddr.toc_boss_door,
         "value": 0x2,
         "map_obj_comp": (68, 8, 0xFFFFFFFC)
     },
-    0x20: {
+    0x2003: {
         "name": "Goron Temple",
         "address": PHAddr.gt_boss_door,
         "value": 0x1,
         "map_obj_comp": (3, 8, 0x7FFC)
     },
-    0x1F: {
+    0x1F02: {
         "name": "Temple of Ice",
         "address": PHAddr.toi_doors,
         "value": 0x80,
-        "map_obj_comp": (1, 6, 32764)
+        "map_obj_comp": (47, 6, 4092)
     },
-    0x21: {
+    0x2104: {
         "name": "Mutoh's Temple",
         "address": PHAddr.mt_doors,
         "value": 0x1,
-        "map_obj_comp": (1, 8, 4092)
+        "map_obj_comp": (1, 8, 32764)
     },
 }
 
@@ -1993,7 +1993,7 @@ map_type_lookup = {
 }
 
 model_resets = {
-    0x02: "Green Rupee (1)",
+    # 0x02: "Green Rupee (1)",
     0x04: "Shield",
     0x06: "Force Gem (B3)",
     0x07: "Bombs (Progressive)",
@@ -2002,10 +2002,10 @@ model_resets = {
     0x0A: "Heart Container",
     0x0E: "Bombchus (Progressive)",
     0x0F: "Boss Key (Temple of Fire)",
-    0x18: "Blue Rupee (5)",
-    0x19: "Red Rupee (20)",
-    0x1A: "Big Red Rupee (200)",
-    0x1B: "Gold Rupee (300)",
+    # 0x18: "Blue Rupee (5)",
+    # 0x19: "Red Rupee (20)",
+    # 0x1A: "Big Red Rupee (200)",
+    # 0x1B: "Gold Rupee (300)",
     0x21: "Square Crystals",
     0x22: "Round Crystals",
     0x23: "Triangle Crystals",
@@ -2019,8 +2019,8 @@ model_resets = {
     0x76: "Purple Potion",
     0x77: "Yellow Potion",
     0x78: "Sand of Hours (Small)",
-    0x81: "Rupoor (-10)",
-    0x82: "Big Rupoor (-50)",
+    # 0x81: "Rupoor (-10)",
+    # 0x82: "Big Rupoor (-50)",
 }
 
 shop_location_lookup = {
