@@ -242,6 +242,7 @@ ITEMS_DATA = {
         "id": 22,
         "model": 0x25,
         "ghost_model": True,
+        "blocked_scenes": [0x130B]
     },
     "Salvage Arm": {
         "classification": ItemClassification.progression,
@@ -250,6 +251,7 @@ ITEMS_DATA = {
         "id": 23,
         "model": 0x3D,
         "ghost_model": True,
+        "blocked_scenes": [0x130B]
     },
     "Fishing Rod": {
         "classification": ItemClassification.progression,
@@ -274,6 +276,7 @@ ITEMS_DATA = {
         "id": 26,
         "model": 0x80,
         "ghost_model": True,
+        "model_reset": True
     },
     "Cyclone Slate": {
         "classification": ItemClassification.progression,
@@ -709,6 +712,7 @@ ITEMS_DATA = {
         "id": 75,
         "hint_on_receive": ["Ocean SW Salvage #9 Cannon W"],
         "model": 0x4C,
+        "blocked_scenes": [0xb03]
     },
     "Treasure Map #10 (Gusts SE)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -748,7 +752,8 @@ ITEMS_DATA = {
         "value": 0x1,
         "id": 80,
         "hint_on_receive": ["Ocean SE Salvage #14 Goron NW"],
-        "model": 0x5b
+        "model": 0x5b,
+        "blocked_scenes": [0x1800]
     },
     "Treasure Map #15 (Goron W)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -756,7 +761,8 @@ ITEMS_DATA = {
         "value": 0x2,
         "id": 81,
         "hint_on_receive": ["Ocean SE Salvage #15 Goron W"],
-        "model": 0x5c
+        "model": 0x5c,
+        "blocked_scenes": [0x1800]
     },
     "Treasure Map #16 (Goron NE)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -813,7 +819,8 @@ ITEMS_DATA = {
         "value": 0x8,
         "id": 88,
         "hint_on_receive": ["Ocean SE Salvage #22 Harrow S"],
-        "model": 0x5e
+        "model": 0x5e,
+        "blocked_scenes": [0x1400]
     },
     "Treasure Map #23 (Frost NW)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -837,7 +844,8 @@ ITEMS_DATA = {
         "value": 0x4,
         "id": 91,
         "hint_on_receive": ["Ocean NE Salvage #25 Dead E"],
-        "model": 0x65
+        "model": 0x65,
+        "blocked_scenes": [0x1800]
     },
     "Treasure Map #26 (Ruins SW)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -845,7 +853,8 @@ ITEMS_DATA = {
         "value": 0x2,
         "id": 92,
         "hint_on_receive": ["Ocean NE Salvage #26 Ruins SW"],
-        "model": 0x64
+        "model": 0x64,
+        "blocked_scenes": [0x1800]
     },
     "Treasure Map #27 (Maze E)": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -1239,6 +1248,7 @@ ITEMS_DATA = {
         "value": 0x40,
         "id": 124,
         "model": 0x72,
+        "blocked_scenes": [0x100a]
     },
     "Azurine": {
         "classification": ItemClassification.progression,
@@ -1473,6 +1483,7 @@ ITEMS_DATA = {
         "id": 157,
         "model": 0x3e,
         "ghost_model": True,
+        "blocked_scenes": [0x600]
     },
     "Kaleidoscope": {
         "classification": ItemClassification.progression,
@@ -1481,6 +1492,7 @@ ITEMS_DATA = {
         "id": 158,
         "model": 0x3f,
         "ghost_model": True,
+        "blocked_scenes": [0x700]
     },
     "Guard Notebook": {
         "classification": ItemClassification.progression,
@@ -1489,6 +1501,7 @@ ITEMS_DATA = {
         "id": 159,
         "model": 0x40,
         "ghost_model": True,
+        "blocked_scenes": [0x900]
     },
     "Wood Heart": {
         "classification": ItemClassification.progression,
@@ -1497,6 +1510,7 @@ ITEMS_DATA = {
         "id": 160,
         "model": 0x43,
         "ghost_model": True,
+        "blocked_scenes": [0xa00]
     },
     "Phantom Blade": {
         "classification": ItemClassification.progression,
@@ -1699,6 +1713,7 @@ ITEMS_DATA = {
         "id": 183,
         "model": 0x80,
         "ghost_model": True,
+        "model_reset": True
     },
     "Fish: Toona": {
         "classification": ItemClassification.filler,
@@ -1709,6 +1724,7 @@ ITEMS_DATA = {
         "id": 184,
         "model": 0x80,
         "ghost_model": True,
+        "model_reset": True
     },
     "Fish: Loovar": {
         "classification": ItemClassification.progression_skip_balancing,
@@ -1719,6 +1735,7 @@ ITEMS_DATA = {
         "id": 185,
         "model": 0x80,
         "ghost_model": True,
+        "model_reset": True
     },
     "Fish: Rusty Swordfish": {
         "classification": ItemClassification.progression_skip_balancing,
@@ -1729,6 +1746,7 @@ ITEMS_DATA = {
         "id": 186,
         "model": 0x80,
         "ghost_model": True,
+        "model_reset": True
     },
     "Fish: Legendary Neptoona": {
         "classification": ItemClassification.progression_skip_balancing,
@@ -1739,6 +1757,7 @@ ITEMS_DATA = {
         "id": 187,
         "model": 0x80,
         "ghost_model": True,
+        "model_reset": True
     },
     "Fish: Stowfish": {
         "classification": ItemClassification.progression_skip_balancing,
@@ -1749,6 +1768,7 @@ ITEMS_DATA = {
         "id": 188,
         "model": 0x80,
         "ghost_model": True,
+        "model_reset": True
     },
     "_UT_Glitched_Logic": {
         "classification": ItemClassification.progression,

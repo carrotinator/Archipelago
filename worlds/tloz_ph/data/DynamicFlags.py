@@ -623,7 +623,8 @@ DYNAMIC_FLAGS = {
         "on_scenes": [0x1],
         "on_entrance": [5],
         "unset_if_true": [(PHAddr.flags_fog_spirits, 0x10)],
-        "set_if_true": [(PHAddr.flags_clear_fog, 0x80), (PHAddr.flags_fog_done, 0x10), (PHAddr.adv_flags_12, 0x4)]
+        "set_if_true": [(PHAddr.flags_clear_fog, 0x80), (PHAddr.flags_fog_done, 0x10),
+                        (PHAddr.adv_flags_12, 0x4)]  # Despawn jolene
     },
     "Dungeon rando dummy spirit flag removal": {
         "on_scenes": [0x1],
@@ -889,10 +890,14 @@ DYNAMIC_FLAGS = {
         "unset_if_true": [(PHAddr.adv_flags_3, 0x80)],
         "reset_flags": ["RESET Remove Jolene"]
     },
+    "Remove Jolene NW": {
+        "on_scenes": [0x1],
+        "unset_if_true": [(PHAddr.adv_flags_12, 0x4)],  # uses the "got caught already" flag
+    },
     "RESET Remove Jolene": {
         # "on_scenes": [0xC00],
         "has_locations": ["Crayk Boss Reward"],
-        "set_if_true": [(PHAddr.adv_flags_3, 0x80)]
+        "set_if_true": [(PHAddr.adv_flags_3, 0x80), ]
     },
     "Zauz has enough metals": {
         "on_scenes": [0x160A],

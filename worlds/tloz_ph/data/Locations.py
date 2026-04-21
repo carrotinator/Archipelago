@@ -2709,7 +2709,7 @@ LOCATIONS_DATA = {
         "conditional": True,
         "id": 213,
         "hint_entrance": "Dee Ess Board Ship",
-        "gift_addr": Address(0x20729c)
+        # "gift_addr": Address(0x20729c)
     },
     "Dee Ess Right Speakers Dig SE": {
         "region_id": "Dee Ess Dig",
@@ -2721,7 +2721,7 @@ LOCATIONS_DATA = {
         "conditional": True,
         "id": 214,
         "hint_entrance": "Dee Ess Board Ship",
-        "gift_addr": Address(0x20729c)
+        # "gift_addr": Address(0x20729c)
     },
     "Dee Ess Left Speakers Dig West": {
         "region_id": "Dee Ess Dig",

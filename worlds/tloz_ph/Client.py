@@ -563,8 +563,7 @@ class PhantomHourglassClient(DSZeldaClient):
                 await PHAddr.wayfarer_chest.set_bits(ctx, 0x80)
 
         # Open boss door
-        if current_scene in BOSS_DOOR_DATA:
-            await self.open_boss_door(ctx)
+        await self.open_boss_door(ctx)
 
         # Open pedestal doors. sucks that you can't trigger it with dynaflags. slow code but game is slower
         if ctx.slot_data.get("randomize_pedestal_items", 0) > 0:
@@ -920,6 +919,8 @@ class PhantomHourglassClient(DSZeldaClient):
         if item_name in ITEM_GROUPS["Metals"]:
             self.metal_count += 1
             await self.process_game_completion(ctx)
+        if "Boss Key" in item_name:
+            await self.open_boss_door(ctx)
 
         exclude_key = storage_key(ctx, ut_exclude_key)
         # Exclude forced vanilla items on not needing them any more
@@ -1469,7 +1470,7 @@ class PhantomHourglassClient(DSZeldaClient):
                 print(f"Handling Item: {item_name} ghost? {item_data.ghost_model} reset? {item_data.model_reset} last_vanilla: {self.last_vanilla_item}")
                 if (item_data.ghost_model or item_data.model is None) and self.current_scene not in getattr(item_data, "blocked_scenes", []):
                     write_list += await item_data.receive_item(self, ctx, num_received_items)
-                if self.last_vanilla_item and not item_data.model_reset:
+                if self.last_vanilla_item and not item_data.model_reset and item_data.vanilla_model[0] in model_resets:
                     self.last_vanilla_item.pop()
 
             else:
