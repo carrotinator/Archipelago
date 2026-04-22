@@ -558,6 +558,10 @@ class PhantomHourglassClient(DSZeldaClient):
         if current_scene in [0xB03]:
             await self.remove_ship_parts(ctx)
 
+        # Despawn jolene in NW quad
+        if self.current_scene == 1:
+            await PHAddr.adv_flags_12.set_bits(ctx, 0x4)
+
         if current_scene == 0x1401:  # Bannan chest needs to happen after load
             if await PHAddr.adv_flags_22.read(ctx) & 0x8:
                 await PHAddr.wayfarer_chest.set_bits(ctx, 0x80)
@@ -843,22 +847,6 @@ class PhantomHourglassClient(DSZeldaClient):
         # Don't remove heart containers if already at max
         if item == "Heart Container" and self.item_count(ctx, item) >= 13:
             self.last_vanilla_item.pop()
-
-        # Farmable locations don't remove vanilla
-        if "farmable" in location and location["id"] in ctx.checked_locations:
-            if item == "Ship Part":
-                await self.give_random_treasure(ctx)
-            else:
-                self.last_vanilla_item.pop()
-                logger.info(f"Got farmable location")
-
-        # if "chest_offset" in location or "gift_addr" in location:
-        #     self.last_vanilla_item.pop()
-        #     model = ctx.slot_data.get("location_models", {}).get(str(location["id"]), 0x1E)
-        #     print(f"Got swapped item model as vanilla item {hex(model)}: {model_resets.get(model)}")
-        #     if model_resets.get(model):
-        #         print(f"\tResetting model: {model_resets[model]}")
-        #         self.last_vanilla_item.append(model_resets[model])
 
     async def receive_key_in_own_dungeon(self, ctx, item_name: str, write_keys_to_storage):
         # TotOK - adds to key increment if you get it in the dungeon, otherwise do as usual
@@ -1291,7 +1279,6 @@ class PhantomHourglassClient(DSZeldaClient):
             print(f"Reloading Chests!")
             if reload_data is True:
                 self.chest_reload_watches.append((PHAddr.in_cutscene, 0xd8, "eq"))
-                # await self.set_chest_contents(ctx)
             elif isinstance(reload_data, tuple):
                 self.chest_reload_watches.append(reload_data)
 
@@ -1499,8 +1486,8 @@ class PhantomHourglassClient(DSZeldaClient):
             objects = (await read_multiple(ctx, read_list)).values()
             checks = await read_multiple(ctx, [Address.from_pointer(a+check_offset*4, size=size) for a in objects])
             _i = 0
-            print(f"\tobjects: {objects}")
-            print(f"\tchecks: {checks}")
+            # print(f"\tobjects: {objects}")
+            # print(f"\tchecks: {checks}")
             for _i, check in enumerate(zip(objects, checks.values())):
                 o, c = check
                 print(f"\t\tcomparing: {c} == {comp_value}")
@@ -1548,6 +1535,9 @@ class PhantomHourglassClient(DSZeldaClient):
                     write_list.append(addr.get_inner_write_list(model))
 
             elif chest_offset is not None:
+                # Farmable locations set treasure
+                if "farmable" in data and data["id"] in ctx.checked_locations:
+                    model = 0x7D
                 vanilla_item_model = self.item_data[data["vanilla_item"]].vanilla_model
                 print(f"\tVanilla model {vanilla_item_model} offsets {chest_offset}")
                 chest_obj = await self.find_map_object(ctx, chest_offset, 9, vanilla_item_model, size=1)
@@ -1556,7 +1546,7 @@ class PhantomHourglassClient(DSZeldaClient):
                     write_list.append(chest_content_addr.get_inner_write_list(model))
                     print(f"Writing {model} to addr {chest_content_addr} for loc {loc}")
                 else:
-                    logger.info(f"Could not find chests for item swapping, probably restarted client in already loaded room.")
+                    print(f"Could not find chests for item swapping, probably restarted client in already loaded room.")
 
         await bizhawk.write(ctx.bizhawk_ctx, write_list)
 

@@ -1653,7 +1653,15 @@ def ph_gt_b1(state, player):
     return all([
         ph_has_explosives(state, player),
         ph_can_kill_eye_brute(state, player),
-        ph_has_sword(state, player)])
+        any([
+            ph_has_sword(state, player),
+            all([
+                ph_can_grapple_glitch(state, player),
+                ph_has_chus(state, player)
+            ])
+        ])
+
+    ])
 
 def ph_gt_b2_back(state, player):
     return any([

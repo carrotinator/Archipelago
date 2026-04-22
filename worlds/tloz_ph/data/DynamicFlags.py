@@ -892,6 +892,10 @@ DYNAMIC_FLAGS = {
     },
     "Remove Jolene NW": {
         "on_scenes": [0x1],
+        "set_if_true": [(PHAddr.adv_flags_12, 0x4)],  # uses the "got caught already" flag
+    },
+    "Remove Jolene in Ship": {
+        "on_scenes": [0x400],
         "unset_if_true": [(PHAddr.adv_flags_12, 0x4)],  # uses the "got caught already" flag
     },
     "RESET Remove Jolene": {
@@ -1002,13 +1006,15 @@ DYNAMIC_FLAGS = {
     "RESET Block Oshus Gem": {
         # "on_scenes": [0xB00],
         "has_locations": ["TotOK Lobby Phantom Hourglass"],
-        "set_if_true": [(PHAddr.adv_flags_36, 0x4)]
+        "set_if_true": [(PHAddr.adv_flags_36, 0x4)],
+        "unset_if_true": [(PHAddr.adv_flags_22, 0x2)]
     },
     "Oshus Gem": {
         "on_scenes": [0xB0A],
         "not_has_locations": ["Oshus Spirit Gem"],
         "has_locations": ["Cyclok Boss Reward"],
-        "set_if_true": [(PHAddr.adv_flags_36, 0x4), (PHAddr.adv_flags_1, 0x2), (PHAddr.adv_flags_3, 0x40)]
+        "set_if_true": [(PHAddr.adv_flags_36, 0x4), (PHAddr.adv_flags_1, 0x2), (PHAddr.adv_flags_3, 0x40)],
+        "unset_if_true": [(PHAddr.adv_flags_22, 0x2)]
     },
     "RESET Oshus Gem hourglass": {
         # "on_scenes": [0xB00],
@@ -1252,12 +1258,14 @@ DYNAMIC_FLAGS = {
     "Remove big catch lure if no skippyjack": {
         "on_scenes": [0, 1, 2, 3],
         "not_has_locations": ["Fishing Catch Skippyjack"],
+        "has_slot_data": [("randomize_fishing", [1, 2, 3])],
         "unset_if_true": [(PHAddr.inventory_6, 0x80)],
-        "reset_flags": ["RESET Remove big catch lure if no skippyjack"]
+        # "reset_flags": ["RESET Remove big catch lure if no skippyjack"]
     },
     "RESET Remove big catch lure if no skippyjack": {
-        # "on_scenes": [0, 1, 2, 3],
+        "on_scenes": [0, 1, 2, 3],
         "has_locations": ["Fishing Catch Skippyjack"],
+        "has_slot_data": [("randomize_fishing", [1, 2, 3])],
         "has_items": [("Big Catch Lure", 1)],
         "set_if_true": [(PHAddr.inventory_6, 0x80)]
     },

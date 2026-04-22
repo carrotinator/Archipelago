@@ -2334,11 +2334,11 @@ LOCATIONS_DATA = {
         "region_id": "Ghost Ship B3",
         "stage_id": 0x29,
         "floor_id": 0x2,
-        "vanilla_item": "Red Potion",
+        "vanilla_item": "Purple Potion",
         "dungeon": "Ghost Ship",
         "id": 183,
         "hint_entrance": ["GS Exit", "Ghost Ship Cubus Sisters Reunion"],
-        "chest_offset": 5
+        "chest_offset": 8
     },
     "Cubus Sisters Ghost Key": {
         "region_id": "Post Cubus Sisters",
@@ -2629,7 +2629,7 @@ LOCATIONS_DATA = {
         "conditional": True,
         "id": 207,
         "hint_entrance": "Harrow Board Ship",
-        "gift_addr": Address(0x2066d4)
+        # "gift_addr": Address(0x2066d4)
     },
     "Harrow Island Dig 2": {
         "region_id": "Harrow Minigame",
@@ -2642,7 +2642,7 @@ LOCATIONS_DATA = {
         "conditional": True,
         "id": 208,
         "hint_entrance": "Harrow Board Ship",
-        "gift_addr": Address(0x2066cc)
+        # "gift_addr": Address(0x2066cc)
     },
     "Harrow Island Dig 3": {
         "region_id": "Harrow Minigame NE Chart",
@@ -2655,7 +2655,7 @@ LOCATIONS_DATA = {
         "conditional": True,
         "id": 209,
         "hint_entrance": "Harrow Board Ship",
-        "gift_addr": Address(0x2063cc)
+        # "gift_addr": Address(0x2063cc)
     },
     "Harrow Island Dig 4": {
         "region_id": "Harrow Minigame NE Chart",
@@ -2668,7 +2668,7 @@ LOCATIONS_DATA = {
         "conditional": True,
         "id": 210,
         "hint_entrance": "Harrow Board Ship",
-        "gift_addr": Address(0x2066dc)
+        # "gift_addr": Address(0x2066dc)
     },
 
     # ========== Dee Ess Island ============
@@ -2747,6 +2747,7 @@ LOCATIONS_DATA = {
         "conditional": True,
         "id": 216,
         "hint_entrance": "Dee Ess Board Ship",
+        "reload_chests": True  # doesn't account for rupee farming
     },
     "Dee Ess Eye Brute Chest": {
         "region_id": "Dee Ess Eye Brutes",
@@ -3003,7 +3004,7 @@ LOCATIONS_DATA = {
         "address": PHAddr.adv_flags_31,
         "value": 0x8,
         "boss_room": "Temple of Ice",
-        # "delay_reset": True,
+        "delay_reset": True,
         "id": 239,
         "hint_entrance": "Gleeok Exit",
         "hint_entrance_secondary": "ToI Exit",

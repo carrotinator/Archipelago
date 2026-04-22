@@ -558,6 +558,7 @@ ITEMS_DATA = {
         "max": 0xFF,
         "model": 0x3D,
         "ghost_model": True,
+        "model_reset": True
     },
     "Refill: Health": {
         "classification": ItemClassification.filler,
@@ -1607,6 +1608,7 @@ ITEMS_DATA = {
         "id": 168,
         "model": 0x7F,
         "ghost_model": True,
+        "model_reset": True,
     },
     "Golden Frog Glyph Phi": {
         "classification": ItemClassification.progression,
@@ -1614,6 +1616,7 @@ ITEMS_DATA = {
         "value": 0x1,
         "id": 169,
         "model": 0x7F,
+        "model_reset": True,
         "ghost_model": True,
     },
     "Golden Frog Glyph N": {
@@ -1622,6 +1625,7 @@ ITEMS_DATA = {
         "value": 0x2,
         "id": 170,
         "model": 0x7F,
+        "model_reset": True,
         "ghost_model": True,
     },
     "Golden Frog Glyph Omega": {
@@ -1630,6 +1634,7 @@ ITEMS_DATA = {
         "value": 0x4,
         "id": 171,
         "model": 0x7F,
+        "model_reset": True,
         "ghost_model": True,
     },
     "Golden Frog Glyph W": {
@@ -1638,6 +1643,7 @@ ITEMS_DATA = {
         "value": 0x8,
         "id": 172,
         "model": 0x7F,
+        "model_reset": True,
         "ghost_model": True,
     },
     "Golden Frog Glyph Square": {
@@ -1646,6 +1652,7 @@ ITEMS_DATA = {
         "value": 0x10,
         "id": 173,
         "model": 0x7F,
+        "model_reset": True,
         "ghost_model": True,
     },
 
@@ -1781,6 +1788,7 @@ ITEMS_DATA = {
         "id": 206,
         "tags": ["backup_filler"],
         "model": 0x7F,
+        "model_reset": True,
         "ghost_model": True,
     },
     "Map Warp: Cannon": {
@@ -1789,6 +1797,7 @@ ITEMS_DATA = {
         "id": 207,
         "tags": ["backup_filler"],
         "model": 0x7F,
+        "model_reset": True,
         "ghost_model": True,
     },
     "Map Warp: Ember": {
@@ -1797,6 +1806,7 @@ ITEMS_DATA = {
         "id": 208,
         "tags": ["backup_filler"],
         "model": 0x7F,
+        "model_reset": True,
         "ghost_model": True,
     },
     "Map Warp: Molida": {
@@ -1805,6 +1815,7 @@ ITEMS_DATA = {
         "id": 209,
         "tags": ["backup_filler"],
         "model": 0x7F,
+        "model_reset": True,
         "ghost_model": True,
     },
     "Map Warp: Spirit": {
@@ -1813,6 +1824,7 @@ ITEMS_DATA = {
         "id": 210,
         "tags": ["backup_filler"],
         "model": 0x7F,
+        "model_reset": True,
         "ghost_model": True,
     },
     "Map Warp: Gust": {
@@ -1821,6 +1833,7 @@ ITEMS_DATA = {
         "id": 211,
         "tags": ["backup_filler"],
         "model": 0x7F,
+        "model_reset": True,
         "ghost_model": True,
     },
     "Map Warp: Bannan": {
@@ -1829,6 +1842,7 @@ ITEMS_DATA = {
         "id": 212,
         "tags": ["backup_filler"],
         "model": 0x7F,
+        "model_reset": True,
         "ghost_model": True,
     },
     "Map Warp: Uncharted": {
@@ -1837,6 +1851,7 @@ ITEMS_DATA = {
         "id": 213,
         "tags": ["backup_filler"],
         "model": 0x7F,
+        "model_reset": True,
         "ghost_model": True,
     },
     "Map Warp: Zauz": {
@@ -1845,6 +1860,7 @@ ITEMS_DATA = {
         "id": 214,
         "tags": ["backup_filler"],
         "model": 0x7F,
+        "model_reset": True,
         "ghost_model": True,
     },
     "Map Warp: Goron": {
@@ -1853,6 +1869,7 @@ ITEMS_DATA = {
         "id": 215,
         "tags": ["backup_filler"],
         "model": 0x7F,
+        "model_reset": True,
         "ghost_model": True,
     },
     "Map Warp: Frost": {
@@ -1861,6 +1878,7 @@ ITEMS_DATA = {
         "id": 216,
         "tags": ["backup_filler"],
         "model": 0x7F,
+        "model_reset": True,
         "ghost_model": True,
     },
     "Map Warp: Harrow": {
@@ -1869,6 +1887,7 @@ ITEMS_DATA = {
         "id": 217,
         "tags": ["backup_filler"],
         "model": 0x7F,
+        "model_reset": True,
         "ghost_model": True,
     },
     "Map Warp: Dee Ess": {
@@ -1877,6 +1896,7 @@ ITEMS_DATA = {
         "id": 218,
         "tags": ["backup_filler"],
         "model": 0x7F,
+        "model_reset": True,
         "ghost_model": True,
     },
     "Map Warp: Isle of the Dead": {
@@ -1885,6 +1905,7 @@ ITEMS_DATA = {
         "id": 219,
         "tags": ["backup_filler"],
         "model": 0x7F,
+        "model_reset": True,
         "ghost_model": True,
     },
     "Map Warp: Ruins": {
@@ -1893,6 +1914,7 @@ ITEMS_DATA = {
         "id": 220,
         "tags": ["backup_filler"],
         "model": 0x7F,
+        "model_reset": True,
         "ghost_model": True,
     },
     "Map Warp: Maze": {
@@ -1901,6 +1923,7 @@ ITEMS_DATA = {
         "id": 221,
         "tags": ["backup_filler"],
         "model": 0x7F,
+        "model_reset": True,
         "ghost_model": True,
     },
 }
