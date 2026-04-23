@@ -1,5 +1,5 @@
 # List of tricks, skips and glitches by area, marked with logic requirements and with video links when available
-Thanks to the [glitches spreadsheet](https://docs.google.com/spreadsheets/d/18NCGJjt9wil1gnRB2rZO9DIv_5etKmRf0sAH66i5SVQ/edit?usp=sharing) [updated formatted version](https://docs.google.com/spreadsheets/d/1rA02uHGGx9anGXcHbXpcXmDBjD1h8hJh-dJGfj-nOZA/edit?usp=sharing) for collecting everything relevant to the vanilla game!
+Thanks to the [glitches spreadsheet](https://docs.google.com/spreadsheets/d/18NCGJjt9wil1gnRB2rZO9DIv_5etKmRf0sAH66i5SVQ/edit?usp=sharing) ([updated formatted version](https://docs.google.com/spreadsheets/d/1rA02uHGGx9anGXcHbXpcXmDBjD1h8hJh-dJGfj-nOZA/edit?usp=sharing)) for collecting everything relevant to the vanilla game!
 
 ## Mercay island
 - [Swordless/bombless Mountain Passage](https://www.youtube.com/watch?v=6_J14xLnVWM). Savewarping from the back entrance of Mountain Passage also works (Glitched Logic for savewarp, cucco jump is TAS difficulty)
