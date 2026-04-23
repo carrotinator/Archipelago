@@ -941,6 +941,12 @@ DYNAMIC_FLAGS = {
         "set_if_true": [(PHAddr.adv_flags_15, 0x80)]
     },
     # Oshus Items
+    "Always spawn 1 oshus": {
+        "on_scenes": [0xB0A],
+        "set_if_true": [(PHAddr.flags_bosses_0, 0x20), # despawn o1
+                        (PHAddr.flags_clear_fog, 0x80), # despawn o2
+                        (PHAddr.adv_flags_4, 0x2)]  # spawn o3
+    },
     "Block phantom sword crafting blade": {
         "on_scenes": [0xB0A],
         "has_items": [("Phantom Blade", 0)],
@@ -968,8 +974,17 @@ DYNAMIC_FLAGS = {
                         "RESET Oshus Gem chart",
                         "RESET Oshus Wind Temple",
                         "RESET Oshus spawn B13 Phantoms",
-                        "RESET Oshus Have Phantom Blade"]
+                        "RESET Oshus Have Phantom Blade",
+                        "RESET yellow guy beat gs",  # unsets fog removal flag
+                        "RESET respawn fog vanilla fog",  # unsets fog removal flag
+                        "RESET Ember double linebeck"]  # unsets blaaz flag
     },
+    "RESET respawn fog vanilla fog": {
+        "not_has_locations": ["Ghost Ship Rescue Tetra"],
+        "has_slot_data": [("fog_settings", 1)],
+        "unset_if_true": [(PHAddr.flags_clear_fog, 0x80)]
+    },
+
     "RESET Oshus spawn B13 Phantoms": {
         "set_if_true": [(PHAddr.adv_flags_22, 0x40)]
     },
@@ -1030,17 +1045,12 @@ DYNAMIC_FLAGS = {
         "not_has_locations": ["Cyclok Boss Reward"],
         "unset_if_true": [(PHAddr.adv_flags_3, 0x40)]
     },
-    "Oshus absent backup gem": {
-        "on_scenes": [0xB0A],
-        "has_locations": ["Cyclok Boss Reward", "Blaaz Boss Reward"],
-        "set_if_true": [(PHAddr.adv_flags_41, 0x2)]
-    },
-    "Oshus absent backup sword": {
-        "on_scenes": [0xB0A],
-        "has_items": [("Phantom Hourglass", 1), ("Phantom Blade", 1)],
-        "has_locations": ["Blaaz Boss Reward"],
-        "set_if_true": [(PHAddr.adv_flags_41, 0x2), (PHAddr.inventory_5, 0x20)]
-    },
+    # "Oshus absent backup sword": {
+    #     "on_scenes": [0xB0A],
+    #     "has_items": [("Phantom Hourglass", 1), ("Phantom Blade", 1)],
+    #     "has_locations": ["Blaaz Boss Reward"],
+    #     "set_if_true": [(PHAddr.adv_flags_41, 0x2), (PHAddr.inventory_5, 0x20)]
+    # },
     # Trade Quest
     "PoRL Trade Quest": {
         "on_scenes": [0x700],
@@ -1301,9 +1311,19 @@ DYNAMIC_FLAGS = {
         "set_if_true": [(PHAddr.flags_bosses_0, 0x20)],
         "reset_flags": ["RESET Ember double linebeck"],
     },
+    "Ember prevent blaaz temple exit softlock": {
+        "on_scenes": [0xD01],
+        "on_entrance": [1],
+        "unset_if_true": [(PHAddr.flags_bosses_0, 0x20)],
+        "reset_flags": ["RESET Defeated blaaz"],
+    },
     "RESET Ember double linebeck": {
         "not_has_locations": ["Blaaz Boss Reward"],
         "unset_if_true": [(PHAddr.flags_bosses_0, 0x20)],
+    },
+    "RESET Defeated blaaz": {
+        "has_locations": ["Blaaz Boss Reward"],
+        "set_if_true": [(PHAddr.flags_bosses_0, 0x20)],
     },
     "Astrid after fire temple": {
         "on_scenes": [0xD0A],

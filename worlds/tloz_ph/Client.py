@@ -200,6 +200,7 @@ class PhantomHourglassClient(DSZeldaClient):
         self.chest_reload_watches: list[tuple] = []
 
         self.defeated_bellum = False
+        self.minigame_chest_reset = False
 
 
     async def check_game_version(self, ctx: "BizHawkClientContext") -> bool:
@@ -478,6 +479,15 @@ class PhantomHourglassClient(DSZeldaClient):
         if self.is_dead and not self.chest_reload_watches:
             self.chest_reload_watches.append((self.health_address, 0, "gt"))
             print(f"Setting Chest reload for death: {self.chest_reload_watches}")
+
+        if self.current_stage in [0x2b, 0x19]:
+            in_minigame = await PHAddr.in_minigame.read(ctx, silent=True)
+            if self.minigame_chest_reset and not in_minigame:
+                self.minigame_chest_reset = False
+                print(f"Exited minigame, reloading chests")
+                await self.set_chest_contents(ctx)
+            if not self.minigame_chest_reset and in_minigame:
+                self.minigame_chest_reset = True
 
 
 
@@ -1070,7 +1080,7 @@ class PhantomHourglassClient(DSZeldaClient):
             er_map[scene][new_detect] = exit_data
 
         # Leaving a travelling ship can make your detect entrance any quadrant
-        if detect_data.exit[2] == 0xFA:
+        if detect_data.exit[2] is not None and detect_data.exit[2] == 0xFA:
             for i in range(4):
                 new_detect = detect_data.copy()
                 new_detect.set_exit_room(i)

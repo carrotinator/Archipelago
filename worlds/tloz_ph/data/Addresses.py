@@ -274,6 +274,7 @@ class PHAddr:
     map_obj_table = Address(0x1B8968)  # size biig
 
     defeated_bellum = Address(0x1b5774)
+    in_minigame = Address(0x307D77)
 
 class PHSRAM:
     # SRAM

@@ -1655,10 +1655,11 @@ def ph_gt_b1(state, player):
         ph_can_kill_eye_brute(state, player),
         any([
             ph_has_sword(state, player),
-            all([
-                ph_can_grapple_glitch(state, player),
-                ph_has_chus(state, player)
-            ])
+            ph_option_hard_logic(state, player),
+            # all([  # rip
+            #     ph_can_grapple_glitch(state, player),
+            #     ph_has_chus(state, player)
+            # ])
         ])
 
     ])
