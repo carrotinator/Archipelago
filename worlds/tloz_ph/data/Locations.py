@@ -3449,7 +3449,7 @@ LOCATIONS_DATA = {
         "id": 273,
         "hint_entrance": "Maze Board Ship",
         "chest_offset": 33,
-        "reload_chests": (PHAddr.link_z, 0xc350, "gt"),
+        # "reload_chests": (PHAddr.link_z, 0xc350, "gt"),  # reloads on exiting minigame, no need to double up
         "delay_reset": True
     },
     "Maze Island Normal": {
@@ -3463,7 +3463,7 @@ LOCATIONS_DATA = {
         "id": 274,
         "hint_entrance": "Maze Board Ship",
         "chest_offset": 34,
-        "reload_chests": (PHAddr.link_z, 0xc350, "gt"),
+        # "reload_chests": (PHAddr.link_z, 0xc350, "gt"),
         "delay_reset": True
     },
     "Maze Island Expert": {
@@ -3477,7 +3477,7 @@ LOCATIONS_DATA = {
         "id": 275,
         "hint_entrance": "Maze Board Ship",
         "chest_offset": 35,
-        "reload_chests": (PHAddr.link_z, 0xc350, "gt"),
+        # "reload_chests": (PHAddr.link_z, 0xc350, "gt"),
         "delay_reset": True
     },
     "Maze Island Bonus Reward": {

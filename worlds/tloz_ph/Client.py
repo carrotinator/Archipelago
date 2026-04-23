@@ -496,7 +496,7 @@ class PhantomHourglassClient(DSZeldaClient):
         if read_result.get(PHAddr.opened_clog, False):
             if await PHAddr.flipped_clog.read(ctx, silent=True) & 1:
                 if not self.warp_to_start_flag:
-                    logger.info(f"Primed a warp to start. Enter a transition to warp to {STAGES[0xB]}.")
+                    logger.info(f"Primed a warp to start. Enter a transition or save and quit to warp to {STAGES[0xB]}.")
                     self.warp_to_start_flag = True
             else:
                 if self.warp_to_start_flag:
@@ -1461,7 +1461,8 @@ class PhantomHourglassClient(DSZeldaClient):
                 _write_list += await item_data.receive_item(self, ctx, num_received_items)
             return _write_list
 
-        if self.last_location:
+        # print(f"Getting item last location: {self.last_location} location_models: {ctx.slot_data.get("location_models", {})}")
+        if self.last_location and str(self.last_location['id']) in ctx.slot_data.get("location_models", {}):
             # Handle chests with swapped items
             if "chest_offset" in self.last_location or "gift_addr" in self.last_location:
                 print(f"Handling Item: {item_name} ghost? {item_data.ghost_model} reset? {item_data.model_reset} last_vanilla: {self.last_vanilla_item}")
