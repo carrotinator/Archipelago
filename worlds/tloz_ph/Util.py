@@ -54,6 +54,8 @@ def build_scene_to_dynamic_flag(ctx) -> Dict[int, list[dict]]:
             scene_to_dynamic_flag[scene].append(data)
     return scene_to_dynamic_flag
 
+def build_scene_to_dynamic_entrance(ctx) -> dict:
+    return {}
 
 def build_location_name_to_id_dict() -> Dict[str, int]:
     location_name_to_id: Dict[str, int] = {}
