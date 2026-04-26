@@ -1631,16 +1631,19 @@ def ph_goron_entrance(state, player):
     ])
 
 def ph_goron_chus(state, player):
-    return all([
-        ph_has_shovel(state, player),
-        any([
-            all([
-                ph_has_hammer(state, player),
-                ph_option_hard_logic(state, player)
-                ]),
-            ph_has_bow(state, player),
-            ph_has_grapple(state, player),
-        ])
+    return any([
+        all([
+            ph_has_shovel(state, player),
+            any([
+                all([
+                    ph_has_hammer(state, player),
+                    ph_option_hard_logic(state, player)
+                    ]),
+                ph_has_bow(state, player),
+                ph_has_grapple(state, player),
+            ])
+        ]),
+        ph_can_hammer_clip(state, player)
     ])
 
 def ph_meet_all_gorons(state, player):
