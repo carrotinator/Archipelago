@@ -1136,6 +1136,11 @@ DYNAMIC_FLAGS = {
         "on_scenes": [0x1a0b, 0x1a00],
         "unset_if_true": [(PHAddr.adv_flags_38, 0x40)]
     },
+    "Cyclone Slate Safety": {
+        "on_scenes": [0, 1, 2, 3],
+        "has_items": [("Cyclone Slate", 1)],
+        "set_if_true": [(PHAddr.inventory_6, 0x40)]
+    },
     # Doyland
     "Doyland lower water": {
         "on_scenes": [0x2201],
