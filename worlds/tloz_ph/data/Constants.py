@@ -1993,6 +1993,7 @@ map_type_lookup = {
 }
 
 model_resets = {
+    0x1: "Small Key (Generic)",
     # 0x02: "Green Rupee (1)",
     0x04: "Shield",
     0x06: "Force Gem (B3)",

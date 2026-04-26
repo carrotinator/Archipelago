@@ -45,7 +45,8 @@ async def receive_potion(client: "PhantomHourglassClient", ctx: "BizHawkClientCo
             break
     return res
 
-async def receive_dummy(*args): return []
+async def receive_dummy(*args):
+    return []
 
 async def receive_full_heal(client, ctx, item, rii):
     await client.full_heal(ctx)
