@@ -2009,6 +2009,7 @@ model_resets = {
     0x21: "Square Crystals",
     0x22: "Round Crystals",
     0x23: "Triangle Crystals",
+    0x25: "Cannon",
     0x28: "Bow (Progressive)",
     0x29: "Bombs (Progressive)",
     0x2A: "Bombchus (Progressive)",

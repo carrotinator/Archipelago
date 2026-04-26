@@ -64,8 +64,9 @@ class PHAddr:
     in_map = Address(0x1B2D60)
     using_cyclone_slate = Address(0x1B636C)
     
-    loading_stage = Address(0x1B2E78)  # 0 when loading stage, some sorta pointer
+    loading_stage = Address(0x1BA8C7)  # 0 when loading stage, some sorta pointer
     loading_room = Address(0x10BD6F) # 0 when not loading room
+
     in_cutscene = Address(0x1BBCF4)
     in_short_cs = Address(0x1B6FE8)
     started_save_file = Address(0x1B7FB8)  # Used to trigger precision stuff from menu
@@ -274,6 +275,7 @@ class PHAddr:
     map_obj_table = Address(0x1B8968)  # size biig
 
     defeated_bellum = Address(0x1b5774)
+    potion_protector = Address(0x1BA70a)
     in_minigame = Address(0x307D77)
 
 class PHSRAM:

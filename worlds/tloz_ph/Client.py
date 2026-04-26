@@ -106,7 +106,8 @@ SMALL_KEY_OFFSET = 0x260
 STAGE_FLAGS_OFFSET = 0x268
 
 # Addresses to read each cycle
-read_keys_always = [PHAddr.game_state, PHAddr.in_cutscene, PHAddr.loading_room,
+read_keys_always = [PHAddr.game_state, PHAddr.in_cutscene,
+                    PHAddr.loading_room, PHAddr.loading_stage,
                     PHAddr.received_item_index, PHAddr.slot_id,
                     PHAddr.stage, PHAddr.room, PHAddr.entrance,
                     PHAddr.in_short_cs, PHAddr.opened_clog, PHAddr.saving
@@ -175,6 +176,7 @@ class PhantomHourglassClient(DSZeldaClient):
         self.last_health_pointer = 0
         self.save_spam_protection = False
         self.death_warning_spam_protect = False
+        self.home_screen_warp_spam = False
 
         # Map warp vars
         self.map_mode: bool = False  # if in warp menu
@@ -189,6 +191,7 @@ class PhantomHourglassClient(DSZeldaClient):
         self.addr_room = PHAddr.room
         self.addr_entrance = PHAddr.entrance
         self.addr_received_item_index = PHAddr.received_item_index
+        self.loading_stage = False
 
         self.boat_speed = default_boat_speed
         self.boat_snap_speed = True
@@ -397,6 +400,13 @@ class PhantomHourglassClient(DSZeldaClient):
             self.getting_location = (read_result.get(PHAddr.getting_location, 0) & 0x20
                                      or read_result.get(PHAddr.getting_ship_part, False))
 
+        if not read_result[PHAddr.loading_stage]:
+            self.loading_stage = True
+        if self.loading_stage and read_result[PHAddr.loading_stage]:
+            print(f"Stage loading finished, setting early stage flags")
+            self.loading_stage = False
+            await self.set_stage_flags(ctx, read_result[PHAddr.stage])
+
     async def process_on_room_load(self, ctx, current_scene, read_result: dict):
         self.prev_rupee_count = await PHAddr.rupee_count.read(ctx)
         await self.update_potion_tracker(ctx)
@@ -494,14 +504,22 @@ class PhantomHourglassClient(DSZeldaClient):
     async def detect_warp_to_start(self, ctx, read_result: dict):
         # Opened clog warp to start check
         if read_result.get(PHAddr.opened_clog, False):
-            if await PHAddr.flipped_clog.read(ctx, silent=True) & 1:
+            if not self.home_screen_warp_spam and await PHAddr.flipped_clog.read(ctx, silent=True) & ~0:
                 if not self.warp_to_start_flag:
-                    logger.info(f"Primed a warp to start. Enter a transition or save and quit to warp to {STAGES[0xB]}.")
-                    self.warp_to_start_flag = True
+                    if self.starting_entrance[:2] == (self.current_stage, read_result[PHAddr.room]):
+                        logger.info(f"In starting scene, you can't warp to start from here.")
+                        self.home_screen_warp_spam = True
+                    else:
+                        logger.info(f"Primed a warp to start. Enter a transition or save and quit to warp to {STAGES[0xB]}.")
+                        self.warp_to_start_flag = 1
             else:
-                if self.warp_to_start_flag:
+                if self.warp_to_start_flag == 1:
+                    self.warp_to_start_flag = 2
+                elif self.warp_to_start_flag > 1:
                     logger.info("Canceled warp to start.")
                     self.warp_to_start_flag = False
+        else:
+            self.home_screen_warp_spam = False
 
         # Cancel warp to start if in a dangerous situation
         if self.warp_to_start_flag:
@@ -513,9 +531,6 @@ class PhantomHourglassClient(DSZeldaClient):
             if self.is_dead:
                 self.warp_to_start_flag = False
                 logger.info("Canceled warp to start, death is not a valid warp method")
-            if self.starting_entrance[:2] == (self.current_stage, read_result[PHAddr.room]):
-                logger.info(f"In starting scene, canceling warp to start")
-                self.warp_to_start_flag = False
 
     async def enter_game(self, ctx):
         self.save_slot = await PHAddr.save_slot.read(ctx, silent=True)
@@ -1018,7 +1033,11 @@ class PhantomHourglassClient(DSZeldaClient):
                 return game_clear
             if self.current_scene == 0x3300 and not self.defeated_bellum:
                 if await PHAddr.defeated_bellum.read(ctx, silent=True) == 1:
-                    self.defeated_bellum = True
+                    if await PHAddr.potion_protector.read(ctx, silent=True):
+                        print(f"Tried to drink potion, don't send goal!")
+                        await PHAddr.defeated_bellum.overwrite(ctx, 0, silent=True)
+                    else:
+                        self.defeated_bellum = True
 
             game_clear = self.defeated_bellum  # finished game
 
