@@ -74,7 +74,7 @@ class PHAddr:
     link_held_item_2 = Address(0x1CDAE0, size=2)
     link_held_item = Address(0x1CD510, size=2)
 
-    actor_table_pointer = Address(0x1BA8C4, size=4)
+    actor_table_pointer = Address(0x1BA8C4, size=3)
 
     # Pointers
     gItemManager = Pointer(0x0fb4)

@@ -99,9 +99,11 @@ async def remove_vanilla_throwable_keys(client: "PhantomHourglassClient", ctx: "
         bk_id = await PHAddr.link_held_item_2.read(ctx, silent=True)
     else:
         bk_id = await PHAddr.link_held_item.read(ctx, silent=True)
+    if bk_id == 0:
+        return []
 
     # Get the actor table
-    actor_table_addr =  AddrFromPointer(await PHAddr.actor_table_pointer.read(ctx, silent=True) - 0x2000000, size=250)
+    actor_table_addr =  AddrFromPointer(await PHAddr.actor_table_pointer.read(ctx, silent=True), size=256)
     actor_table = hex(await actor_table_addr.read(ctx, silent=True))
     actor_table = "0" + actor_table[2:]
     print(f"Removing throwable key {item.name} with bk_id {bk_id}")
@@ -111,8 +113,9 @@ async def remove_vanilla_throwable_keys(client: "PhantomHourglassClient", ctx: "
         actor_data = actor_table[_i * 8:(_i + 1) * 8]
         if actor_data[1] == "0":  # filter out empty slots
             continue
+        print(actor_data)
         actor_id_addr = AddrFromPointer(int(actor_data, 16) + 8 - 0x2000000, size=4)
-        actor_id = await actor_id_addr.read(ctx,  silent=True)
+        actor_id = await actor_id_addr.read(ctx, silent=True)
         # If you find the boss key, delete its pointer
         if actor_id == bk_id:
             little_endian_lol = AddrFromPointer(actor_table_addr + len(actor_table) // 2 - (_i + 1) * 4, size=4)

@@ -963,7 +963,7 @@ DYNAMIC_FLAGS = {
         "on_scenes": [0xB0A],
         "has_items": [("Phantom Hourglass", 1), ("Phantom Blade", 1)],
         "unset_if_true": [(PHAddr.adv_flags_22, 0x40)],
-        "not_on_entrance": [0x2]
+        "on_entrance": [0, 1]
     },
     "Reset Oshus": {
         "on_scenes": [0xB0A],

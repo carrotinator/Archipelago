@@ -1080,7 +1080,7 @@ class PhantomHourglassClient(DSZeldaClient):
             er_map[scene][new_detect] = exit_data
 
         # Leaving a travelling ship can make your detect entrance any quadrant
-        if detect_data.exit[2] is not None and detect_data.exit[2] == 0xFA:
+        if detect_data.exit and detect_data.exit[2] == 0xFA:
             for i in range(4):
                 new_detect = detect_data.copy()
                 new_detect.set_exit_room(i)
@@ -1564,6 +1564,8 @@ class PhantomHourglassClient(DSZeldaClient):
     async def get_object_read_addr(self, ctx, location) -> Address | None:
         vanilla_item_model = self.item_data[location["vanilla_item"]].vanilla_model
         chest_object = await self.find_map_object(ctx, location["chest_offset"], 9, vanilla_item_model, size=1)
+        if not chest_object:
+            return None
         LOCATIONS_DATA[location['name']] |= {
             "value": 0x29,  # read for open chest
             "exact_read": True,
