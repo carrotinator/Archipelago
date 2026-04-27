@@ -26,6 +26,7 @@
 - Works with some controller/dpad patches!
 - Works with player model patches. [Guide](https://gamebanana.com/tuts/19109) for making them.
 - [moonlight-n3ds](https://github.com/zoeyjodon/moonlight-N3DS) can be used to controll bizhawk with a modded 3ds
+- [moonlight-wiiu](https://github.com/GaryOderNichts/moonlight-wiiu) can be used to controll bizhawk with a wii U
 
 ## Useful to know before you start
 - Freestanding items, items dug from the ground and salvage do not change their item models, but still work correctly.
