@@ -504,7 +504,8 @@ class PhantomHourglassClient(DSZeldaClient):
     async def detect_warp_to_start(self, ctx, read_result: dict):
         # Opened clog warp to start check
         if read_result.get(PHAddr.opened_clog, False):
-            if not self.home_screen_warp_spam and await PHAddr.flipped_clog.read(ctx, silent=True) & ~0:
+            filpped_clog = await PHAddr.flipped_clog.read(ctx, silent=True)
+            if not self.home_screen_warp_spam and filpped_clog & 1:
                 if not self.warp_to_start_flag:
                     if self.starting_entrance[:2] == (self.current_stage, read_result[PHAddr.room]):
                         logger.info(f"In starting scene, you can't warp to start from here.")
@@ -512,7 +513,7 @@ class PhantomHourglassClient(DSZeldaClient):
                     else:
                         logger.info(f"Primed a warp to start. Enter a transition or save and quit to warp to {STAGES[0xB]}.")
                         self.warp_to_start_flag = 1
-            else:
+            elif filpped_clog == 0:
                 if self.warp_to_start_flag == 1:
                     self.warp_to_start_flag = 2
                 elif self.warp_to_start_flag > 1:
@@ -1482,13 +1483,17 @@ class PhantomHourglassClient(DSZeldaClient):
 
         # print(f"Getting item last location: {self.last_location} location_models: {ctx.slot_data.get("location_models", {})}")
         if self.last_location and str(self.last_location['id']) in ctx.slot_data.get("location_models", {}):
-            # Handle chests with swapped items
+            # Handle locs with swapped items
             if "chest_offset" in self.last_location or "gift_addr" in self.last_location:
                 print(f"Handling Item: {item_name} ghost? {item_data.ghost_model} reset? {item_data.model_reset} last_vanilla: {self.last_vanilla_item}")
                 if (item_data.ghost_model or item_data.model is None) and self.current_scene not in getattr(item_data, "blocked_scenes", []):
                     write_list += await item_data.receive_item(self, ctx, num_received_items)
                 if self.last_vanilla_item and not item_data.model_reset and item_data.vanilla_model[0] in model_resets:
                     self.last_vanilla_item.pop()
+                if self.last_vanilla_item and "monotone_incremental" in item_data.tags and "delay_reset" in self.last_location:
+                    print(f"Monotone Incremental {item_data} from delay reset, canceling delay reset.")
+                    self.last_vanilla_item.pop()
+                    self.delay_reset = 0
 
             else:
                 write_list += await old_item_handling()
@@ -1598,7 +1603,8 @@ class PhantomHourglassClient(DSZeldaClient):
             print(f"Got swapped item model as vanilla item {hex(model)}: {model_resets.get(model)}")
             if model_resets.get(model):
                 print(f"\tResetting model: {model_resets[model]}")
-                self.last_vanilla_item.append(model_resets[model])
+                await super()._set_vanilla_item(ctx, location, model_resets[model])
+                # self.last_vanilla_item.append(model_resets[model])
             return
         await super()._set_vanilla_item(ctx, location, vanilla_item)
 

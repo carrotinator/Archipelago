@@ -1299,6 +1299,7 @@ LOCATIONS_DATA = {
         "item_override": "Rare Metal",
         "stage_id": 0x2b,
         "floor_id": 0x0,
+        "from_entrances": [1],
         "address": PHAddr.flags_bosses_0,
         "value": 0x20,
         "boss_room": "Temple of Fire",
@@ -1971,6 +1972,7 @@ LOCATIONS_DATA = {
         "address": PHAddr.flags_bosses_0,
         "value": 0x40,
         "boss_room": "Temple of Wind",
+        "from_entrances": [1, 2],
         # "delay_reset": True,
         "id": 156,
         "hint_entrance": "Cyclok Exit",
@@ -2417,7 +2419,8 @@ LOCATIONS_DATA = {
         "value": 0x80,
         "post_dungeon": "Ghost Ship",
         "id": 189,
-        "gift_addr": Address(0x215dfc)
+        "gift_addr": Address(0x215dfc),
+        "delay_reset": True
     },
 
     # ========== Goron Island ============
