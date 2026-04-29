@@ -828,6 +828,7 @@ LOCATIONS_DATA = {
         "stage_id": 0x25,
         "floor_id": 0xd,
         "dungeon": "Temple of the Ocean King",
+        "set_bit": [(PHAddr.adv_flags_1, 0x8)],
         "id": 61,
         "hint_entrance": "TotOK Lobby Exit",
         "chest_offset": 1,
@@ -3556,6 +3557,7 @@ LOCATIONS_DATA = {
         "value": 0x8,
         "id": 327,
         "conditional": True,
+        "delay_reset": True,
         "gift_addr": Address(0x215fe4)
     },
     "Prince of Red Lions Trade Quest Item": {

@@ -411,6 +411,7 @@ class PhantomHourglassClient(DSZeldaClient):
         self.prev_rupee_count = await PHAddr.rupee_count.read(ctx)
         await self.update_potion_tracker(ctx)
         await self.update_treasure_tracker(ctx)
+        self.chest_reload_watches.clear()
 
     async def process_fast(self, ctx: "BizHawkClientContext", read_result: dict):
         if self.current_stage == 3 and read_result.get(PHAddr.salvage_health, 5) <= 1:
@@ -606,10 +607,16 @@ class PhantomHourglassClient(DSZeldaClient):
                     await door.unset_bits(ctx, 0x10, offset=4 * 1)  # remove map icon
 
             async def lower_spikes(start_offset, check_offset, comp_value, width):
+
                 spike, offset = await self.find_map_object(ctx, start_offset, check_offset, comp_value, return_index=True)
+                if spike is None:
+                    print(f"Can't find spikes, probably already removed.")
+                    return
                 reads: list[Address] = [Address.from_pointer(PHAddr.map_obj_table + 4 * (offset-i-1), size=3) for i in range(width-1)]
                 spikes = [spike] + list((await read_multiple(ctx, reads)).values())
                 print(f"Lowering Spike objects: {spikes}")
+                if spike is None:
+                    await self.print_map_data(ctx)
                 await write_multiple(ctx, [Address.from_pointer(a+4*i, size=4) for a in spikes for i in [1]], [0]*width)
 
             # === TotOK ===
@@ -617,16 +624,16 @@ class PhantomHourglassClient(DSZeldaClient):
                 if self.item_count(ctx, "Force Gem (B3)") >= 3 or self.item_count(ctx, "Force Gems"):
                     await PHAddr.totok_b3_state.set_bits(ctx, [0xFE, 0x0F])
             elif current_scene == 0x250B:  # B8
-                if (self.item_count(ctx, "Round Crystal (Temple of the Ocean King)")
-                        or self.item_count(ctx, "Round Pedestal B8 (Temple of the Ocean King)")
-                        or self.item_count(ctx, "Round Crystals")):
-                    await lower_spikes(8, 6, 0xFFFF6800, 2)
-                    await PHAddr.totok_b8_state.set_bits(ctx, 0x2)
                 if (self.item_count(ctx, "Triangle Crystal (Temple of the Ocean King)")
                         or self.item_count(ctx, "Triangle Crystals")
                         or self.item_count(ctx, "Triangle Pedestal B8 (Temple of the Ocean King)")):
                     await lower_spikes(12, 6, 14336, 3)
                     await PHAddr.totok_b8_state.set_bits(ctx, 0x4)
+                if (self.item_count(ctx, "Round Crystal (Temple of the Ocean King)")
+                        or self.item_count(ctx, "Round Pedestal B8 (Temple of the Ocean King)")
+                        or self.item_count(ctx, "Round Crystals")):
+                    await lower_spikes(8, 6, 0xFFFF6800, 2)
+                    await PHAddr.totok_b8_state.set_bits(ctx, 0x2)
             elif current_scene == 0x250C:  # B9
                 if (self.item_count(ctx, "Round Crystal (Temple of the Ocean King)")
                         or self.item_count(ctx, "Round Pedestal B9 (Temple of the Ocean King)")
@@ -1463,6 +1470,7 @@ class PhantomHourglassClient(DSZeldaClient):
         next_item_id = ctx.items_received[num_received_items].item
         item_name = self.item_id_to_name[next_item_id]
         item_data: PHItem = self.item_data[item_name]
+        local_item = ctx.items_received[num_received_items].player == ctx.slot
 
         if log_items:
             logger.info(f"Received Backlogged Item: {item_name}")
@@ -1482,14 +1490,26 @@ class PhantomHourglassClient(DSZeldaClient):
             return _write_list
 
         # print(f"Getting item last location: {self.last_location} location_models: {ctx.slot_data.get("location_models", {})}")
-        if self.last_location and str(self.last_location['id']) in ctx.slot_data.get("location_models", {}):
+        if local_item and self.last_location and str(self.last_location['id']) in ctx.slot_data.get("location_models", {}):
             # Handle locs with swapped items
             if "chest_offset" in self.last_location or "gift_addr" in self.last_location:
                 print(f"Handling Item: {item_name} ghost? {item_data.ghost_model} reset? {item_data.model_reset} last_vanilla: {self.last_vanilla_item}")
                 if (item_data.ghost_model or item_data.model is None) and self.current_scene not in getattr(item_data, "blocked_scenes", []):
                     write_list += await item_data.receive_item(self, ctx, num_received_items)
-                if self.last_vanilla_item and not item_data.model_reset and item_data.vanilla_model[0] in model_resets:
+
+                vanilla_model = item_data.vanilla_model[0]
+                print(f"\tCancel removal conditions: {vanilla_model in model_resets} "
+                      f"| {not model_reset_vanillas.get(item_data.model)} "
+                      f"| {model_reset_vanillas.get(item_data.model)} == {item_name} -> {model_reset_vanillas.get(item_data.model) == item_name}")
+                if (self.last_vanilla_item
+                        and not item_data.model_reset  # always reset
+                        and vanilla_model in model_resets  # reset these items, custom item stuff
+                        and (
+                                not model_reset_vanillas.get(item_data.model)
+                                or model_reset_vanillas.get(item_data.model) == item_name # cancel reset for models that work in vanilla
+                        )):
                     self.last_vanilla_item.pop()
+
                 if self.last_vanilla_item and "monotone_incremental" in item_data.tags and "delay_reset" in self.last_location:
                     print(f"Monotone Incremental {item_data} from delay reset, canceling delay reset.")
                     self.last_vanilla_item.pop()
@@ -1506,9 +1526,13 @@ class PhantomHourglassClient(DSZeldaClient):
         print("Write list:")
         for addr, v, domain in write_list:
             print(f"  {hex(addr)}: {v} ({domain})")
-        # print(f"Write list: {write_list}")
         await bizhawk.write(ctx.bizhawk_ctx, write_list)
 
+        # Post Processes
+        if self.delay_pickup_remove_vanilla and local_item:
+            print(f"Removing vanilla for delay pickup")
+            self.delay_pickup_remove_vanilla = False
+            await self._remove_vanilla_item(ctx, num_received_items)
         await self.receive_item_post_processing(ctx, item_name, item_data)
 
     @staticmethod
@@ -1598,13 +1622,14 @@ class PhantomHourglassClient(DSZeldaClient):
         return Address.from_pointer(chest_object+4)
 
     async def _set_vanilla_item(self, ctx, location, vanilla_item: str | None = None):
+        print(f"Setting vanilla item for {location.get('name')}")
         if "chest_offset" in location or "gift_addr" in location:
             model = ctx.slot_data.get("location_models", {}).get(str(location["id"]), 0x1E)
-            print(f"Got swapped item model as vanilla item {hex(model)}: {model_resets.get(model)}")
+            print(f"Got swapped item model as vanilla item {hex(model)}: {model_resets.get(model)} {model_reset_vanillas.get(model)}")
+            # Always remove for previously checked locations
             if model_resets.get(model):
                 print(f"\tResetting model: {model_resets[model]}")
-                await super()._set_vanilla_item(ctx, location, model_resets[model])
-                # self.last_vanilla_item.append(model_resets[model])
+                await super()._set_vanilla_item(ctx, location, model_resets.get(model))
             return
         await super()._set_vanilla_item(ctx, location, vanilla_item)
 
