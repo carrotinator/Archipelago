@@ -100,7 +100,7 @@
 {"name": "Sensitive Anouki's Exit", "sections": [{"name": "Sensitive Anouki's Exit"}], "map_locations": [{"map": "Sensitive Anouki's House", "x": 132, "y": 108}]},
 {"name": "Smart Anouki's Exit", "sections": [{"name": "Smart Anouki's Exit"}], "map_locations": [{"map": "Smart Anouki's House", "x": 132, "y": 108}]},
 {"name": "Brant's Maze 1", "sections": [{"name": "Brant's Maze 1"}], "map_locations": [{"map": "Brant's Temple Maze 1", "x": 128, "y": 48}]},
-{"name": "Brant's Maze Exit", "sections": [{"name": "Brant's Maze Exit"}], "map_locations": [{"map": "Brant's Temple Maze 1", "x": 128, "y": 146}]},
+{"name": "Brant's Maze Exit", "sections": [{"name": "Brant's Maze Exit"}], "map_locations": [{"map": "Brant's Temple Maze 1", "x": 128, "y": 146}, {"map": "Isle of the Dead", "x": 132, "y": 72}]},
 {"name": "IotD Pyramid", "sections": [{"name": "IotD Pyramid"}], "map_locations": [{"map": "Isle of the Dead", "x": 192, "y": 40}]},
 {"name": "Brant's Exit", "sections": [{"name": "Brant's Exit"}], "map_locations": [{"map": "Brant's Temple Maze 1", "x": 128, "y": 146}]},
 {"name": "Doylan's Staircase", "sections": [{"name": "Doylan's Staircase"}], "map_locations": [{"map": "Doylan's Temple", "x": 128, "y": 116}]},

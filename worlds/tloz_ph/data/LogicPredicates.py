@@ -1867,6 +1867,16 @@ def ph_toi_b2_north(state, player):
         ph_can_hit_spin_switches(state, player)
     ])
 
+def ph_gleeok(state, player):
+    return all([
+        ph_has_grapple(state, player),
+        any([
+            ph_has_sword(state, player),
+            ph_has_bombs(state, player),
+            ph_has_hammer(state, player)
+        ])
+    ])
+
 # Mutoh's
 
 def ph_mutoh_entrance(state, player):
@@ -3107,6 +3117,7 @@ RULE_DICT = {
     "toi_b1_switch": ph_toi_b2_switch_room,
     "toi_b2_north": ph_toi_b2_north,
     "toi_boss_door": ph_toi_boss_door,
+    "gleeok": ph_gleeok,
     # MT
     "mutoh_entrance": ph_mutoh_entrance,
     "mutoh_water": ph_mutoh_water,

@@ -684,7 +684,7 @@ def make_overworld_logic():
         ["ToI B1 Boss Door", "ToI B1 Mid", False, "grapple"],
         ["ToI B1 Boss Door", "ToI B1 Before Boss", True, "toi_boss_door"],
         ["ToI B1 Before Boss", "Gleeok", True, None],
-        ["Gleeok", "Post Gleeok", False, "grapple"],
+        ["Gleeok", "Post Gleeok", False, "gleeok"],
         ["Post Gleeok", "Post ToI", False, None],
         ["ToI B1 Before Boss", "ToI Blue Warp", True, None],
         ["ToI 1F", "ToI Blue Warp", True, "has", "_toi_blue_warp"],

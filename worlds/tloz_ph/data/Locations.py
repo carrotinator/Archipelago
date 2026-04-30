@@ -3533,6 +3533,7 @@ LOCATIONS_DATA = {
         "stage_id": 0x6,
         "floor_id": 0x0,
         "address": PHAddr.adv_flags_19,
+        "delay_reset": True,
         "value": 0x20,
         "id": 279,
         "gift_addr": [Address(0x216044), Address(0x215ee4)]
@@ -3543,6 +3544,7 @@ LOCATIONS_DATA = {
         "stage_id": 0x6,
         "floor_id": 0x0,
         "address": PHAddr.adv_flags_19,
+        "delay_reset": True,
         "value": 0x20,
         "id": 280,
         "gift_addr": [Address(0x215f04), Address(0x2160fc)]

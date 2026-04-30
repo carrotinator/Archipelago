@@ -1264,9 +1264,21 @@ DYNAMIC_FLAGS = {
         "unset_if_true": [(PHAddr.adv_flags_19, 0x08)],
         "not_has_locations": ["Man of Smiles' Prize Postcard"]
     },
+    "Man of smiles resets": {
+        "on_scenes": [0x600],
+        "reset_flags": ["RESET Heroes new clothes"]
+    },
+    "RESET Heroes new clothes": {
+        "has_items": [("Hero's New Clothes", 0)],
+        "unset_if_true": [(PHAddr.flags_trade_quest, 0x4)]
+    },
+    "RESET Prize postcard": {
+        "has_items": [("Prize Postcard", 0)],
+        "unset_if_true": [(PHAddr.adv_flags_19, 0x8)]
+    },
     # Heal on bellumbeck
     "Full heal on bellumbeck": {
-        "on_scenes": [0x3300],
+        "on_scenes": [0x600],
         "full_heal": True
     },
     # Skippyjack protection

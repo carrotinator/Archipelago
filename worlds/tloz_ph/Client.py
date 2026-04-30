@@ -593,6 +593,9 @@ class PhantomHourglassClient(DSZeldaClient):
             if await PHAddr.adv_flags_22.read(ctx) & 0x8:
                 await PHAddr.wayfarer_chest.set_bits(ctx, 0x80)
 
+        if self.current_stage == 0 and ctx.slot_data["randomize_fishing"]:
+            await self.force_spawn_swordfish(ctx)
+
         # Open boss door
         await self.open_boss_door(ctx)
 
@@ -1637,3 +1640,13 @@ class PhantomHourglassClient(DSZeldaClient):
         if read_result[PHAddr.in_cutscene] != 0xD8:
             return
         await super().process_in_game(ctx, read_result)
+
+    async def force_spawn_swordfish(self, ctx):
+        print(f"Checking RNG Swordfish {self.current_room}")
+        sf_pointer = await PHAddr.swordfish_pointers[self.current_room].read(ctx)
+        if (sf_pointer
+            and self.item_count(ctx, "Swordfish Shadows")
+            and self.item_count(ctx, "Big Catch Lure")
+        ):
+            print(f"\tRNG Swordfish successful, spawning swordfish immediately")
+            await Address.from_pointer(sf_pointer+375, size=2).overwrite(ctx, 0x10F)
