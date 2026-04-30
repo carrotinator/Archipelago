@@ -2432,14 +2432,13 @@ LOCATIONS_DATA = {
         "floor_id": 0x2,
         "vanilla_item": "Treasure Map #16 (Goron NE)",
         "address": PHAddr.adv_flags_34,
-        "delay_reset": True,
+        # "delay_reset": True,  # The treasure map is added by the cutscene!
         "value": 0x20,
         "x_min": -60000,
         "z_max": 45000,
         "id": 190,
         "do_special": {"event_type": "ut_connect",
                        "event_name": "EVENT: Goron SW Kill Yellow Chus"},
-        "set_bit": [(PHAddr.treasure_maps_2, 0x10)],
         "hint_entrance": "Goron SW Mountains East",
         "gift_addr": Address(0x2143DC)
     },

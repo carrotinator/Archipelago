@@ -658,7 +658,7 @@ def make_overworld_logic():
         ["ToI 3F Right", "ToI 3F", False, "toi_3f"],
         ["ToI 3F", "ToI 3F Right", False, "range"],
         ["ToI 3F", "ToI 3F Key Door", True, "toi_key_door_1"],
-        ["ToI 3F", "ToI 3F Switch State", False, "bombs"],
+        ["ToI 3F", "ToI 3F Switch State", False, "toi_3f_switch"],
         ["ToI 3F Switch State", "ToI 3F Boomerang Key", False, "toi_3f_boomerang"],
         ["ToI 3F Key Door", "ToI 2F Arena", True, None],
         ["ToI 2F Arena", "ToI 2F Post Arena", False, "dark_yook"],
