@@ -287,8 +287,10 @@ ITEMS_DATA = {
         "value": 0x10,
         "id": 26,
         "model": 0x80,
+        # "set_bit": [(PHAddr.adv_flags_39, 0x80)],
         "ghost_model": True,
-        "model_reset": True
+        "model_reset": True,
+        "blocked_scenes": [0x1401]
     },
     "Cyclone Slate": {
         "classification": ItemClassification.progression,
@@ -1766,7 +1768,8 @@ ITEMS_DATA = {
         "id": 183,
         "model": 0x80,
         "ghost_model": True,
-        "model_reset": True
+        "model_reset": True,
+        "blocked_scenes": [0x200]
     },
     "Fish: Toona": {
         "classification": ItemClassification.filler,
@@ -1777,7 +1780,8 @@ ITEMS_DATA = {
         "id": 184,
         "model": 0x80,
         "ghost_model": True,
-        "model_reset": True
+        "model_reset": True,
+        "blocked_scenes": [0x200]
     },
     "Fish: Loovar": {
         "classification": ItemClassification.progression_skip_balancing,
@@ -1788,7 +1792,8 @@ ITEMS_DATA = {
         "id": 185,
         "model": 0x80,
         "ghost_model": True,
-        "model_reset": True
+        "model_reset": True,
+        "blocked_scenes": [0x200]
     },
     "Fish: Rusty Swordfish": {
         "classification": ItemClassification.progression_skip_balancing,
@@ -1799,7 +1804,8 @@ ITEMS_DATA = {
         "id": 186,
         "model": 0x80,
         "ghost_model": True,
-        "model_reset": True
+        "model_reset": True,
+        "blocked_scenes": [0x200]
     },
     "Fish: Legendary Neptoona": {
         "classification": ItemClassification.progression_skip_balancing,
@@ -1810,7 +1816,8 @@ ITEMS_DATA = {
         "id": 187,
         "model": 0x80,
         "ghost_model": True,
-        "model_reset": True
+        "model_reset": True,
+        "blocked_scenes": [0x200]
     },
     "Fish: Stowfish": {
         "classification": ItemClassification.progression_skip_balancing,
@@ -1821,7 +1828,8 @@ ITEMS_DATA = {
         "id": 188,
         "model": 0x80,
         "ghost_model": True,
-        "model_reset": True
+        "model_reset": True,
+        "blocked_scenes": [0x200]
     },
     "_UT_Glitched_Logic": {
         "classification": ItemClassification.progression,

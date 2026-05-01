@@ -828,6 +828,7 @@ LOCATIONS_DATA = {
         "stage_id": 0x25,
         "floor_id": 0xd,
         "dungeon": "Temple of the Ocean King",
+        "set_bit": [(PHAddr.adv_flags_1, 0x8)],
         "id": 61,
         "hint_entrance": "TotOK Lobby Exit",
         "chest_offset": 1,
@@ -1299,6 +1300,7 @@ LOCATIONS_DATA = {
         "item_override": "Rare Metal",
         "stage_id": 0x2b,
         "floor_id": 0x0,
+        "from_entrances": [1],
         "address": PHAddr.flags_bosses_0,
         "value": 0x20,
         "boss_room": "Temple of Fire",
@@ -1971,6 +1973,7 @@ LOCATIONS_DATA = {
         "address": PHAddr.flags_bosses_0,
         "value": 0x40,
         "boss_room": "Temple of Wind",
+        "from_entrances": [1, 2],
         # "delay_reset": True,
         "id": 156,
         "hint_entrance": "Cyclok Exit",
@@ -2417,7 +2420,8 @@ LOCATIONS_DATA = {
         "value": 0x80,
         "post_dungeon": "Ghost Ship",
         "id": 189,
-        "gift_addr": Address(0x215dfc)
+        "gift_addr": Address(0x215dfc),
+        "delay_reset": True
     },
 
     # ========== Goron Island ============
@@ -2428,14 +2432,13 @@ LOCATIONS_DATA = {
         "floor_id": 0x2,
         "vanilla_item": "Treasure Map #16 (Goron NE)",
         "address": PHAddr.adv_flags_34,
-        "delay_reset": True,
+        # "delay_reset": True,  # The treasure map is added by the cutscene!
         "value": 0x20,
         "x_min": -60000,
         "z_max": 45000,
         "id": 190,
         "do_special": {"event_type": "ut_connect",
                        "event_name": "EVENT: Goron SW Kill Yellow Chus"},
-        "set_bit": [(PHAddr.treasure_maps_2, 0x10)],
         "hint_entrance": "Goron SW Mountains East",
         "gift_addr": Address(0x2143DC)
     },
@@ -3530,6 +3533,7 @@ LOCATIONS_DATA = {
         "stage_id": 0x6,
         "floor_id": 0x0,
         "address": PHAddr.adv_flags_19,
+        "delay_reset": True,
         "value": 0x20,
         "id": 279,
         "gift_addr": [Address(0x216044), Address(0x215ee4)]
@@ -3540,6 +3544,7 @@ LOCATIONS_DATA = {
         "stage_id": 0x6,
         "floor_id": 0x0,
         "address": PHAddr.adv_flags_19,
+        "delay_reset": True,
         "value": 0x20,
         "id": 280,
         "gift_addr": [Address(0x215f04), Address(0x2160fc)]
@@ -3553,6 +3558,7 @@ LOCATIONS_DATA = {
         "value": 0x8,
         "id": 327,
         "conditional": True,
+        "delay_reset": True,
         "gift_addr": Address(0x215fe4)
     },
     "Prince of Red Lions Trade Quest Item": {

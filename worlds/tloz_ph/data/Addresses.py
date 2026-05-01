@@ -278,6 +278,16 @@ class PHAddr:
     potion_protector = Address(0x1BA70a)
     in_minigame = Address(0x307D77)
 
+    sea_actor_table = Address(0x257950)  # Size biig
+    swordfish_pointer_sw = Address(0x257A08, size=3)  # 46
+    swordfish_pointer_nw = Address(0x257A24, size=3)  # 53
+    swordfish_pointer_se = Address(0x2579B8, size=3)  # 26
+    swordfish_pointer_ne = Address(0x2579D4, size=3)  # 34
+    swordfish_pointers = [swordfish_pointer_sw,
+                          swordfish_pointer_nw,
+                          swordfish_pointer_se,
+                          swordfish_pointer_ne]
+
 class PHSRAM:
     # SRAM
     mercay_se_chests = SRAM(0x3c4)
