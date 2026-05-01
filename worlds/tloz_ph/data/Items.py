@@ -287,7 +287,7 @@ ITEMS_DATA = {
         "value": 0x10,
         "id": 26,
         "model": 0x80,
-        "set_bit": [(PHAddr.adv_flags_39, 0x80)],
+        # "set_bit": [(PHAddr.adv_flags_39, 0x80)],
         "ghost_model": True,
         "model_reset": True,
         "blocked_scenes": [0x1401]

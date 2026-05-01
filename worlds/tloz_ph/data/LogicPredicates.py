@@ -358,6 +358,8 @@ def ph_totok_phantom_steal_object(state, player):
 def ph_has_range(state: CollectionState, player: int):
     return state.has_any(["Boomerang", "Bow (Progressive)", "Grappling Hook"], player)
 
+def ph_beam_range(state, player):
+    return ph_has_range(state, player) or ph_has_beam_sword(state, player)
 
 def ph_has_short_range(state: CollectionState, player: int):
     return any([ph_has_mid_range(state, player),
@@ -497,7 +499,7 @@ def ph_can_farm_rupees(state: CollectionState, player: int):
 
 def ph_island_shop(state, player, price):
     other_costs = 0
-    if state.can_reach_region("Beedle", player):
+    if state.has_group("Sea Charts", player):
         # Includes cannon island, but not salvage arm cause that also unlocks treasure shop
         other_costs += 1550
         if ph_option_randomize_masked_beedle(state, player):
@@ -2941,6 +2943,7 @@ RULE_DICT = {
     "dark_yook": ph_can_kill_dark_yook,
     "can_steal_from_phantom": ph_totok_phantom_steal_object,
     "range": ph_has_range,
+    "beam_range": ph_beam_range,
     "long_range": ph_has_range,
     "short_range": ph_has_short_range,
     "mid_range": ph_has_mid_range,

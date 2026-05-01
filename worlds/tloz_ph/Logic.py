@@ -54,7 +54,7 @@ def make_overworld_logic():
         ["Long Bridge Cave", "Mercay NE", False, None],
         ["Long Bridge Cave", "Mercay NW Freedle Island", True, None],
         ["Mercay NW Freedle Island", "Mercay NE", False, None],
-        ["Long Bridge Cave", "Long Bridge Cave Chest", False, "range"],
+        ["Long Bridge Cave", "Long Bridge Cave Chest", False, "beam_range"],
         ["Mercay NW Freedle Island", "Mercay NW Freedle Gift", False, "sea_chart", "SE"],
         ["Mercay NE", "Mercay NW Temple", True, None],
         ["Mercay NE Ledge", "Mercay NE", False, None],

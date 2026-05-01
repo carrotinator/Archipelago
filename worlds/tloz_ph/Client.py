@@ -602,7 +602,7 @@ class PhantomHourglassClient(DSZeldaClient):
         # Open pedestal doors. sucks that you can't trigger it with dynaflags. slow code but game is slower
         if ctx.slot_data.get("randomize_pedestal_items", 0) > 0:
             async def open_door(start_offset, check_offset, comp_value):
-                door = await self.find_map_object(ctx, start_offset, check_offset, comp_value)
+                door = await self.find_table_object(ctx, start_offset, check_offset, comp_value)
                 print(f"Opening door {door}")
                 if door:
                     await door.overwrite(ctx, 0x1000, offset=4 * 26)  # Open
@@ -611,7 +611,7 @@ class PhantomHourglassClient(DSZeldaClient):
 
             async def lower_spikes(start_offset, check_offset, comp_value, width):
 
-                spike, offset = await self.find_map_object(ctx, start_offset, check_offset, comp_value, return_index=True)
+                spike, offset = await self.find_table_object(ctx, start_offset, check_offset, comp_value, return_index=True)
                 if spike is None:
                     print(f"Can't find spikes, probably already removed.")
                     return
@@ -841,7 +841,7 @@ class PhantomHourglassClient(DSZeldaClient):
     async def open_boss_door(self, ctx):
         data = BOSS_DOOR_DATA.get(self.current_scene, False)
         if data and ctx.slot_data.get("boss_key_behaviour", True) and self.item_count(ctx, f"Boss Key ({data['name']})"):
-            boss_door = await self.find_map_object(ctx, *data["map_obj_comp"])
+            boss_door = await self.find_table_object(ctx, *data["map_obj_comp"])
             if not boss_door:
                 return
             open_state = Address.from_pointer(boss_door+2*4)
@@ -1539,17 +1539,32 @@ class PhantomHourglassClient(DSZeldaClient):
         await self.receive_item_post_processing(ctx, item_name, item_data)
 
     @staticmethod
-    async def find_map_object(ctx: "BizHawkClientContext", start_offset: int,
-                              check_offset: int, comp_value: int | list,
-                              size=4, return_index=False) -> Address | tuple[Address, int] | None:
-
+    async def find_table_object(ctx: "BizHawkClientContext", start_offset: int,
+                              check_offset, comp_value: int | list,
+                              size=4,
+                              table_addr: Address=PHAddr.map_obj_table,
+                              return_index=False, max_search: int=35) -> Address | tuple[Address, int] | None:
+        """
+        Find a specific object from a pointer table.
+        Loops backwards from start_offset until the validation check matches.
+        :param ctx: BizhawkContext
+        :param start_offset: largest offset in the table the object you want can be found in
+        :param check_offset: offset in the object data to use for validation
+        :param comp_value: what check offset needs to equal to validate the object
+        :param table_addr: Address for the start of the table to search through
+        :param size: size of the comp value read
+        :param return_index: return the table index that the correct object was found at along with the object data address
+        :param max_search: How far to search. -1 checks the entire table
+        :return: Address of valid object, or tuple of Address and table index
+        """
         async def check_multi(l) -> tuple[Address | None, int]:
-            read_list = [Address.from_pointer(PHAddr.map_obj_table + 4 * (offset-_i), size=3) for _i in range(l)]
+            read_list = [Address.from_pointer(table_addr + 4 * (offset-_i), size=3) for _i in range(l)]
             objects = (await read_multiple(ctx, read_list)).values()
-            checks = await read_multiple(ctx, [Address.from_pointer(a+check_offset*4, size=size) for a in objects])
+            objects = [a for a in objects if a]
+            checks = await read_multiple(ctx, [Address.from_pointer(a+int(check_offset*4), size=size) for a in objects])
             _i = 0
-            # print(f"\tobjects: {objects}")
-            # print(f"\tchecks: {checks}")
+            print(f"\tobjects: {[hex(o) for o in objects]}")
+            print(f"\tchecks: {checks}")
             for _i, check in enumerate(zip(objects, checks.values())):
                 o, c = check
                 print(f"\t\tcomparing: {c} == {comp_value}")
@@ -1560,7 +1575,7 @@ class PhantomHourglassClient(DSZeldaClient):
         check_list = list(range(start_offset + 1))
         check_list.reverse()
         batch_size = 8
-        for chunk, offset in enumerate(check_list[:35:batch_size]):
+        for chunk, offset in enumerate(check_list[:max_search:batch_size]):
             remaining = min(len(check_list[chunk*batch_size:]), batch_size)
             ret, chunk_index = await check_multi(remaining)
             if ret:
@@ -1602,7 +1617,7 @@ class PhantomHourglassClient(DSZeldaClient):
                     model = 0x7D
                 vanilla_item_model = self.item_data[data["vanilla_item"]].vanilla_model
                 print(f"\tVanilla model {vanilla_item_model} offsets {chest_offset}")
-                chest_obj = await self.find_map_object(ctx, chest_offset, 9, vanilla_item_model, size=1)
+                chest_obj = await self.find_table_object(ctx, chest_offset, 9, vanilla_item_model, size=1)
                 if chest_obj:
                     chest_content_addr = Address.from_pointer(chest_obj + 9 * 4, 1)
                     write_list.append(chest_content_addr.get_inner_write_list(model))
@@ -1614,7 +1629,7 @@ class PhantomHourglassClient(DSZeldaClient):
 
     async def get_object_read_addr(self, ctx, location) -> Address | None:
         vanilla_item_model = self.item_data[location["vanilla_item"]].vanilla_model
-        chest_object = await self.find_map_object(ctx, location["chest_offset"], 9, vanilla_item_model, size=1)
+        chest_object = await self.find_table_object(ctx, location["chest_offset"], 9, vanilla_item_model, size=1)
         if not chest_object:
             return None
         LOCATIONS_DATA[location['name']] |= {
@@ -1643,10 +1658,14 @@ class PhantomHourglassClient(DSZeldaClient):
 
     async def force_spawn_swordfish(self, ctx):
         print(f"Checking RNG Swordfish {self.current_room}")
-        sf_pointer = await PHAddr.swordfish_pointers[self.current_room].read(ctx)
-        if (sf_pointer
-            and self.item_count(ctx, "Swordfish Shadows")
+        if (self.item_count(ctx, "Swordfish Shadows")  # Progressive fishing when :(
             and self.item_count(ctx, "Big Catch Lure")
         ):
-            print(f"\tRNG Swordfish successful, spawning swordfish immediately")
-            await Address.from_pointer(sf_pointer+375, size=2).overwrite(ctx, 0x10F)
+            fish_offset_table = [46, 53, 26, 34]
+            swordfish_addr = await self.find_table_object(ctx,
+                                                          fish_offset_table[self.current_scene],
+                                                          375/4, 0, 2,
+                                                          PHAddr.sea_actor_table, max_search=4)
+            if swordfish_addr:
+                print(f"\tRNG Swordfish successful, spawning swordfish immediately {swordfish_addr}")
+                await Address.from_pointer(swordfish_addr+375, size=2).overwrite(ctx, 0x10F)
