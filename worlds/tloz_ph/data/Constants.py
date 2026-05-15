@@ -1177,6 +1177,16 @@ CATEGORY_LOCATION_GROUPS = {
         "Masked Beedle Heart Container",
         "Masked Beedle Courage Gem",
     ],
+    "Counter Shops": [
+        "Beedle Shop Bomb Bag",
+        "Beedle Shop Wisdom Gem",
+        "Masked Beedle Heart Container",
+        "Masked Beedle Courage Gem",
+        "Island Shop Power Gem",
+        "Island Shop Quiver",
+        "Island Shop Bombchu Bag",
+        "Island Shop Heart Container",
+    ],
     "Minigames": [
         "Bannan Island East Cannon Game",
         "Prince of Red Lions Combat Reward",
@@ -2065,6 +2075,12 @@ shop_location_lookup = {
     0x2a: "Island Shop Bombchu Bag",
     0xa: "Island Shop Heart Container"
 }
+
+SHOP_SCENES = [
+    0xB11,
+    0xc0e,
+
+]
 
 if __name__ == "__main__":
     for cat, value in CATEGORY_LOCATION_GROUPS.items():

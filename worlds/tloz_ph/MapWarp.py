@@ -225,7 +225,7 @@ async def set_visibility(ctx: "BizHawkClientContext"):
 
 async def map_mode(client: "PhantomHourglassClient", ctx: "BizHawkClientContext", read_list):
     # Check options
-    if ctx.slot_data.get("map_warp_options", 0) == 0 and False: return
+    if ctx.slot_data.get("map_warp_options", 0) == 0: return
 
     if client.warp_to_start_flag:
         client.warp_to_start_flag = False

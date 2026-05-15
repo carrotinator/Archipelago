@@ -1300,7 +1300,7 @@ class PhantomHourglassClient(DSZeldaClient):
 
         if "do_special" in location:
             if location["do_special"] == "keylock":
-                print(f"Got item in Mountain passage: {ctx.items_received[-1]}")
+                # print(f"Got item in Mountain passage: {ctx.items_received[-1]}")
                 self.item_location_combo = location
             if location["do_special"] == "ut_event":
                 key = storage_key(ctx, ut_events_key)
@@ -1493,11 +1493,12 @@ class PhantomHourglassClient(DSZeldaClient):
             return _write_list
 
         # print(f"Getting item last location: {self.last_location} location_models: {ctx.slot_data.get("location_models", {})}")
-        if local_item and self.last_location and str(self.last_location['id']) in ctx.slot_data.get("location_models", {}):
+        model_id = ctx.slot_data.get("location_models", {}).get(str(self.last_location['id']), None) if self.last_location else None
+        if local_item and model_id is not None:
             # Handle locs with swapped items
             if "chest_offset" in self.last_location or "gift_addr" in self.last_location:
                 print(f"Handling Item: {item_name} ghost? {item_data.ghost_model} reset? {item_data.model_reset} last_vanilla: {self.last_vanilla_item}")
-                if (item_data.ghost_model or item_data.model is None) and self.current_scene not in getattr(item_data, "blocked_scenes", []):
+                if (item_data.ghost_model or item_data.model is None or model_id in [0x1D, 0x1E]) and self.current_scene not in getattr(item_data, "blocked_scenes", []):
                     write_list += await item_data.receive_item(self, ctx, num_received_items)
 
                 vanilla_model = item_data.vanilla_model[0]

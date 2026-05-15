@@ -41,12 +41,10 @@ DYNAMIC_FLAGS = {
     },
     "Mercay yellow guy treasure map": {
         "on_scenes": [0xB03],
-        "not_has_locations": ["Mercay SE Ojibe (Docks Guy) Item"],
         "unset_if_true": [(PHAddr.treasure_maps_0, 0x02)],
         "reset_flags": ["RESET Mercay yellow guy treasure map"]
     },
     "RESET Mercay yellow guy treasure map": {
-        # "on_scenes": [0x000, 0xB00, 0xB02, 0xB0C, 0xB0D, 0xB0E, 0xB0F, 0xB11, 0x2701],
         "has_items": [("Treasure Map #9 (Cannon W)", 1)],
         "set_if_true": [(PHAddr.treasure_maps_0, 0x02)]
     },
@@ -390,12 +388,17 @@ DYNAMIC_FLAGS = {
     "Reset cc room": {
         "on_scenes": [0x2508],
         "reset_flags": ["RESET Courage Crest room not salvaged it", "RESET Courage Crest room remove crest",
-                        "RESET Courage Crest room remove crest if not got it"]
+                        "RESET Courage Crest room remove crest if not got it", "RESET Courage Crest room salvaged it"]
     },
-    "RESET Courage Crest room not salvaged it": {
+    "RESET Courage Crest room salvaged it": {
         # "on_scenes": [0x2600, 0x2507],
         "has_locations": ["Ocean SW Salvage Courage Crest"],
         "set_if_true": [(PHAddr.adv_flags_2, 0x40)]
+    },
+    "RESET Courage Crest room not salvaged it": {
+        # "on_scenes": [0x2600, 0x2507],
+        "not_has_locations": ["Ocean SW Salvage Courage Crest"],
+        "unset_if_true": [(PHAddr.adv_flags_2, 0x40)]
     },
     "RESET Courage Crest room remove crest": {
         # "on_scenes": [0x2600, 0x2507],
@@ -484,7 +487,8 @@ DYNAMIC_FLAGS = {
     # boat requires sea chart
     "Always Despawn Linebeck 1": {
         "on_scenes": [0xB03],
-        "unset_if_true": [(PHAddr.adv_flags_2, 0x8)]
+        "unset_if_true": [(PHAddr.adv_flags_2, 0x8)],
+        "set_if_true": [(PHAddr.adv_flags_3, 0x10)]
     },
     "Always Spawn linebeck 2 setting": {
         "on_scenes": [0xB03],
@@ -585,6 +589,14 @@ DYNAMIC_FLAGS = {
         "has_slot_data": [("shuffle_dungeon_entrances", 0), ("shuffle_bosses", 0)],
         "set_if_true": [(PHAddr.flags_fog_spirits, 0x10), (PHAddr.flags_fog_done, 0x10)],  # Spawn spirits, remove fog
         "unset_if_true": [(PHAddr.flags_clear_fog, 0x80)]  # Respawn ghost ship
+    },
+    "Respawn ghost ship vanilla fog": {
+        "on_scenes": [0x1],  # NW quadrant
+        "not_last_scenes": [0x2903, 0x400],  # from ghost ship
+        "not_on_entrance": [5],  # prevent respawning if coming from ghost ship
+        "not_has_locations": ["Ghost Ship Rescue Tetra"],
+        "has_slot_data": [("fog_settings", 1)],
+        "unset_if_true": [(PHAddr.flags_clear_fog, 0x80), (PHAddr.flags_fog_done, 0x10)]  # Respawn ghost ship, add fog
     },
     "Always Respawn ghost ship with dungeon rando": {
         "on_scenes": [0x1],  # NW quadrant

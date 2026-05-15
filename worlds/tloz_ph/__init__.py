@@ -225,11 +225,12 @@ class PhantomHourglassWorld(World):
             self.boss_reward_items_pool = slot_data["boss_reward_items_pool"]
             self.ut_pairings = slot_data.get("er_pairings", {})
             self.treasure_price_index = slot_data.get("treasure_price_index", 0)
+            required_dungeon_locations = slot_data.get("required_dungeon_locations", [])
 
             # Figure out what events are active, and add to ut_pairings
             print(F"Generating early")
             print(f"UT Pairings: {self.ut_pairings}")
-            if (self.options.ut_events and getattr(self.multiworld, "enforce_deferred_connections", "default") != "off"):
+            if self.options.ut_events and getattr(self.multiworld, "enforce_deferred_connections", "default") != "off":
                 for event in EVENTS.values():
                     if self.options.ut_events == "unique_events" and event.extra_data.get("shared_event", False):
                         continue
@@ -246,6 +247,8 @@ class PhantomHourglassWorld(World):
                     if not self.options.shuffle_overworld_transitions and event.name == "EVENT: Gust Windmills":
                         continue
                     if "Unnamed Entrance" in event.name:
+                        continue
+                    if self.options.dungeon_hint_type.value == 2 and event.name in BOSS_EVENT_TO_LOCATION and BOSS_EVENT_TO_LOCATION[event.name] not in required_dungeon_locations:
                         continue
 
                     print(f"Adding Event: {event.name} {event.id} => {event.vanilla_reciprocal.id}")
@@ -1347,8 +1350,9 @@ class PhantomHourglassWorld(World):
                 continue
             if item.game in ["Phantom Hourglass"]:
                 if ITEMS[item.name].model is not None:
-                    location_models[loc_data['id']] = ITEMS[item.name].model
-                    continue
+                    if not (item.name.startswith("Treasure Map") and loc.name in CATEGORY_LOCATION_GROUPS["Counter Shops"]):
+                        location_models[loc_data['id']] = ITEMS[item.name].model
+                        continue
 
             if item.classification & ItemClassification.progression or item.classification & ItemClassification.useful:
                 location_models[loc_data['id']] = 0x1E  # blue force gem
@@ -1483,10 +1487,15 @@ class PhantomHourglassWorld(World):
                     # print(f"Pairing {pairing} {entrance_id_to_entrance[i].name}")
                     # print(f"UT pairings {self.ut_pairings}")
                     if pairing is not None:
+                        exit_name = entrance_id_to_entrance[i].name
                         _exit: "Entrance" = self.get_entrance(entrance_id_to_entrance[i].name)
                         entrance_region: "Region" = self.get_region(entrance_id_to_region[pairing])
                         print(f"Connecting: {_exit} => {entrance_region} | {i}: {pairing}")
                         _exit.connect(entrance_region)
+
+                        if exit_name in BOSS_EVENT_TO_LOCATION:
+                            print(f"Globally connecting menu => {_exit.parent_region}")
+                            self.get_region("Menu").connect(_exit.parent_region)
 
                 self.ut_connected_entrances |= new_entrances
 
@@ -1506,6 +1515,7 @@ class PhantomHourglassWorld(World):
                     e.connected_region = None
                     # Create target
                     parent_region.create_er_target(e.name)
+
 
         if "ph_keylocking" in key and stored_data:
             print(f"Attempting to keylock stuff!")
