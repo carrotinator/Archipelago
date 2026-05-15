@@ -156,6 +156,7 @@ LOCATIONS_DATA = {
         "value": 0x2,
         "vanilla_item": "Treasure Map #9 (Cannon W)",
         "id": 13,
+        "persistent": True,
         # "gift_addr": Address(0x2165FC)  # Need a better detection method for this...
     },
     "Shipyard Chest": {
@@ -234,6 +235,7 @@ LOCATIONS_DATA = {
         "stage_id": 0x27,
         "floor_id": 0x0,
         "z_max": 0x11170,
+        "y": 0,
         "sram_addr": PHSRAM.mountain_passage,
         "sram_value": 0x2,
         "dungeon": "Mountain Passage",
@@ -1708,7 +1710,8 @@ LOCATIONS_DATA = {
         "x_min": -0x1f40,
         "id": 132,
         "hint_entrance": ["Spirit Island Cave", "Spirit Board Ship"],
-        "chest_offset": 136
+        "chest_offset": 136,
+        "read_object": True,
     },
     "Spirit Island Gauntlet Chest": {
         "region_id": "Spirit Island Gauntlet",
@@ -1939,6 +1942,7 @@ LOCATIONS_DATA = {
         "stage_id": 0x1d,
         "floor_id": 0x1,
         "y": 0x0,
+        "x_max": 40000,
         "dungeon": "Temple of Wind",
         "id": 153,
         "hint_entrance": ["ToW Exit", "ToW Enter Boss"],
@@ -2542,7 +2546,8 @@ LOCATIONS_DATA = {
         "dungeon": "Goron Temple",
         "id": 199,
         "hint_entrance": ["GT Exit", "GT Enter Boss"],
-        "chest_offset": 20
+        "chest_offset": 20,
+        "read_object": True,
     },
     "Goron Temple B1 Kill Eyeslugs Chest": {
         "region_id": "GT B1",
@@ -2906,6 +2911,7 @@ LOCATIONS_DATA = {
         "floor_id": 0x1,
         "vanilla_item": "Red Potion",
         "z_max": -0x7530,
+        "x_min": 70000,
         "dungeon": "Temple of Ice",
         "id": 229,
         "hint_entrance": ["ToI Exit", "ToI Enter Boss"],
@@ -2917,6 +2923,7 @@ LOCATIONS_DATA = {
         "floor_id": 0x1,
         "vanilla_item": "Wisdom Gem",
         "y": 0x1333,
+        "x_max": -70000,
         "dungeon": "Temple of Ice",
         "id": 230,
         "hint_entrance": ["ToI Exit", "ToI Enter Boss"],
@@ -2927,7 +2934,9 @@ LOCATIONS_DATA = {
         "stage_id": 0x1f,
         "floor_id": 0x1,
         "vanilla_item": "Small Key (Temple of Ice)",
-        "y": 0x2666,
+        # "y": 0x2666,
+        "x_min": -70000,
+        "x_max": 70000,
         "dungeon": "Temple of Ice",
         "id": 231,
         "hint_entrance": ["ToI Exit", "ToI Enter Boss"],
@@ -3173,6 +3182,19 @@ LOCATIONS_DATA = {
         "z_max": -0x9c40,
         "conditional": True,
         "id": 250,
+        "delay_pickup": ["Isle of Ruins NW Like-Like Dig Shield"]
+    },
+    "Isle of Ruins NW Like-Like Dig Shield": {
+        "region_id": "Ruins NW Dig",
+        "vanilla_item": "Shield",
+        "stage_id": 0x11,
+        "floor_id": 0x1,
+        "additional_rooms": [0x1201],
+        "y": 0x1333,
+        "x_max": -0x30d40,
+        "z_max": -0x9c40,
+        "conditional": True,
+        "id": 330,
     },
     "Isle of Ruins NW Upper Bonk Tree": {
         "region_id": "Ruins NW Across Bridge",
@@ -3285,7 +3307,8 @@ LOCATIONS_DATA = {
         "dungeon": "Mutoh's Temple",
         "id": 259,
         "hint_entrance": ["MT Exit", "MT Enter Boss"],
-        "chest_offset": 56
+        "chest_offset": 56,
+        "read_object": True
     },
     "Mutoh's Temple 3F Hammer Chest": {
         "region_id": "MT Landing",
@@ -3295,7 +3318,8 @@ LOCATIONS_DATA = {
         "dungeon": "Mutoh's Temple",
         "id": 260,
         "hint_entrance": ["MT Exit", "MT Enter Boss"],
-        "chest_offset": 2
+        "chest_offset": 2,
+        "read_object": True,
     },
     "Mutoh's Temple B2 Spike Roller Chest": {
         "region_id": "MT Hammer",
