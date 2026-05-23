@@ -87,6 +87,9 @@ calculating logic at all! Good luck!
 ## Dee Ess Island
 - Kill Eye brutes with their own bombs (Hard Logic)
 
+## Isle of Frost
+- Itemless Yooks. Requires some very silly unloading of lit bomb flowers to get them to trigger in time (Not implemented, possible extreme logic)
+
 ## Temple of Ice
 - 1F [Color Switch early](https://www.youtube.com/watch?v=na6olZJgE3M) (Hard Logic)
   - Can be done with just boomerang!
