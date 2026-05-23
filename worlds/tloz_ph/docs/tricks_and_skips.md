@@ -36,6 +36,7 @@ calculating logic at all! Good luck!
  - B8 push phantoms into pits (kill phantoms with stun/weapon)
  - B8 Hammer clip bombchu switch (Glitched Logic)
  - B10 Hammer switches (doesn't affect logic)
+ - B12 [hammer chest without hammer](https://youtu.be/k3TiG0TNmak) (Hard Logic)
 
 ## Cannon island
  - [Bomb garden skip](https://www.youtube.com/watch?v=KtJ2GkNlr3E) (doesn't affect logic)
@@ -99,4 +100,5 @@ calculating logic at all! Good luck!
 ## Mutoh's Temple
 - 1F Skip one side with hammer (All Settings)
 - B1 [Arrow despawn](https://www.youtube.com/watch?v=XvgpXRtiq0w) for puzzle and small key skips (Glitched Logic)
-- B1 [Hammer pad skew](https://www.youtube.com/watch?v=qZzMGVTJMHE) and Spirit of Power level 1 can skip bow. Works with both bombs and chus (Glitched Logic)
+- B1 [Hammer pad skew](https://www.youtube.com/watch?v=qZzMGVTJMHE) and Spirit of Courage level 1 can skip bow. Works with both bombs and chus (Glitched Logic)
+- B1 [Hammer pad skew to boss key](https://www.twitch.tv/rpglimitbreak/clip/HeadstrongRelatedCrabTwitchRaid-prnoEIh0S-jp4UZ3), skips a small key (Glitched Logic)
