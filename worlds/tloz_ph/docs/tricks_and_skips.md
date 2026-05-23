@@ -24,7 +24,7 @@ calculating logic at all! Good luck!
  - B2 hit switch over fire with pot (Hard Logic)
  - B2 Have phantom pick up key
    - Throw pot at phantom to pick it up (Normal logic)
-   - Lure phantom to start of room (Hard Logic)
+   - [Lure phantom to start of room](https://youtu.be/OudN2CtGYzE) (Hard Logic)
  - B2 [boomerang return key](https://www.youtube.com/watch?v=ftt3lP_qQDc) (doesn't affect logic)
  - B2 hammer clip bombchu switch (Glitched logic)
  - B3 Kill all phantoms (kill phantoms with traps)
@@ -45,16 +45,17 @@ calculating logic at all! Good luck!
 - [Grapple chest without grapple](https://www.youtube.com/watch?v=IZiyFStyRfg) (Glitched Logic)
 
 ## Temple of Fire
-- Hit 1F spin switch with things other than sword: bombs, chus and boomerang (Hard Logic)
-- [Rat key early](https://www.youtube.com/watch?v=OJ-CwmYvWrc) (really tricky to kill rat with just boomerang, doesn't affect logic if killed with hammer clip)
-- [3F Out of Bounds](https://youtu.be/Z1OuvLaDUEg) (Glitched Logic)
+- 1F [spin switch with things other than sword](https://youtu.be/Lrg779r8K7I): bombs, chus and boomerang (Hard Logic)
+- 2F [Rat key early](https://www.youtube.com/watch?v=OJ-CwmYvWrc) (really tricky to kill rat with just boomerang, doesn't affect logic if killed with hammer clip)
+- 2F [Color switch with chus](https://youtu.be/l1uqr2vSkgg) (Hard Logic)
+- 3F [3F Out of Bounds](https://youtu.be/Z1OuvLaDUEg) (Glitched Logic)
 
 ## Temple of Courage
 - 1F Hammer clip all the switches (Glitched Logic)
 - B1 Invisible maze early
   - With grapple (all settings)
   - [With boomerang](https://www.youtube.com/watch?v=2DAUMNNQNhw) (Glitched Logic)
-- B1 Boomerang Skip with Spirit of Courage (Not Implemented)
+- B1 [Boomerang Skip with Spirit of Courage](https://youtu.be/6_twN751nE8) (Not Implemented, possible extreme logic)
 
 ## Nyave's Ship
 - Kill miniblins with barrels (Hard Logic)
@@ -62,10 +63,10 @@ calculating logic at all! Good luck!
 ## Isle of Gust
 - Gust South NW Chest without shovel
   - from west entrance with grapple (Normal Logic)
-  - from east entrance with grapple and bombchu camera lock (Glitched Logic)
+  - [from east entrance with grapple and bombchu camera lock](https://youtu.be/qZ7nYrg0dyE) (Glitched Logic)
 
 ## Temple of Wind
-- [Boss key early](https://www.youtube.com/watch?v=16hl9_mOLds) (not implemented)
+- [Boss key early](https://www.youtube.com/watch?v=16hl9_mOLds) (not implemented, possible extreme logic)
 - [B1 out of bounds](https://www.youtube.com/watch?v=ertGqXyGL-c) (doesn't affect logic)
 
 ## Ghost Ship
@@ -81,7 +82,7 @@ calculating logic at all! Good luck!
   - you can also grapple in with a bombchu camera lock and kill them with link (doesn't affect logic)
 - B2 early shortcut [rock roll](https://www.youtube.com/watch?v=FrdBA7idCWI) [BCL](https://www.youtube.com/watch?v=BUWBODrGF-0) (Doesn't affect logic)
 - [Boss key early](https://www.youtube.com/watch?v=BUWBODrGF-0) (Doesn't affect logic)
-- [Boss key skip](https://www.youtube.com/watch?v=Z4cupNcYcUg) (Not Implemented)
+- [Boss key skip](https://www.youtube.com/watch?v=Z4cupNcYcUg) (Not Implemented, possible extreme logic)
 
 ## Dee Ess Island
 - Kill Eye brutes with their own bombs (Hard Logic)
@@ -90,12 +91,17 @@ calculating logic at all! Good luck!
 - 1F [Color Switch early](https://www.youtube.com/watch?v=na6olZJgE3M) (Hard Logic)
   - Can be done with just boomerang!
 - 3F Hit entrance switch with bomb held over head (Normal Logic)
-- 3F hit boomerang switches with bow (Hard Logic)
+- 3F [hit boomerang switches with bow](https://youtu.be/OudN2CtGYzE) (Hard Logic)
 - 1F shortcut hammer clip (Glitched Logic)
 - B1 Hammer clip color switch (Glitched logic)
 - B1 [BCL switch skip](https://www.youtube.com/watch?v=aED-Yp_5MXo) (Glitched Logic)
-- B1 Jump to boomerang switches and hit with bow (Hard Logic)
+- B1 [Jump to boomerang switches and hit with bow](https://youtu.be/OudN2CtGYzE) (Hard Logic)
+- B2 [Spin Switches with weird items](https://youtu.be/Lrg779r8K7I) (Hard Logic)
 - B2 Hammer clip for early boss key (Glitched Logic)
+
+## Isle of Ruins
+- Regal Necklace SKip (Not Implemented, possible extreme logic)
+- NW Diagonal jump to return path from Doylan's Temple (Hard Logic)
 
 ## Mutoh's Temple
 - 1F Skip one side with hammer (All Settings)
