@@ -375,6 +375,12 @@ DYNAMIC_FLAGS = {
         "has_locations": ["Ocean SW Salvage Courage Crest"],
         "unset_if_true": [(PHAddr.adv_flags_2, 0x40)],
     },
+    "Courage Crest room remove sea chart": {
+        "on_scenes": [0x2508],
+        "has_items": [("SW Sea Chart", 0)],
+        "unset_if_true": [(PHAddr.inventory_5, 0x2)],
+        "reset_flags": ["RESET Give all sea charts if map warping"]
+    },
     "Courage Crest room remove crest": {
         "on_scenes": [0x2508],
         "unset_if_true": [(PHAddr.adv_flags_16, 0x04)],

@@ -1744,8 +1744,12 @@ def ph_toi_b2(state, player):
         ph_has_grapple(state, player),
         any([
             all([
+                state.has("_toi_b1_switch", player),
                 ph_quick_switches(state, player),
-                state.has("_toi_b1_switch", player)
+                any([
+                    ph_option_hard_logic(state, player),
+                    ph_has_hammer(state, player)
+                ])
             ]),
             all([
                 ph_can_bcl(state, player),
@@ -1874,7 +1878,7 @@ def ph_gleeok(state, player):
         ph_has_grapple(state, player),
         any([
             ph_has_sword(state, player),
-            ph_has_bombs(state, player),
+            state.has("Bombs (Progressive)", player, 2),
             ph_has_hammer(state, player)
         ])
     ])
@@ -1943,8 +1947,11 @@ def ph_mutoh_bk_chest(state, player):
             ph_has_small_keys(state, player, "Mutoh's Temple", 2),
             ph_ut_small_key_own_dungeon(state, player),
             all([
-                ph_has_small_keys(state, player, "Mutoh's Temple", 1),
-                ph_UT_glitched_logic(state, player)
+                ph_UT_glitched_logic(state, player),
+                any([
+                    ph_has_small_keys(state, player, "Mutoh's Temple", 1),
+                    ph_has_explosives(state, player)
+                ])
             ])
     ])
 
@@ -2817,7 +2824,10 @@ def ph_totok_b12_ghost(state, player):
 
 
 def ph_totok_b12_hammer(state, player):
-    return ph_totok_has_floor_time(state, player, '12_h', 10)
+    return any([
+        ph_totok_has_floor_time(state, player, '12_h', 10),
+        ph_option_hard_logic(state, player) and ph_totok_has_floor_time(state, player, 12, 20)
+    ])
 
 
 def ph_totok_b13(state, player):
