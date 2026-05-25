@@ -489,6 +489,12 @@ DYNAMIC_FLAGS = {
         "has_slot_data": [["randomize_triforce_crest", 1]],
         "has_items": [("Triforce Crest", 1)]
     },
+    "Triforce Crest Rando safety remove": {
+        "on_scenes": [0x2507],
+        "unset_if_true": [(PHAddr.adv_flags_4, 0x2)],
+        "has_slot_data": [["randomize_triforce_crest", 1]],
+        "has_items": [("Triforce Crest", 0)]
+    },
 
     # boat requires sea chart
     "Always Despawn Linebeck 1": {
@@ -838,13 +844,13 @@ DYNAMIC_FLAGS = {
         "has_items": [("NE Sea Chart", 0)],
         "unset_if_true": [(PHAddr.adv_flags_1, 0x10)]
     },
-    "SE spawn pirate ship": {
+    "spawn big pirate ship": {
         "on_scenes": [0x2, 0x3],
         "not_has_locations": ["Ocean Miniblin Pirate Ambush Item"],
         "has_locations": ["Ghost Ship Rescue Tetra"],
         "set_if_true": [(PHAddr.flags_fog_spirits, 0x10), (PHAddr.flags_clear_fog, 0x80), (PHAddr.flags_fog_done, 0x10)]
     },
-    "SE despawn pirate ship": {
+    "despawn big pirate ship": {
         "on_scenes": [0x2, 0x3],
         "not_has_locations": ["Ghost Ship Rescue Tetra"],
         "unset_if_true": [(PHAddr.flags_fog_spirits, 0x10), (PHAddr.flags_clear_fog, 0x80), (PHAddr.flags_fog_done, 0x10)]
@@ -1158,6 +1164,16 @@ DYNAMIC_FLAGS = {
         "on_scenes": [0, 1, 2, 3],
         "has_items": [("Cyclone Slate", 1)],
         "set_if_true": [(PHAddr.inventory_6, 0x40)]
+    },
+    "Salvage Arm Safety": {
+        "on_scenes": [0, 1, 2, 3],
+        "has_items": [("Salvage Arm", 1)],
+        "set_if_true": [(PHAddr.inventory_6, 0x10)]
+    },
+    "Salvage Arm Safety remove": {
+        "on_scenes": [0, 1, 2, 3],
+        "has_items": [("Salvage Arm", 0)],
+        "unset_if_true": [(PHAddr.inventory_6, 0x10)]
     },
     # Doyland
     "Doyland lower water": {

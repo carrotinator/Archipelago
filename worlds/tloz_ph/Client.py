@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from random import randint
+
 from .DSZeldaClient.DSZeldaClient import *
 from .DSZeldaClient.subclasses import (get_address_from_heap, storage_key, get_stored_data, AddrFromPointer)
 from .data.Items import ITEMS
@@ -110,11 +111,12 @@ read_keys_always = [PHAddr.game_state, PHAddr.in_cutscene,
                     PHAddr.loading_room, PHAddr.loading_stage,
                     PHAddr.received_item_index, PHAddr.slot_id,
                     PHAddr.stage, PHAddr.room, PHAddr.entrance,
-                    PHAddr.in_short_cs, PHAddr.opened_clog, PHAddr.saving
+                    PHAddr.in_short_cs, PHAddr.opened_clog, PHAddr.saving,
+                    PHAddr.in_map
                      ]
 
 read_keys_deathlink = []
-read_keys_land = [PHAddr.getting_location, PHAddr.getting_ship_part, PHAddr.in_map]
+read_keys_land = [PHAddr.getting_location, PHAddr.getting_ship_part]
 read_keys_sea = [PHAddr.shot_frog, PHAddr.boat_health, PHAddr.drawing_sea_route, PHAddr.boat_gear]
 read_keys_salvage = [PHAddr.salvage_health]
 
@@ -524,15 +526,17 @@ class PhantomHourglassClient(DSZeldaClient):
             self.home_screen_warp_spam = False
 
         # Cancel warp to start if in a dangerous situation
-        if self.warp_to_start_flag:
+        if self.warp_to_start_flag or self.map_warp:
             # Cyclone slate warp to start crashes, prevent that from working
             if self.at_sea:
                 if await PHAddr.using_cyclone_slate.read(ctx, silent=True) == 1:  # is 0x65 if never used cyclone slate
                     self.warp_to_start_flag = False
-                    logger.info("Canceled warp to start, Cyclone Slate is not a valid warp method")
+                    self.map_warp = None
+                    logger.info("Canceled warp, Cyclone Slate is not a valid warp method")
             if self.is_dead:
                 self.warp_to_start_flag = False
-                logger.info("Canceled warp to start, death is not a valid warp method")
+                self.map_warp = None
+                logger.info("Canceled warp, death is not a valid warp method")
 
     async def enter_game(self, ctx):
         self.save_slot = await PHAddr.save_slot.read(ctx, silent=True)
@@ -1089,7 +1093,7 @@ class PhantomHourglassClient(DSZeldaClient):
                     await ctx.send_death(ctx.player_names[ctx.slot] + " may have disappointed the Ocean King.")
                     self.last_deathlink = ctx.last_death_link
 
-    def add_special_er_data(self, ctx, er_map, scene, detect_data, exit_data):
+    def add_special_er_data(self, ctx, er_map, scene, detect_data: "PHTransition", exit_data: "PHTransition"):
         # all lowered water scenes on ruins need to account for funny scene detections
         if scene & 0xFF00 == 0x1100:
             high_scene = 0x1200 + (scene & 0xFF)
@@ -1116,6 +1120,13 @@ class PhantomHourglassClient(DSZeldaClient):
                 new_detect.set_exit_room(i)
                 print(f"\tnew detect scene: {new_detect} {new_detect.entrance} {new_detect.exit}")
                 er_map[scene][new_detect] = exit_data
+
+        # Courage temple should put you outside
+        if exit_data.entrance == (0xC, 0x1, 0x3):
+            new_exit = exit_data.copy()
+            new_exit.entrance = (0xC, 0x1, 0x4)
+            print(f"\tNew entrance: {new_exit.entrance}")
+            er_map[scene][detect_data] = new_exit
 
         return er_map
 
