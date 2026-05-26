@@ -470,6 +470,7 @@ class PhantomHourglassWorld(World):
         self.create_event("Post ToI", "_beat_toi")
         self.create_event("Post MT", "_beat_mt")
         self.create_event("Spawn Pirate Ambush", "_beat_ghost_ship")
+        self.create_event("Post Cubus Sisters Event", "_beat_cubus_sisters")
         # Farmable minigame events
         self.create_event("Bannan Cannon Game", "_can_play_cannon_game")
         self.create_event("Archery Game", "_can_play_archery")

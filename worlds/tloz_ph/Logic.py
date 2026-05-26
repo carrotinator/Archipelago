@@ -418,8 +418,9 @@ def make_overworld_logic():
             ["Ghost Ship Boat", "Ghost Ship 1F", False, "ghost_ship"],
             ["Ghost Ship 1F", "Ghost Ship Boat", False, None],
         ["NW Ocean", "PoRL", False, None],
-        ["PoRL", "PoRL Item", False, "sword"],
-        ["PoRL", "PoRL Trade", False, "heroes_new_clothes"],
+            ["PoRL", "PoRL Item", False, "sword"],
+            ["PoRL", "PoRL Trade", False, "heroes_new_clothes"],
+        ["NW Ocean", "Pirate Ambush", False, "pirate_ambush_nw"],
 
         # ================= Isle of Gust ====================
 
@@ -507,6 +508,7 @@ def make_overworld_logic():
         ["Cubus Sisters", "Ghost Ship Warp", False, "sword"],
         ["Ghost Ship Warp", "Ghost Ship 1F", False, None],
         ["Cubus Sisters", "Post Cubus Sisters", False, "sword"],
+        ["Post Cubus Sisters", "Post Cubus Sisters Event", False, None],
         ["Ghost Ship B2", "Ghost Ship Tetra", False, "ghost_key"],
         ["Ghost Ship Tetra", "Spawn Pirate Ambush", False, None],
 
@@ -531,7 +533,7 @@ def make_overworld_logic():
         ["Dee Ess Island", "Dee Ess Boat", False, None],
             ["Dee Ess Boat", "Dee Ess Island", False, "require_chart", "SE"],
             ["Dee Ess Boat", "SE Ocean", True, "require_chart", "SE"],
-        ["SE Ocean", "Pirate Ambush", False, "beat_gs"],
+        ["SE Ocean", "Pirate Ambush", False, "pirate_ambush_se"],
         ["SE Ocean", "SS Wayfarer", True, "ss_wayfarer"],
         ["SS Wayfarer", "SS Wayfarer Trade", False, "wood_heart"],
         ["SS Wayfarer Trade", "SS Wayfarer Event", False, None],
@@ -714,7 +716,7 @@ def make_overworld_logic():
             ["Ruins Boat", "NE Ocean", False, "require_chart", "NE"],
             ["Ruins Boat", "Ruins SW Port", False, "regal_necklace"],
             ["Ruins SW Port", "Ruins Boat", False, None],
-        ["NE Ocean", "Pirate Ambush", False, "beat_gs"],
+        ["NE Ocean", "Pirate Ambush", False, "pirate_ambush_ne"],
 
         # ================= IotD ====================
 
