@@ -922,6 +922,10 @@ DYNAMIC_FLAGS = {
         "on_scenes": [0x400],
         "unset_if_true": [(PHAddr.adv_flags_12, 0x4)],  # uses the "got caught already" flag
     },
+    "Pirate ambush set spirit flag": {
+        "on_scenes": [0x400],
+        "set_if_true": [(PHAddr.flags_fog_spirits, 0x10)]
+    },
     "RESET Remove Jolene": {
         # "on_scenes": [0xC00],
         "has_locations": ["Crayk Boss Reward"],

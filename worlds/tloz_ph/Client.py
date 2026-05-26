@@ -476,7 +476,7 @@ class PhantomHourglassClient(DSZeldaClient):
             trigger_reload = False
             for addr, value, *comp in self.chest_reload_watches:
                 signed = addr in [PHAddr.link_x, PHAddr.link_y, PHAddr.link_z]
-                prev = await addr.read(ctx, signed=signed)
+                prev = await addr.read(ctx, signed=signed, silent=True)
                 comp = "eq" if not comp else comp[0]
                 if any([
                     comp in ["gt"] and prev > value,
