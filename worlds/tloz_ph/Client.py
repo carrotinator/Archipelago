@@ -1,3 +1,4 @@
+import dataclasses
 from dataclasses import dataclass
 from random import randint
 
@@ -7,7 +8,7 @@ from .data.Items import ITEMS
 from .MapWarp import map_mode
 from .data.Entrances import entrance_id_to_entrance
 from .data.DynamicEntrances import DYNAMIC_ENTRANCES_BY_SCENE
-from typing import Literal
+from typing import Literal, Iterable
 from settings import get_settings
 
 if TYPE_CHECKING:
@@ -16,6 +17,16 @@ if TYPE_CHECKING:
     from . import PhantomHourglassSettings
 
 default_boat_speed = 0x10A
+
+def hex_f(i):
+    """hex() but can handle all datatype exceptions recursively"""
+    if isinstance(i, int):
+        return hex(i)
+    if isinstance(i, dict):
+        return {hex_f(k): hex_f(v) for k, v in i.items()}
+    if isinstance(i, Iterable) and not isinstance(i, str):
+        return [hex_f(j) for j in i]
+    return i
 
 def get_client_as_command_processor(self: "BizHawkClientCommandProcessor"):
     ctx = self.ctx
@@ -206,6 +217,11 @@ class PhantomHourglassClient(DSZeldaClient):
 
         self.defeated_bellum = False
         self.minigame_chest_reset = False
+
+        self.dig_spots_in_scene: list[str] = []
+        self.actor_table_pointer: Address | None = None
+        self.last_actor_scan: list[int] = []
+        self.linked_dig_spots: dict[str, int] = {}
 
 
     async def check_game_version(self, ctx: "BizHawkClientContext") -> bool:
@@ -502,6 +518,9 @@ class PhantomHourglassClient(DSZeldaClient):
             if not self.minigame_chest_reset and in_minigame:
                 self.minigame_chest_reset = True
 
+        # Process reloading of dig spots/bonk trees
+        await self.repopulate_dig_spots(ctx)
+
 
 
     async def detect_warp_to_start(self, ctx, read_result: dict):
@@ -692,6 +711,9 @@ class PhantomHourglassClient(DSZeldaClient):
                         or self.item_count(ctx, "Round Crystals")):
                     await lower_spikes(28, 6, 22528, 4)
                     # await self.stage_flag_address.set_bits(ctx, 0x2, offset=3)
+
+        # Find potential dig spots
+        await self.load_dig_spots(ctx)
 
     async def write_totok_midway_keys(self, ctx):
         data = DUNGEON_KEY_DATA[372]
@@ -1681,3 +1703,91 @@ class PhantomHourglassClient(DSZeldaClient):
             if swordfish_addr:
                 print(f"\tRNG Swordfish successful, spawning swordfish immediately {swordfish_addr}")
                 await Address.from_pointer(swordfish_addr+375, size=2).overwrite(ctx, 0x10F)
+
+    async def load_dig_spots(self, ctx):
+        self.dig_spots_in_scene.clear()
+        self.last_actor_scan.clear()
+        self.actor_table_pointer = await PHAddr.actor_table_pointer.read(ctx)
+        wl = []
+        for loc in self.locations_in_scene:
+            if loc in dig_spot_data:
+                if LOCATIONS_DATA[loc]['id'] not in ctx.checked_locations:
+                    self.dig_spots_in_scene.append(loc)
+                    wl += await dig_spot_data[loc].get_reset_writes(ctx)
+                else:
+                    wl += dig_spot_data[loc].get_clear_writes()
+        if wl:
+            await bizhawk.write(ctx.bizhawk_ctx, wl)
+
+    async def repopulate_dig_spots(self, ctx: "BizHawkClientContext"):
+        if not self.dig_spots_in_scene:
+            return
+
+        scan_len = 64
+
+        async def scan_actor_table() -> list[int]:
+            _read_list = [Address.from_pointer(self.actor_table_pointer+3+4*i) for i in range(scan_len)]
+            _read_list += [dig_spot_data[_loc].item_pointer_addr for _loc in self.dig_spots_in_scene if dig_spot_data[_loc].is_tree]
+            res = await read_multiple(ctx, _read_list)
+            return list(res.values())
+
+        def get_first_new_actor(d) -> int:
+            for k, v in d.items():
+                if v == 2:
+                    return k
+            return None
+
+        # Check if received locations
+        write_list = []
+        for loc in self.dig_spots_in_scene.copy():
+            if LOCATIONS_DATA[loc]['id'] in ctx.checked_locations:
+                self.dig_spots_in_scene.remove(loc)
+                write_list += dig_spot_data[loc].get_clear_writes()
+                print(f"Location {loc} has been gotten, no longer reloading.")
+                continue
+        await bizhawk.write(ctx.bizhawk_ctx, write_list)
+
+        # Make sure you have an old actor table scan
+        current_actor_table = await scan_actor_table()
+        if not self.last_actor_scan:
+            self.last_actor_scan = current_actor_table
+            return
+
+        # Find diffs in actor table
+        diff: dict[int, int] = {}
+        current_trees = [dig_spot_data[_loc].item_pointer_addr for _loc in self.dig_spots_in_scene if dig_spot_data[_loc].is_tree]
+        # print(f"Scanning {current_actor_table} | {self.last_actor_scan}")
+        for i, scans in enumerate(zip(current_actor_table, self.last_actor_scan)):
+            current, last = scans
+            if current != last:
+                if i < scan_len:
+                    diff[self.actor_table_pointer+i*4] = current
+                else:
+                    diff[current_trees[i-scan_len].addr_eu] = current
+        self.last_actor_scan = current_actor_table
+        if not diff:
+            return
+        print(f"diff: {hex_f(diff)}")
+
+        # Check for dug spots
+        for loc in self.dig_spots_in_scene:
+            spot_addr = dig_spot_data[loc].item_pointer_addr
+            if diff.get(spot_addr, 2) == 0:
+                first_new = get_first_new_actor(diff)
+                if first_new is None:
+                    print(f"Could not find rupee spawn, resetting")
+                    await dig_spot_data[loc].reset(ctx)
+                    break
+                self.linked_dig_spots[loc] = first_new
+                print(f"Watching for rupee despawn: {hex_f(self.linked_dig_spots)}")
+        # Check for rupees despawning
+        for loc, rupee_addr in self.linked_dig_spots.copy().items():
+            if diff.get(rupee_addr, 2) == 0:
+                print(f"Detected rupee despawn: {loc} {hex_f(rupee_addr)}")
+                if LOCATIONS_DATA[loc]['id'] not in ctx.checked_locations:
+                    await dig_spot_data[loc].reset(ctx)
+                self.linked_dig_spots.pop(loc)
+
+
+
+

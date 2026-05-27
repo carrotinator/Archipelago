@@ -1054,6 +1054,7 @@ LOCATIONS_DATA = {
         "x_max": -0xc350,
         "y": 0x1333,
         "conditional": True,
+        "persistent": True,
         "id": 79,
         "hint_entrance": ["Cannon Bomb Garden Cave", "Cannon Bee Cave",
                           "Cannon Workshop East", "Cannon Workshop West", "Cannon Board Ship"]
@@ -1087,6 +1088,7 @@ LOCATIONS_DATA = {
         "x_max": 0x6978,
         "z_min": 0x9088,
         "conditional": True,
+        "persistent": True,
         "id": 82,
         "hint_entrance": ["Cannon Bomb Garden Cave", "Cannon Workshop East"]
     },
@@ -1102,6 +1104,7 @@ LOCATIONS_DATA = {
         "sram_addr": SRAM(0x6dc),
         "sram_value": 0x1,
         "id": 83,
+        "persistent": True,
         "hint_entrance": ["Cannon Bomb Garden Cave", "Cannon Workshop East"]
     },
     "Cannon Island East Dig": {
@@ -1115,6 +1118,7 @@ LOCATIONS_DATA = {
         "sram_addr": SRAM(0x190),
         "sram_value": 0x2,
         "conditional": True,
+        "persistent": True,
         "id": 84,
         "hint_entrance": ["Cannon Bomb Garden Cave", "Cannon Workshop East"]
     },

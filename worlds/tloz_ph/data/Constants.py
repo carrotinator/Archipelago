@@ -1,4 +1,5 @@
 from .Addresses import *
+from dataclasses import dataclass
 
 VERSION = "0.3.0"
 ROM_HASH = "f2dc6c4e093e4f8c6cbea80e8dbd62cb"
@@ -2081,6 +2082,71 @@ SHOP_SCENES = [
     0xc0e,
 
 ]
+
+@dataclass
+class DigSpotData:
+    name: str
+    lock_addr: "Address"
+    item_pointer_addr: "Address"
+    item_pointer_value: int
+    extra_address: "Address" = Address(0)
+    extra_value: int = 0
+    is_tree: bool = False
+    tree_flag_bit: int = 0
+
+
+
+    async def get_reset_writes(self, _ctx):
+        res: list[tuple[int, list[int], str]] = [
+            self.item_pointer_addr.get_inner_write_list(self.item_pointer_value)
+        ]
+        if not self.is_tree:
+            res.append(self.lock_addr.get_inner_write_list(0x1))
+        else:
+            prev_flags = await self.lock_addr.read(_ctx, silent=True)
+            res.append(self.lock_addr.get_inner_write_list(prev_flags & (~self.tree_flag_bit)))
+
+        if self.extra_address:
+            res.append(self.extra_address.get_inner_write_list(self.extra_value))
+
+        return res
+
+    async def reset(self, _ctx):
+        import worlds._bizhawk as bizhawk
+        wl = await self.get_reset_writes(_ctx)
+        await bizhawk.write(_ctx.bizhawk_ctx, wl)
+
+    def get_clear_writes(self):
+        res: list[tuple[int, list[int], str]] = [
+            self.item_pointer_addr.get_inner_write_list(0)
+        ]
+        return res
+
+
+dig_spot_data = {
+    # Cannon
+    "Cannon Island Bee Dig": DigSpotData("Cannon Island Bee Dig",
+                                         Address(0x26A1C0),
+                                         Address(0x2707E8, size=4),
+                                         0x0226A0A8,
+                                         Address(0x1BA8B8), 0x2F),
+    "Cannon Island SE Dig": DigSpotData("Cannon Island SE Dig",
+                                         Address(0x269CC0),
+                                         Address(0x2707E0, size=4),
+                                         0x02269BA8),
+    "Cannon Island East Dig": DigSpotData("Cannon Island East Dig",
+                                        Address(0x266140),
+                                        Address(0x270784, size=4),
+                                        0x02266028),
+    "Cannon Island Bonk Tree": DigSpotData("Cannon Island Bonk Tree",
+                                          Address(0x254D50),
+                                          Address(0x2558D4),
+                                          3,
+                                           is_tree=True,
+                                           tree_flag_bit=1),
+}
+
+
 
 if __name__ == "__main__":
     for cat, value in CATEGORY_LOCATION_GROUPS.items():
