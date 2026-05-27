@@ -16,7 +16,7 @@ from .Options import *
 from .Logic import create_connections
 from .data import LOCATIONS_DATA
 from .data.Constants import *
-from .data.Items import ITEMS
+from .data.Items import ITEMS, ITEM_GROUPS
 from .data.Regions import REGIONS
 from .data.LogicPredicates import *
 from .data.Entrances import ENTRANCES, entrance_id_to_region, EVENTS, entrance_id_to_entrance

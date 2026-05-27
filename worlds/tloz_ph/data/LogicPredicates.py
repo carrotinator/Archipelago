@@ -3,6 +3,7 @@ from math import floor, ceil
 from BaseClasses import CollectionState
 from Options import Accessibility
 from .Constants import *
+from .Items import ITEM_GROUPS
 from .. import PhantomHourglassOptions
 
 

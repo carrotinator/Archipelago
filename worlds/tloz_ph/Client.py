@@ -4,7 +4,7 @@ from random import randint
 
 from .DSZeldaClient.DSZeldaClient import *
 from .DSZeldaClient.subclasses import (get_address_from_heap, storage_key, get_stored_data, AddrFromPointer)
-from .data.Items import ITEMS
+from .data.Items import ITEMS, ITEM_GROUPS
 from .MapWarp import map_mode
 from .data.Entrances import entrance_id_to_entrance
 from .data.DynamicEntrances import DYNAMIC_ENTRANCES_BY_SCENE
