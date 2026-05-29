@@ -1705,14 +1705,16 @@ class PhantomHourglassClient(DSZeldaClient):
                 await Address.from_pointer(swordfish_addr+375, size=2).overwrite(ctx, 0x10F)
 
     async def load_dig_spots(self, ctx):
+        print(f"Loading dig spots")
         self.dig_spots_in_scene.clear()
         self.last_actor_scan.clear()
         self.actor_table_pointer = await PHAddr.actor_table_pointer.read(ctx)
         wl = []
         for loc in self.locations_in_scene:
-            if loc in dig_spot_data:
+            if (loc in dig_spot_data and self.current_stage != 0x12) or loc in dig_spot_data_water:
                 if LOCATIONS_DATA[loc]['id'] not in ctx.checked_locations:
                     self.dig_spots_in_scene.append(loc)
+                    dig_spot_data[loc].reset_count = 0
                     wl += await dig_spot_data[loc].get_reset_writes(ctx)
                 else:
                     wl += dig_spot_data[loc].get_clear_writes()

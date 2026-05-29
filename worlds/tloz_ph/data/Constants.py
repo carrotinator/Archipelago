@@ -1729,10 +1729,14 @@ class DigSpotData:
     extra_value: int = 0
     is_tree: bool = False
     tree_flag_bit: int = 0
-
-
+    dangerous_reset: bool = False
+    reset_count: int = 0
 
     async def get_reset_writes(self, _ctx):
+        self.reset_count += 1
+        if self.dangerous_reset and self.reset_count > 1:
+            print(f"\tCanceled Dangerous reset {self.name}")
+            return []
         res: list[tuple[int, list[int], str]] = [
             self.item_pointer_addr.get_inner_write_list(self.item_pointer_value)
         ]
@@ -1758,6 +1762,18 @@ class DigSpotData:
         ]
         return res
 
+class MapDigData(DigSpotData):
+    def __init__(self, name, obj_addr, v):
+        super().__init__(name, obj_addr, obj_addr, v, is_tree=True)
+
+    async def get_reset_writes(self, _ctx):
+        return self.item_pointer_addr.get_write_list(self.item_pointer_value)
+
+    async def reset(self, _ctx):
+        await self.item_pointer_addr.overwrite(_ctx, self.item_pointer_value)
+
+    def get_clear_writes(self):
+        return self.item_pointer_addr.get_write_list(0)
 
 dig_spot_data = {
     # Cannon
@@ -1780,8 +1796,91 @@ dig_spot_data = {
                                           3,
                                            is_tree=True,
                                            tree_flag_bit=1),
-}
 
+    # Mercay
+    "Mercay NE Bonk Tree": DigSpotData("Mercay NE Bonk Tree",
+                                           Address(0x263908),
+                                           Address(0x264B9C),
+                                           6,
+                                           is_tree=True,
+                                           tree_flag_bit=1),
+
+    # Molida
+    "Molida Island South Romanos Tree Dig": DigSpotData("Molida Island South Romanos Tree Dig",
+                                       Address(0x265E98),
+                                       Address(0x26C328, size=4),
+                                       0x02265D80),
+    "Sun Lake Cave Geozard Dig": DigSpotData("Sun Lake Cave Geozard Dig",
+                                            Address(0x266318),
+                                            Address(0x26C320, size=4),
+                                            0x02266200,
+                                            Address(0x1BA8B8), 0x11
+                                             ),
+    # Gust
+    "Isle of Gust North Dig": DigSpotData("Isle of Gust North Dig",
+                                            Address(0x25F310),
+                                            Address(0x26EC9C, size=4),
+                                            0x0225F1F8,
+                                            Address(0x1BA8B8), 0xE
+                                             ),
+    "Isle of Gust South NE Dig": DigSpotData("Isle of Gust South NE Dig",
+                                          Address(0x266810),
+                                          Address(0x26ED18, size=4),
+                                          0x022666F8,
+                                          ),
+    # Frost
+    "Isle of Frost SW Chief's Sign Dig": DigSpotData("Isle of Frost SW Chief's Sign Dig",
+                                             Address(0x265D78),
+                                             Address(0x271C38, size=4),
+                                             0x02265C60,
+                                             ),
+    "Isle of Frost NW Estate Sign Dig": DigSpotData("Isle of Frost NW Estate Sign Dig",
+                                             Address(0x266078),
+                                             Address(0x271C50, size=4),
+                                             0x02265F60,
+                                             ),
+    "Isle of Frost NW Fofo's Sign Dig (SE)": DigSpotData("Isle of Frost NW Fofo's Sign Dig (SE)",
+                                             Address(0x265B78),
+                                             Address(0x271C44, size=4),
+                                             0x02265A60,
+                                             ),
+    "Isle of Frost NW Dobo's Sign Dig (SW)": DigSpotData("Isle of Frost NW Dobo's Sign Dig (SW)",
+                                             Address(0x265878),
+                                             Address(0x271C3C, size=4),
+                                             0x02265760,
+                                             dangerous_reset=True
+                                             ),
+    "Isle of Frost NW Island Dig SE": DigSpotData("Isle of Frost NW Island Dig SE",
+                                                         Address(0x2661F8),
+                                                         Address(0x271C54, size=4),
+                                                         0x022660E0,
+                                                         ),
+    "Isle of Frost NW Island Dig SW": MapDigData("Isle of Frost NW Island Dig SW",
+                                                  Address(0x2663B8), 0x9
+                                                  ),
+    # Ruins
+    "Isle of Ruins NW Upper Bonk Tree": DigSpotData("Isle of Ruins NW Upper Bonk Tree",
+                                           Address(0x2519E0),
+                                           Address(0x254A8C),
+                                           3,
+                                           is_tree=True,
+                                           tree_flag_bit=1),
+
+}
+dig_spot_data_water = {
+    "Isle of Ruins NW Upper Bonk Tree": DigSpotData("Isle of Ruins NW Upper Bonk Tree",
+                                                    Address(0x2519E0),
+                                                    Address(0x254E38),
+                                                    3,
+                                                    is_tree=True,
+                                                    tree_flag_bit=4),
+    "Isle of Ruins NW Lower Water Bonk Tree": DigSpotData("Isle of Ruins NW Lower Water Bonk Tree",
+                                                    Address(0x254F38),
+                                                    Address(0x254E38),
+                                                    3,
+                                                    is_tree=True,
+                                                    tree_flag_bit=8),
+}
 
 
 if __name__ == "__main__":

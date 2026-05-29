@@ -2240,6 +2240,11 @@ id_check = []
 for name, data in ITEMS_DATA.items():
     if data["id"] in id_check:
         raise f"Duplicate ID Detected: {data['id']}"
+
+
+
+
+
     id_check.append(data["id"])
     item_id_to_name_dict[data["id"]] = name
     ITEMS[name] = PHItem(name, data, ITEMS)
