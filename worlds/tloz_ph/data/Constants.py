@@ -1737,6 +1737,9 @@ class DigSpotData:
         if self.dangerous_reset and self.reset_count > 1:
             print(f"\tCanceled Dangerous reset {self.name}")
             return []
+        if self.reset_count > 5:
+            print(f"\tToo many reloads: {self.name}")
+            return []
         res: list[tuple[int, list[int], str]] = [
             self.item_pointer_addr.get_inner_write_list(self.item_pointer_value)
         ]
@@ -1804,6 +1807,16 @@ dig_spot_data = {
                                            6,
                                            is_tree=True,
                                            tree_flag_bit=1),
+    "Mercay SW Tree Dig": MapDigData("Mercay SW Tree Dig",
+                                             Address(0x26E518), 0x9
+                                             ),
+    # Ember
+    "Astrid's Basement Dig": MapDigData("Astrid's Basement Dig",
+                                     Address(0x266A88), 0x9
+                                     ),
+    "Isle of Ember East Summit Dig": MapDigData("Isle of Ember East Summit Dig",
+                                        Address(0x269B08), 0x9
+                                        ),
 
     # Molida
     "Molida Island South Romanos Tree Dig": DigSpotData("Molida Island South Romanos Tree Dig",
@@ -1816,10 +1829,23 @@ dig_spot_data = {
                                             0x02266200,
                                             Address(0x1BA8B8), 0x11
                                              ),
+    "Shovel Hideout Dig": DigSpotData("Shovel Hideout Dig",
+                                             Address(0x264118),
+                                             Address(0x26C320, size=4),
+                                             0x02264000, dangerous_reset=True
+                                             ),
+    "Molida Island South Cucco Grapple Tree Dig": MapDigData("Molida Island South Cucco Grapple Tree Dig",
+                                     Address(0x264ED8), 0x9
+                                     ),
+    "Molida Island South Cucco Grapple Small Island Dig": DigSpotData("Molida Island South Cucco Grapple Small Island Dig",
+                                             Address(0x265898),
+                                             Address(0x26C318, size=4),
+                                             0x02265780
+                                             ),
     # Gust
     "Isle of Gust North Dig": DigSpotData("Isle of Gust North Dig",
                                             Address(0x25F310),
-                                            Address(0x26EC9C, size=4),
+                                            Address(0x26C300, size=4),
                                             0x0225F1F8,
                                             Address(0x1BA8B8), 0xE
                                              ),
@@ -1828,11 +1854,22 @@ dig_spot_data = {
                                           Address(0x26ED18, size=4),
                                           0x022666F8,
                                           ),
+    # Bannan
+    "Bannan Island West Wayfarer Dig": MapDigData("Bannan Island West Wayfarer Dig",
+                                                Address(0x264C38), 0x9
+                                                ),
+    "Bannan Island East Grapple Dig": MapDigData("Bannan Island East Grapple Dig",
+                                                  Address(0x264DB8), 0x9
+                                                  ),
+    # Zauz
+    "Zauz's Island Secret Dig": MapDigData("Zauz's Island Secret Dig",
+                                                 Address(0x2631D0), 0x9
+                                                 ),
     # Frost
     "Isle of Frost SW Chief's Sign Dig": DigSpotData("Isle of Frost SW Chief's Sign Dig",
                                              Address(0x265D78),
                                              Address(0x271C38, size=4),
-                                             0x02265C60,
+                                             0x02265C60, dangerous_reset=True
                                              ),
     "Isle of Frost NW Estate Sign Dig": DigSpotData("Isle of Frost NW Estate Sign Dig",
                                              Address(0x266078),
@@ -1865,6 +1902,10 @@ dig_spot_data = {
                                            3,
                                            is_tree=True,
                                            tree_flag_bit=1),
+    "Isle of Ruins NW Like-Like Dig": DigSpotData("Isle of Ruins NW Like-Like Dig",
+                                                    Address(0x259AA8),
+                                                    Address(0x26433C, size=4),
+                                                    0x02259990, dangerous_reset=True),
 
 }
 dig_spot_data_water = {
@@ -1875,11 +1916,15 @@ dig_spot_data_water = {
                                                     is_tree=True,
                                                     tree_flag_bit=4),
     "Isle of Ruins NW Lower Water Bonk Tree": DigSpotData("Isle of Ruins NW Lower Water Bonk Tree",
-                                                    Address(0x254F38),
-                                                    Address(0x254E38),
+                                                    Address(0x2519E0),
+                                                    Address(0x254f38),
                                                     3,
                                                     is_tree=True,
                                                     tree_flag_bit=8),
+    "Isle of Ruins NW Like-Like Dig": DigSpotData("Isle of Ruins NW Like-Like Dig",
+                                                  Address(0x25B2B8),
+                                                  Address(0x26AEB4, size=4),
+                                                  0x0225B1A0, dangerous_reset=True),
 }
 
 

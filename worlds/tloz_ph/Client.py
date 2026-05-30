@@ -1711,13 +1711,14 @@ class PhantomHourglassClient(DSZeldaClient):
         self.actor_table_pointer = await PHAddr.actor_table_pointer.read(ctx)
         wl = []
         for loc in self.locations_in_scene:
-            if (loc in dig_spot_data and self.current_stage != 0x12) or loc in dig_spot_data_water:
+            spot_data = dig_spot_data_water if self.current_stage == 0x12 else dig_spot_data
+            if loc in spot_data:
                 if LOCATIONS_DATA[loc]['id'] not in ctx.checked_locations:
                     self.dig_spots_in_scene.append(loc)
-                    dig_spot_data[loc].reset_count = 0
-                    wl += await dig_spot_data[loc].get_reset_writes(ctx)
+                    spot_data[loc].reset_count = 0
+                    wl += await spot_data[loc].get_reset_writes(ctx)
                 else:
-                    wl += dig_spot_data[loc].get_clear_writes()
+                    wl += spot_data[loc].get_clear_writes()
         if wl:
             await bizhawk.write(ctx.bizhawk_ctx, wl)
 
@@ -1726,10 +1727,11 @@ class PhantomHourglassClient(DSZeldaClient):
             return
 
         scan_len = 64
+        spot_data = dig_spot_data_water if self.current_stage == 0x12 else dig_spot_data
 
         async def scan_actor_table() -> list[int]:
             _read_list = [Address.from_pointer(self.actor_table_pointer+3+4*i) for i in range(scan_len)]
-            _read_list += [dig_spot_data[_loc].item_pointer_addr for _loc in self.dig_spots_in_scene if dig_spot_data[_loc].is_tree]
+            _read_list += [spot_data[_loc].item_pointer_addr for _loc in self.dig_spots_in_scene if spot_data[_loc].is_tree]
             res = await read_multiple(ctx, _read_list)
             return list(res.values())
 
@@ -1744,7 +1746,7 @@ class PhantomHourglassClient(DSZeldaClient):
         for loc in self.dig_spots_in_scene.copy():
             if LOCATIONS_DATA[loc]['id'] in ctx.checked_locations:
                 self.dig_spots_in_scene.remove(loc)
-                write_list += dig_spot_data[loc].get_clear_writes()
+                write_list += spot_data[loc].get_clear_writes()
                 print(f"Location {loc} has been gotten, no longer reloading.")
                 continue
         await bizhawk.write(ctx.bizhawk_ctx, write_list)
@@ -1757,7 +1759,7 @@ class PhantomHourglassClient(DSZeldaClient):
 
         # Find diffs in actor table
         diff: dict[int, int] = {}
-        current_trees = [dig_spot_data[_loc].item_pointer_addr for _loc in self.dig_spots_in_scene if dig_spot_data[_loc].is_tree]
+        current_trees = [spot_data[_loc].item_pointer_addr for _loc in self.dig_spots_in_scene if spot_data[_loc].is_tree]
         # print(f"Scanning {current_actor_table} | {self.last_actor_scan}")
         for i, scans in enumerate(zip(current_actor_table, self.last_actor_scan)):
             current, last = scans
@@ -1773,12 +1775,12 @@ class PhantomHourglassClient(DSZeldaClient):
 
         # Check for dug spots
         for loc in self.dig_spots_in_scene:
-            spot_addr = dig_spot_data[loc].item_pointer_addr
+            spot_addr = spot_data[loc].item_pointer_addr
             if diff.get(spot_addr, 2) == 0:
                 first_new = get_first_new_actor(diff)
                 if first_new is None:
                     print(f"Could not find rupee spawn, resetting")
-                    await dig_spot_data[loc].reset(ctx)
+                    await spot_data[loc].reset(ctx)
                     break
                 self.linked_dig_spots[loc] = first_new
                 print(f"Watching for rupee despawn: {hex_f(self.linked_dig_spots)}")
@@ -1787,7 +1789,7 @@ class PhantomHourglassClient(DSZeldaClient):
             if diff.get(rupee_addr, 2) == 0:
                 print(f"Detected rupee despawn: {loc} {hex_f(rupee_addr)}")
                 if LOCATIONS_DATA[loc]['id'] not in ctx.checked_locations:
-                    await dig_spot_data[loc].reset(ctx)
+                    await spot_data[loc].reset(ctx)
                 self.linked_dig_spots.pop(loc)
 
 
