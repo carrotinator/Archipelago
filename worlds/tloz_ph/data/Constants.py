@@ -1732,6 +1732,7 @@ class DigSpotData:
     dangerous_reset: bool = False
     reset_count: int = 0
 
+
     async def get_reset_writes(self, _ctx):
         self.reset_count += 1
         if self.dangerous_reset and self.reset_count > 1:
@@ -1768,15 +1769,24 @@ class DigSpotData:
 class MapDigData(DigSpotData):
     def __init__(self, name, obj_addr, v):
         super().__init__(name, obj_addr, obj_addr, v, is_tree=True)
+        self.addr = None
+
+    async def get_pointer(self, ctx):
+        point = await self.item_pointer_addr.read(ctx) + 4*6
+        self.addr = Address(point)
 
     async def get_reset_writes(self, _ctx):
-        return self.item_pointer_addr.get_write_list(self.item_pointer_value)
+        await self.get_pointer(_ctx)
+        return self.addr.get_write_list(self.item_pointer_value)
 
     async def reset(self, _ctx):
-        await self.item_pointer_addr.overwrite(_ctx, self.item_pointer_value)
+        await self.get_pointer(_ctx)
+        await self.addr.overwrite(_ctx, self.item_pointer_value)
 
     def get_clear_writes(self):
-        return self.item_pointer_addr.get_write_list(0)
+        if self.addr:
+            return self.addr.get_write_list(0)
+        return []
 
 dig_spot_data = {
     # Cannon
@@ -1807,16 +1817,16 @@ dig_spot_data = {
                                            6,
                                            is_tree=True,
                                            tree_flag_bit=1),
-    "Mercay SW Tree Dig": MapDigData("Mercay SW Tree Dig",
-                                             Address(0x26E518), 0x9
-                                             ),
+    # "Mercay SW Tree Dig": MapDigData("Mercay SW Tree Dig",
+    #                                          Address(0x26E518), 0x9
+    #                                          ),
     # Ember
-    "Astrid's Basement Dig": MapDigData("Astrid's Basement Dig",
-                                     Address(0x266A88), 0x9
-                                     ),
-    "Isle of Ember East Summit Dig": MapDigData("Isle of Ember East Summit Dig",
-                                        Address(0x269B08), 0x9
-                                        ),
+    # "Astrid's Basement Dig": MapDigData("Astrid's Basement Dig",
+    #                                  Address(0x266A88), 0x9
+    #                                  ),
+    # "Isle of Ember East Summit Dig": MapDigData("Isle of Ember East Summit Dig",
+    #                                     Address(0x26A770, size=3), 0x9
+    #                                     ),
 
     # Molida
     "Molida Island South Romanos Tree Dig": DigSpotData("Molida Island South Romanos Tree Dig",
@@ -1834,9 +1844,9 @@ dig_spot_data = {
                                              Address(0x26C320, size=4),
                                              0x02264000, dangerous_reset=True
                                              ),
-    "Molida Island South Cucco Grapple Tree Dig": MapDigData("Molida Island South Cucco Grapple Tree Dig",
-                                     Address(0x264ED8), 0x9
-                                     ),
+    # "Molida Island South Cucco Grapple Tree Dig": MapDigData("Molida Island South Cucco Grapple Tree Dig",
+    #                                  Address(0x264ED8), 0x9
+    #                                  ),
     "Molida Island South Cucco Grapple Small Island Dig": DigSpotData("Molida Island South Cucco Grapple Small Island Dig",
                                              Address(0x265898),
                                              Address(0x26C318, size=4),
@@ -1855,16 +1865,16 @@ dig_spot_data = {
                                           0x022666F8,
                                           ),
     # Bannan
-    "Bannan Island West Wayfarer Dig": MapDigData("Bannan Island West Wayfarer Dig",
-                                                Address(0x264C38), 0x9
-                                                ),
-    "Bannan Island East Grapple Dig": MapDigData("Bannan Island East Grapple Dig",
-                                                  Address(0x264DB8), 0x9
-                                                  ),
+    # "Bannan Island West Wayfarer Dig": MapDigData("Bannan Island West Wayfarer Dig",
+    #                                             Address(0x264C38), 0x9
+    #                                             ),
+    # "Bannan Island East Grapple Dig": MapDigData("Bannan Island East Grapple Dig",
+    #                                               Address(0x264DB8), 0x9
+    #                                               ),
     # Zauz
-    "Zauz's Island Secret Dig": MapDigData("Zauz's Island Secret Dig",
-                                                 Address(0x2631D0), 0x9
-                                                 ),
+    # "Zauz's Island Secret Dig": MapDigData("Zauz's Island Secret Dig",
+    #                                              Address(0x2631D0), 0x9
+    #                                              ),
     # Frost
     "Isle of Frost SW Chief's Sign Dig": DigSpotData("Isle of Frost SW Chief's Sign Dig",
                                              Address(0x265D78),
@@ -1892,9 +1902,9 @@ dig_spot_data = {
                                                          Address(0x271C54, size=4),
                                                          0x022660E0,
                                                          ),
-    "Isle of Frost NW Island Dig SW": MapDigData("Isle of Frost NW Island Dig SW",
-                                                  Address(0x2663B8), 0x9
-                                                  ),
+    # "Isle of Frost NW Island Dig SW": MapDigData("Isle of Frost NW Island Dig SW",
+    #                                               Address(0x2663B8), 0x9
+    #                                               ),
     # Ruins
     "Isle of Ruins NW Upper Bonk Tree": DigSpotData("Isle of Ruins NW Upper Bonk Tree",
                                            Address(0x2519E0),

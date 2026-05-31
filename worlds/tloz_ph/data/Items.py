@@ -234,7 +234,7 @@ ITEMS_DATA = {
         "id": 18,
         "model": 0x78,
         "ghost_model": True,
-        "item_groups": ["Upgrades", "Sand", "Time"],
+        "item_groups": ["Upgrades", "Sand", "Time", "Technical Items"],
     },
     "Sand of Hours (Small)": {
         "classification": DEPRIORITIZED_SKIP_BALANCING_FALLBACK,
@@ -245,7 +245,7 @@ ITEMS_DATA = {
         "id": 19,
         "model": 0x78,
         "ghost_model": True,
-        "item_groups": ["Upgrades", "Sand", "Time"],
+        "item_groups": ["Upgrades", "Sand", "Time", "Technical Items"],
     },
     "Sand of Hours": {
         "classification": DEPRIORITIZED_FALLBACK,

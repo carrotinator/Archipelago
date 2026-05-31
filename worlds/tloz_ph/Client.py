@@ -505,6 +505,7 @@ class PhantomHourglassClient(DSZeldaClient):
                 self.chest_reload_watches.clear()
                 printl(f"Reloading chests!")
                 await self.set_chest_contents(ctx)
+                await self.load_dig_spots(ctx)
         if self.is_dead and not self.chest_reload_watches:
             self.chest_reload_watches.append((self.health_address, 0, "gt"))
             printl(f"Setting Chest reload for death: {self.chest_reload_watches}")
