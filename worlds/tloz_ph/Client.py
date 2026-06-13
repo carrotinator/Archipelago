@@ -18,16 +18,6 @@ if TYPE_CHECKING:
 
 default_boat_speed = 0x10A
 
-def hex_f(i):
-    """hex() but can handle all datatype exceptions recursively"""
-    if isinstance(i, int):
-        return hex(i)
-    if isinstance(i, dict):
-        return {hex_f(k): hex_f(v) for k, v in i.items()}
-    if isinstance(i, Iterable) and not isinstance(i, str):
-        return [hex_f(j) for j in i]
-    return i
-
 def get_client_as_command_processor(self: "BizHawkClientCommandProcessor"):
     ctx = self.ctx
     from worlds._bizhawk.context import BizHawkClientContext
@@ -1017,16 +1007,17 @@ class PhantomHourglassClient(DSZeldaClient):
 
         # Don't disconnect still blocked entrances
         for i in reciprocals:
-            if not await self.conditional_er(ctx, entrance_id_to_entrance[i], silent=True):
+            if not await self.conditional_er(ctx, entrance_id_to_entrance[i], silent=True) and i in all_ids:
                 printl(f"not redisconnecting blocked entrance {entrance_id_to_entrance[i].name}")
                 all_ids.remove(i)
                 if not ctx.slot_data["decouple_entrances"]:
                     printl(f"\treciprocal{entrance_id_to_entrance[ctx.slot_data['er_pairings'][str(i)]].name}")
                     all_ids.remove(ctx.slot_data["er_pairings"][str(i)])
+
         # Don't disconnect undiscovered entrances
         self.checked_entrances |= set(get_stored_data(ctx, checked_key, set()))
         for i in all_ids.copy():
-            if i not in self.checked_entrances:
+            if i not in self.checked_entrances and i in all_ids:
                 printl(f"not redisconnecting unfound entrance: {entrance_id_to_entrance[i].name}")
                 all_ids.remove(i)
 
