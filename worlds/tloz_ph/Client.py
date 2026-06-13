@@ -1721,6 +1721,7 @@ class PhantomHourglassClient(DSZeldaClient):
                 else:
                     wl += spot_data[loc].get_clear_writes()
         if wl:
+            printl(f"Writing digs: {hex_f(wl)}")
             await bizhawk.write(ctx.bizhawk_ctx, wl)
 
     async def repopulate_dig_spots(self, ctx: "BizHawkClientContext"):

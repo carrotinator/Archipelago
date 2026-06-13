@@ -300,7 +300,7 @@ def make_overworld_logic():
         # 3F
         ["ToF 3F", "ToF 3F Key Drop", False, "tof_key_drop"],
         ["ToF 3F", "ToF 3F Key Door", False, "tof_3f_key_door"],
-        ["ToF 3F", "ToF 3F OOB", False, "grapple_glitch"],
+        ["ToF 3F Key Door", "ToF 3F OOB", False, "grapple_glitch"],
             ["ToF 3F OOB", "ToF 3F Boss Key", False, None],
             ["ToF 3F OOB", "ToF 4F", False, None],
         ["ToF 3F Key Door", "ToF 3F Boss Key", False, "boomerang"],
@@ -454,7 +454,7 @@ def make_overworld_logic():
         ["ToW B2", "ToW B2 Dig", False, "shovel"],
         ["ToW B2", "ToW B2 Bombs", False, "explosives"],
         ["ToW B2", "ToW B2 Key", False, "tow_key"],
-        ["ToW B2 Bombs", "ToW 1F NE", False, None],
+        ["ToW B2 Bombs", "ToW 1F NE", False, "chus"],
         ["ToW 1F", "ToW 2F", False, "tow_cyclok"],
         ["ToW 2F", "Cyclok", True, None],
         ["ToW 2F", "ToW 1F", False, None],
