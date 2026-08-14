@@ -212,6 +212,7 @@ class PhantomHourglassClient(DSZeldaClient):
         self.actor_table_pointer: Address | None = None
         self.last_actor_scan: list[int] = []
         self.linked_dig_spots: dict[str, int] = {}
+        self.key_door_watches: list["Address"] = []
 
 
     async def check_game_version(self, ctx: "BizHawkClientContext") -> bool:
@@ -425,6 +426,18 @@ class PhantomHourglassClient(DSZeldaClient):
         if self.current_stage == 3 and read_result.get(PHAddr.salvage_health, 5) <= 1:
             await self.instant_repair_salvage_arm(ctx)
 
+        # Prevent key door cs skips from opening too slow and closing again
+        if self.key_door_watches:
+            reads = await read_multiple(ctx, self.key_door_watches)
+            for a, v in reads.items():
+                if 8 > v > 2:
+
+                    await write_multiple(ctx, [a, Address.from_pointer(a+28*4+2, 1)], [7, 0xff])
+                    self.key_door_watches.remove(a)
+                    break
+                if v == 8:
+                    self.key_door_watches.remove(a)
+
         # Map warp entrypoint
         if read_result.get(PHAddr.in_map, 0):
             await map_mode(self, ctx, read_result)
@@ -574,6 +587,7 @@ class PhantomHourglassClient(DSZeldaClient):
         self.save_spam_protection = False  # Reset save spam protection
 
         await self.set_chest_contents(ctx)
+        await self.process_map_objects(ctx)
 
         # Yellow warp in TotOK saves keys
         # TODO: allow this to work with ER
@@ -1422,34 +1436,7 @@ class PhantomHourglassClient(DSZeldaClient):
         obj_z = await read_multiple(ctx, pointer_table, offset=4 * 8, keys=range(length), signed=True)
         item = await read_multiple(ctx, pointer_table, offset=4 * 9, keys=range(length))
 
-        typ_lookup = {
-            1: "Unspawned",
-            0x5: "House Entrance",
-            0x2D: "Closed Chest",
-            0x29: "Open Chest",
-            0x819: "Door",
-            0x9: "Solid",
-            0x6F: "Throwable",
-            0xD: "Readable or Entrance",
-            0xF: "Barrel in Cave",
-            0x19: "House",
-            0x49: "Grass",
-            0x80D: "Cave Exit",
-            0x44D: "Switch",
-            0x801: "Buried Laser Statue",
-            0x809: "Staircase",
-            0x81D: "Tap Door, lit Laser Statue",
-            0x4D: "Hammer Switch",
-            0xC1D: "Unlit Laser Statue",
-            0x4F: "Bomb Flower",
-            0x20D: "Updraft",
-            0x209: "Dirt Pile",
-            0x429: "Lit Torch",
-            0x11d: "Pedestal",
-            0x40d: "Repeater"
-        }
-
-        typ_index = {v: i+1 for i, v in enumerate(typ_lookup)}
+        typ_index = {v: i+1 for i, v in enumerate(map_object_idents)}
 
         @dataclass
         class MapObject:
@@ -1462,7 +1449,7 @@ class PhantomHourglassClient(DSZeldaClient):
             addr: Address
 
             def __post_init__(self):
-                self.type_str = typ_lookup.get(self.typ, hex(self.typ))
+                self.type_str = map_object_idents.get(self.typ, hex(self.typ))
 
             def __str__(self):
                 return f"\t{self.index}\t{self.type_str} ({self.x}, {self.y}, {self.z}) {hex(self.item)} {self.addr}"
@@ -1646,28 +1633,14 @@ class PhantomHourglassClient(DSZeldaClient):
 
         await bizhawk.write(ctx.bizhawk_ctx, write_list)
 
-    @staticmethod
-    async def load_map_object_table(ctx):
-        pointer = await PHAddr.gMapObjectManager.read(ctx)
-        reads = await read_multiple(ctx, [Address.from_pointer(pointer, size=3), Address.from_pointer(pointer+4, size=3)])
-        start, last = list(reads.values())
-        PHAddr.map_object_table.set_addr(start)
-        size = (last-start)//4
-        print(f"Start, last: {hex_f(start)}, {hex_f(last)} = {size}")
-
-        return size
-
     async def process_map_objects(self, ctx):
-        whitelisted_stages = list(range(0x18, 0x1e)) + list(range(0x30, 0x35)) + [0x13, 0x2D, 0x2E, 0x37, 0x3E, 0x3F, 0x41, 0x42] + list(range(0x45, 0x4B))
-        if self.current_stage not in whitelisted_stages:
-            return
 
-        table_size = await self.load_map_object_table(ctx)
-        actor_idents = await self.get_table_data(ctx, STAddr.map_object_table, 0,
+        table_size = await PHAddr.map_obj_table_size.read(ctx)
+        actor_idents = await self.get_table_data(ctx, PHAddr.map_obj_table, 0,
                                                  size=3, table_label=False, table_size=table_size)
         printl(f"map objects: {hex_f(actor_idents)}")
 
-        identifiers = map_object_identifiers
+        identifiers = idents_0
 
         write_list = []
         for addr, i in actor_idents.items():
@@ -1678,37 +1651,18 @@ class PhantomHourglassClient(DSZeldaClient):
                 printl(f"Unknown map object: {hex_f(i)} @ {addr}")
                 continue
 
-            if identifiers.get(i) in ["Blue Door", "Key Door", "Arena Door", "Bell Door", "Gem Door"]:
-                write_list.append(Address.from_pointer(addr + 33*4 + 2, size=1).get_inner_write_list(0))  # closing
-                write_list.append(Address.from_pointer(addr + 34*4 + 2, size=1).get_inner_write_list(0))  # opening
+            if identifiers.get(i) in ["Spirit Door", "Key Door", "Blue Door"]:
+                write_list.append(Address.from_pointer(addr + 31*4, size=4).get_inner_write_list(0))  # closing
 
-                if identifiers.get(i) == "Key Door":
-                    self.key_door_watches.append(Address.from_pointer(addr + 22, 1))
-
-                # if self.current_scene == 0x4206 and all([LOCATIONS_DATA[l]['id'] in ctx.checked_locations for l in [
-                #         "Lost at Sea Final Challenge SE Chest", "Lost at Sea Final Challenge NE Chest",
-                #         "Lost at Sea Final Challenge SW Chest", "Lost at Sea Final Challenge NW Chest"
-                #     ]]):
-                #         write_list.append(Address.from_pointer(addr + 22).get_inner_write_list(3))
-
-            if identifiers.get(i) in ["Bridge"]:
-                write_list.append(Address.from_pointer(addr+24*4, size=2).get_inner_write_list(0))
-
-            if identifiers.get(i) in ["Switch"]:
-                write_list.append(Address.from_pointer(addr+9*4 + 2, size=1).get_inner_write_list(0))
+                if identifiers.get(i) in ["Spirit Door", "Key Door"]:
+                    self.key_door_watches.append(Address.from_pointer(addr + 8, 1))
 
             if identifiers.get(i) in ["Spikes"]:
-                write_list.append(Address.from_pointer(addr+19*4+3, size=1).get_inner_write_list(0))
+                write_list.append(Address.from_pointer(addr + 30 * 4, size=2).get_inner_write_list(0))
 
-            if identifiers.get(i) in ["Boss Door"]:
-                await self.open_boss_door(ctx, addr)
-                self.boss_door_addr = addr
-
-            if identifiers.get(i) in ["Torch"]:
-                write_list.append(Address.from_pointer(addr+33*4 + 2, size=1).get_inner_write_list(0))
-
-            # if identifiers.get(i) in ["Flames"]:
-            #     write_list.append(Address.from_pointer(addr + 33 * 4 + 2, size=1).get_inner_write_list(0))
+            # if identifiers.get(i) in ["Boss Door"]:
+            #     await self.open_boss_door(ctx, addr)
+            #     self.boss_door_addr = addr
 
         if write_list:
             printl(f"Deleting Cutscenes: {hex_f(write_list)}")

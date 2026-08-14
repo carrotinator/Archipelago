@@ -1938,6 +1938,47 @@ dig_spot_data_water = {
     #                                               0x0225B1A0, dangerous_reset=True),
 }
 
+idents_0: dict[int, str] = {
+    0x17A864: "Spirit Door",
+    0x15667C: "Key Door",
+    0x156498: "Blue Door",
+    0x157340: "Spikes",
+
+    0x1562AC: "Closed Chest",
+    0x15759C: "Switch",
+
+    0x156CF8: "Pot",
+
+    0x16CB04: "Staircase",
+    0x156B34: "Cave Exit"
+}
+
+map_object_idents: dict[int, str] = {
+    1: "Unspawned",
+    0x5: "House Entrance",
+    0x2D: "Closed Chest",
+    0x29: "Open Chest",
+    0x819: "Door",
+    0x9: "Solid",
+    0x6F: "Throwable",
+    0xD: "Readable or Entrance",
+    0xF: "Barrel in Cave",
+    0x19: "House",
+    0x49: "Grass",
+    0x80D: "Cave Exit",
+    0x44D: "Switch",
+    0x801: "Buried Laser Statue",
+    0x809: "Staircase",
+    0x81D: "Tap Door, lit Laser Statue",
+    0x4D: "Hammer Switch",
+    0xC1D: "Unlit Laser Statue",
+    0x4F: "Bomb Flower",
+    0x20D: "Updraft",
+    0x209: "Dirt Pile",
+    0x429: "Lit Torch",
+    0x11d: "Pedestal",
+    0x40d: "Repeater"
+}
 
 if __name__ == "__main__":
     for cat, value in CATEGORY_LOCATION_GROUPS.items():
