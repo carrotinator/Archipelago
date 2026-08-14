@@ -148,7 +148,7 @@ class PhantomHourglassClient(DSZeldaClient):
         self.stage_flag_offset = STAGE_FLAGS_OFFSET
         self.hint_data = HINT_DATA
         self.entrances = ENTRANCES
-        self.item_data = ITEMS
+        self.item_data: dict[str, "PHItem"] = ITEMS
 
         # Ph variables
         self.goal_room = 0x3600
@@ -840,20 +840,10 @@ class PhantomHourglassClient(DSZeldaClient):
         if stage in STAGE_FLAGS:
             flags = STAGE_FLAGS[stage]
 
-            # Change certain stage flags based on options
-            if stage == 0 and ctx.slot_data["skip_ocean_fights"] == 1:
-                flags = SKIP_OCEAN_FIGHTS_FLAGS
-            if stage == 41 and ctx.slot_data["logic"] >= 1:
-                flags = SPAWN_B3_REAPLING_FLAGS
-
             printl(f"\tSetting Stage flags for {STAGES[stage]}, "
                   f"adr: {self.stage_flag_address}")
             await self.stage_flag_address.set_bits(ctx, flags)
 
-        # # Unlock boss door if have bk
-        # data = BOSS_DOOR_DATA.get(stage, False)
-        # if data and ctx.slot_data.get("boss_key_behaviour", True) and self.item_count(ctx, f"Boss Key ({data['name']})"):
-        #     await data["address"].set_bits(ctx, data["value"])
 
     async def open_boss_door(self, ctx):
         data = BOSS_DOOR_DATA.get(self.current_scene, False)
@@ -1198,7 +1188,7 @@ class PhantomHourglassClient(DSZeldaClient):
         else:
             self.sent_event = True
 
-    async def conditional_er(self, ctx, exit_data, silent=False) -> bool:
+    async def conditional_er(self, ctx, exit_data, silent=False, detect_data=None) -> bool:
         printl(f"\tcond. {exit_data.name} {exit_data.extra_data} lowered water: {self.lowered_water}")
         if "conditional" in exit_data.extra_data:
             # Bounce back if the entrance connects to a lower room
@@ -1568,10 +1558,10 @@ class PhantomHourglassClient(DSZeldaClient):
 
     @staticmethod
     async def find_table_object(ctx: "BizHawkClientContext", start_offset: int,
-                              check_offset, comp_value: int | list,
+                              check_offset: int, comp_value: int | list,
                               size=4,
                               table_addr: Address=PHAddr.map_obj_table,
-                              return_index=False, max_search: int=35) -> Address | tuple[Address, int] | None:
+                              return_index: bool=False, max_search: int=35, reverse: bool=True) -> Address | tuple[Address, int] | None:
         """
         Find a specific object from a pointer table.
         Loops backwards from start_offset until the validation check matches.
@@ -1583,6 +1573,7 @@ class PhantomHourglassClient(DSZeldaClient):
         :param size: size of the comp value read
         :param return_index: return the table index that the correct object was found at along with the object data address
         :param max_search: How far to search. -1 checks the entire table
+        :param reverse: Start backwards for efficiency
         :return: Address of valid object, or tuple of Address and table index
         """
         async def check_multi(l) -> tuple[Address | None, int]:
@@ -1655,6 +1646,75 @@ class PhantomHourglassClient(DSZeldaClient):
 
         await bizhawk.write(ctx.bizhawk_ctx, write_list)
 
+    @staticmethod
+    async def load_map_object_table(ctx):
+        pointer = await PHAddr.gMapObjectManager.read(ctx)
+        reads = await read_multiple(ctx, [Address.from_pointer(pointer, size=3), Address.from_pointer(pointer+4, size=3)])
+        start, last = list(reads.values())
+        PHAddr.map_object_table.set_addr(start)
+        size = (last-start)//4
+        print(f"Start, last: {hex_f(start)}, {hex_f(last)} = {size}")
+
+        return size
+
+    async def process_map_objects(self, ctx):
+        whitelisted_stages = list(range(0x18, 0x1e)) + list(range(0x30, 0x35)) + [0x13, 0x2D, 0x2E, 0x37, 0x3E, 0x3F, 0x41, 0x42] + list(range(0x45, 0x4B))
+        if self.current_stage not in whitelisted_stages:
+            return
+
+        table_size = await self.load_map_object_table(ctx)
+        actor_idents = await self.get_table_data(ctx, STAddr.map_object_table, 0,
+                                                 size=3, table_label=False, table_size=table_size)
+        printl(f"map objects: {hex_f(actor_idents)}")
+
+        identifiers = map_object_identifiers
+
+        write_list = []
+        for addr, i in actor_idents.items():
+            if addr == 0x5544:
+                printl("Map Object Overflow!")
+                break
+            if i not in identifiers:
+                printl(f"Unknown map object: {hex_f(i)} @ {addr}")
+                continue
+
+            if identifiers.get(i) in ["Blue Door", "Key Door", "Arena Door", "Bell Door", "Gem Door"]:
+                write_list.append(Address.from_pointer(addr + 33*4 + 2, size=1).get_inner_write_list(0))  # closing
+                write_list.append(Address.from_pointer(addr + 34*4 + 2, size=1).get_inner_write_list(0))  # opening
+
+                if identifiers.get(i) == "Key Door":
+                    self.key_door_watches.append(Address.from_pointer(addr + 22, 1))
+
+                # if self.current_scene == 0x4206 and all([LOCATIONS_DATA[l]['id'] in ctx.checked_locations for l in [
+                #         "Lost at Sea Final Challenge SE Chest", "Lost at Sea Final Challenge NE Chest",
+                #         "Lost at Sea Final Challenge SW Chest", "Lost at Sea Final Challenge NW Chest"
+                #     ]]):
+                #         write_list.append(Address.from_pointer(addr + 22).get_inner_write_list(3))
+
+            if identifiers.get(i) in ["Bridge"]:
+                write_list.append(Address.from_pointer(addr+24*4, size=2).get_inner_write_list(0))
+
+            if identifiers.get(i) in ["Switch"]:
+                write_list.append(Address.from_pointer(addr+9*4 + 2, size=1).get_inner_write_list(0))
+
+            if identifiers.get(i) in ["Spikes"]:
+                write_list.append(Address.from_pointer(addr+19*4+3, size=1).get_inner_write_list(0))
+
+            if identifiers.get(i) in ["Boss Door"]:
+                await self.open_boss_door(ctx, addr)
+                self.boss_door_addr = addr
+
+            if identifiers.get(i) in ["Torch"]:
+                write_list.append(Address.from_pointer(addr+33*4 + 2, size=1).get_inner_write_list(0))
+
+            # if identifiers.get(i) in ["Flames"]:
+            #     write_list.append(Address.from_pointer(addr + 33 * 4 + 2, size=1).get_inner_write_list(0))
+
+        if write_list:
+            printl(f"Deleting Cutscenes: {hex_f(write_list)}")
+            await bizhawk.write(ctx.bizhawk_ctx, write_list)
+
+
     async def get_object_read_addr(self, ctx, location) -> Address | None:
         vanilla_item_model = self.item_data[location["vanilla_item"]].vanilla_model
         chest_object = await self.find_table_object(ctx, location["chest_offset"], 9, vanilla_item_model, size=1)
@@ -1671,10 +1731,11 @@ class PhantomHourglassClient(DSZeldaClient):
         printl(f"Setting vanilla item for {location.get('name')}")
         if "chest_offset" in location or "gift_addr" in location:
             model = ctx.slot_data.get("location_models", {}).get(str(location["id"]), 0x1E)
-            printl(f"Got swapped item model as vanilla item {hex(model)}: {model_resets.get(model)} {model_reset_vanillas.get(model)}")
+            printl(f"Got swapped item model as vanilla item {hex(model)}: {model_resets.get(model)} {model_reset_vanillas.get(model)} {vanilla_item}")
             # Always remove for previously checked locations
-            if model_resets.get(model):
+            if model_resets.get(model, ""):
                 printl(f"\tResetting model: {model_resets[model]}")
+                self.delay_reset += 1  # Add delay reset to make sure removal handling runs properly
                 await super()._set_vanilla_item(ctx, location, model_resets.get(model))
             return
         await super()._set_vanilla_item(ctx, location, vanilla_item)
@@ -1725,12 +1786,12 @@ class PhantomHourglassClient(DSZeldaClient):
         spot_data = dig_spot_data_water if self.current_stage == 0x12 else dig_spot_data
 
         async def scan_actor_table() -> list[int]:
-            _read_list = [Address.from_pointer(self.actor_table_pointer+3+4*i) for i in range(scan_len)]
+            _read_list = [Address.from_pointer(self.actor_table_pointer+3+4*j) for j in range(scan_len)]
             _read_list += [spot_data[_loc].item_pointer_addr for _loc in self.dig_spots_in_scene if spot_data[_loc].is_tree]
             res = await read_multiple(ctx, _read_list)
             return list(res.values())
 
-        def get_first_new_actor(d) -> int:
+        def get_first_new_actor(d) -> int or None:
             for k, v in d.items():
                 if v == 2:
                     return k

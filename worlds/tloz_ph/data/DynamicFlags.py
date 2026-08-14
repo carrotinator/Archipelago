@@ -1,4 +1,5 @@
 from .Addresses import *
+from .Constants import SKIP_OCEAN_FIGHTS_FLAGS, SPAWN_B3_REAPLING_FLAGS
 
 """
 "Dynamic Flag Name": {
@@ -1456,6 +1457,18 @@ DYNAMIC_FLAGS = {
         "on_scenes": [0, 1, 2, 3],
         "has_items": [("NE Sea Chart", 0)],
         "unset_if_true": [(PHAddr.inventory_5, 0x10)]
+    },
+
+    # Stage Flaggery
+    "Skip ocean fights": {
+        "on_scenes": [0, 1, 2, 3],
+        "has_slot_data": [("skip_ocean_fights", 1)],
+        "update_stage_flags": SKIP_OCEAN_FIGHTS_FLAGS
+    },
+    "Spawn gs b3 reapling": {
+        "on_scenes": [0x4102],
+        "has_slot_data": [("logic", 0, "not")],
+        "update_stage_flags": SPAWN_B3_REAPLING_FLAGS
     },
 }
 
