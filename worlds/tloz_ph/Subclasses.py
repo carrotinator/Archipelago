@@ -2,7 +2,7 @@ from typing import TYPE_CHECKING
 from BaseClasses import Entrance, Region
 from enum import IntEnum
 
-from .DSZeldaClient.subclasses import DSTransition, split_bits, AddrFromPointer
+from .DSZeldaClient.subclasses import DSTransition, split_bits
 from .DSZeldaClient.ItemClass import DSItem, remove_vanilla_normal
 from .data.SwitchLogic import *
 from .data.Constants import EQUIPPED_SHIP_PARTS_ADDR, BOSS_DOOR_DATA

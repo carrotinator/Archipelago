@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from random import randint
 
 from .DSZeldaClient.DSZeldaClient import *
-from .DSZeldaClient.subclasses import (get_address_from_heap, storage_key, get_stored_data, AddrFromPointer)
+from .DSZeldaClient.subclasses import (get_address_from_heap, storage_key, get_stored_data)
 from .data.Items import ITEMS, ITEM_GROUPS
 from .MapWarp import map_mode
 from .data.Entrances import entrance_id_to_entrance
@@ -296,7 +296,7 @@ class PhantomHourglassClient(DSZeldaClient):
         # printl(f"Treasure Tracker! {split_bits(self.last_treasures, 8)}")
 
     async def give_random_treasure(self, ctx):
-        address = AddrFromPointer(PHAddr.pink_coral_count + randint(0, 7))
+        address = Address.from_pointer(PHAddr.pink_coral_count + randint(0, 7))
         await address.add(ctx, 1)
         await self.update_treasure_tracker(ctx)
         logger.info(f"Got random treasure from farmable location.")
@@ -335,7 +335,7 @@ class PhantomHourglassClient(DSZeldaClient):
             if death_link_pointer:
                 addr, offset = death_link_pointer
                 pointer_1 = await addr.read(ctx)
-                self.health_address = AddrFromPointer(pointer_1 + offset - 0x2000000, size=2, name="link_health")
+                self.health_address = Address.from_pointer(pointer_1 + offset - 0x2000000, size=2, name="link_health")
                 self.last_health_pointer = pointer_1
                 read_keys.append(self.health_address)
             printl(f"Health Address = {self.health_address}")
@@ -382,7 +382,7 @@ class PhantomHourglassClient(DSZeldaClient):
             total = ctx.slot_data["metal_hunt_total"]
             required = ctx.slot_data["metal_hunt_required"]
         else:
-            return True
+            return
 
         if scene == 0xB0A:
             # Oshus Text
@@ -836,7 +836,7 @@ class PhantomHourglassClient(DSZeldaClient):
     async def set_stage_flags(self, ctx, stage):
         printl(f"Setting stage flags")
         self.stage_flag_address = await get_address_from_heap(ctx, PHAddr.gMapManager, STAGE_FLAGS_OFFSET)
-        self.key_address = AddrFromPointer(self.stage_flag_address + SMALL_KEY_OFFSET)
+        self.key_address = Address.from_pointer(self.stage_flag_address + SMALL_KEY_OFFSET)
         if stage in STAGE_FLAGS:
             flags = STAGE_FLAGS[stage]
 
@@ -958,8 +958,9 @@ class PhantomHourglassClient(DSZeldaClient):
                 await self.scout_location(ctx, item_data.hint_on_receive)
         # Increment metal count
         if item_name in ITEM_GROUPS["Metals"]:
-            self.metal_count += 1
-            await self.process_game_completion(ctx)
+            printl(f"Old thingy metal count: {self.metal_count+1}")
+            self.update_metal_count(ctx)
+            printl(f"Updated metal count: {self.metal_count}")
         if "Boss Key" in item_name:
             await self.open_boss_door(ctx)
 
@@ -1030,12 +1031,12 @@ class PhantomHourglassClient(DSZeldaClient):
 
     @staticmethod
     async def enable_items(ctx: "BizHawkClientContext", inventory_id: int):
-        equipped_item_pointer = AddrFromPointer(await PHAddr.gItemManager.read(ctx)-0x02000000, size=4)
+        equipped_item_pointer = Address.from_pointer(await PHAddr.gItemManager.read(ctx), size=4)
         equipped_item = await equipped_item_pointer.read(ctx, silent=True)
         if equipped_item == 0xffffffff:
             printl(f"Items menu not visible, enabling: {hex(equipped_item_pointer + EQUIP_TIMER_OFFSET)}")
             # Enable items menu
-            equipped_item_timer = AddrFromPointer(equipped_item_pointer + EQUIP_TIMER_OFFSET, size=2)
+            equipped_item_timer = Address.from_pointer(equipped_item_pointer + EQUIP_TIMER_OFFSET, size=2)
             await equipped_item_timer.overwrite(ctx, 20)
             await equipped_item_pointer.overwrite(ctx, inventory_id)
 
@@ -1055,6 +1056,7 @@ class PhantomHourglassClient(DSZeldaClient):
         if ctx.slot_data["bellum_access"] == 4:
             game_clear = self.metal_count >= ctx.slot_data["required_metals"]
             if game_clear and not self.sent_goal:
+                printl(f"Bellum access: {ctx.slot_data['bellum_access']} metal count {self.metal_count} >= {ctx.slot_data['required_metals']}")
                 await self.store_visited_entrances(ctx, ENTRANCES["GOAL"], ENTRANCES["GOAL"].vanilla_reciprocal)
                 self.sent_goal = True
         else:
@@ -1169,7 +1171,7 @@ class PhantomHourglassClient(DSZeldaClient):
                 data = [data] if isinstance(data, dict) else data
                 self.event_data = data
                 for i, event in enumerate(data):
-                    address = AddrFromPointer(self.stage_flag_address + event.get("offset", 0), size=event.get("size", 1)) if event["address"] == "stage_flags" else event["address"]
+                    address = Address.from_pointer(self.stage_flag_address + event.get("offset", 0), size=event.get("size", 1)) if event["address"] == "stage_flags" else event["address"]
                     printl(f"event data {self.event_data}")
                     self.event_data[i]["address"] = address
                     printl(f"event data {self.event_data}")
