@@ -1943,14 +1943,45 @@ idents_0: dict[int, str] = {
     0x15667C: "Key Door",
     0x156498: "Blue Door",
     0x157340: "Spikes",
+    0x179104: "Ice Spikes",
+    0x259fc8: "Arena Door",
 
+    0x155fd4: "Small Chest",
     0x1562AC: "Closed Chest",
-    0x15759C: "Switch",
+    0x1563f4: "Unspawned Chest",
+    0x159254: "Bridge Spawner",
 
-    0x156CF8: "Pot",
+    0x156fc0: "Stone Tablet",
+    0x16c47c: "Gossip Stone",
+
+    0x15759C: "Switch",
+    0x16c3d4: "Color Switch",
+    0x16c2f0: "Lever",
+    0x1574b0: "Pressure Pad",
+    0x15a628: "Eye Switch",
+    0x185c44: "Lazer Statue",
+
+    0x156CF8: "Pot (Hearts)",
+    0x156c60: "Pot",
+
+    0x15741c: "Peg",
 
     0x16CB04: "Staircase",
-    0x156B34: "Cave Exit"
+    0xe2d44: "Staircase",
+    0x156B34: "Cave Exit",
+    0x156a0c: "Cave",
+    0x156aa0: "Bombable Cave",
+
+    0x179198: "Ice Bridge",
+    0x16c614: "Color Block",
+    0x25e448: "Separator",
+    0x25a308: "Separator (Corner)",
+    0xe289c: "Offscreen",
+    0x15a328: "Bombable Wall",
+    0x157790: "Bombable Rock",
+    0x16cbac: "Tree",
+
+    0x16cc40: "Grass",
 }
 
 map_object_idents: dict[int, str] = {

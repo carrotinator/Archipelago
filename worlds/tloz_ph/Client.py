@@ -881,6 +881,8 @@ class PhantomHourglassClient(DSZeldaClient):
 
     async def update_special_key_count(self, ctx, current_stage: int, new_keys, key_data: dict, key_values, key_address: "Address") -> tuple[int, bool]:
         if current_stage == 0x25:
+            if self._just_entered_game:
+                return await key_address.read(ctx), False
             if self.location_name_to_id["TotOK 1F Sea Chart Chest"] in ctx.checked_locations:
                 new_keys -= 1  # Opening the SW sea chart door uses a key permanently! No savescums!
             if self.current_scene == 0x2504:  # Set B3.5 key count
@@ -893,7 +895,8 @@ class PhantomHourglassClient(DSZeldaClient):
         return new_keys, True
 
     async def get_small_key_address(self, ctx) -> "Address":
-        return await get_address_from_heap(ctx, PHAddr.gMapManager, SMALL_KEY_OFFSET)
+        self.key_address = await get_address_from_heap(ctx, PHAddr.gMapManager, SMALL_KEY_OFFSET)
+        return self.key_address
 
     # Called during location processing to determine what vanilla item to remove
     async def unset_special_vanilla_items(self, ctx, location, item):
@@ -1635,30 +1638,34 @@ class PhantomHourglassClient(DSZeldaClient):
 
     async def process_map_objects(self, ctx):
 
-        table_size = await PHAddr.map_obj_table_size.read(ctx)
+        table_size = await PHAddr.map_obj_table_size.read(ctx)*4
         actor_idents = await self.get_table_data(ctx, PHAddr.map_obj_table, 0,
                                                  size=3, table_label=False, table_size=table_size)
-        printl(f"map objects: {hex_f(actor_idents)}")
+        printl(f"map objects ({table_size}): {hex_f(actor_idents)}")
 
         identifiers = idents_0
 
         write_list = []
-        for addr, i in actor_idents.items():
+        for i, pack in enumerate(actor_idents.items()):
+            addr, ident = pack
             if addr == 0x5544:
                 printl("Map Object Overflow!")
                 break
-            if i not in identifiers:
-                printl(f"Unknown map object: {hex_f(i)} @ {addr}")
+            if ident not in identifiers:
+                printl(f"Unknown map object: {hex_f(ident)} @ {addr} #{i}")
                 continue
 
-            if identifiers.get(i) in ["Spirit Door", "Key Door", "Blue Door"]:
+            if identifiers.get(ident) in ["Spirit Door", "Key Door", "Blue Door", "Arena Door"]:
                 write_list.append(Address.from_pointer(addr + 31*4, size=4).get_inner_write_list(0))  # closing
 
-                if identifiers.get(i) in ["Spirit Door", "Key Door"]:
+                if identifiers.get(ident) in ["Spirit Door", "Key Door"]:
                     self.key_door_watches.append(Address.from_pointer(addr + 8, 1))
 
-            if identifiers.get(i) in ["Spikes"]:
+            if identifiers.get(ident) in ["Spikes"]:
                 write_list.append(Address.from_pointer(addr + 30 * 4, size=2).get_inner_write_list(0))
+
+            if identifiers.get(ident) in ["Bridge Spawner"]:
+                write_list.append(Address.from_pointer(addr + 15 * 4, size=2).get_inner_write_list(0))
 
             # if identifiers.get(i) in ["Boss Door"]:
             #     await self.open_boss_door(ctx, addr)
