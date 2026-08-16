@@ -10,6 +10,7 @@ from .data.Entrances import entrance_id_to_entrance
 from .data.DynamicEntrances import DYNAMIC_ENTRANCES_BY_SCENE
 from typing import Literal, Iterable
 from settings import get_settings
+from .Subclasses import PairedObjects
 
 if TYPE_CHECKING:
     from worlds._bizhawk.context import BizHawkClientContext, BizHawkClientCommandProcessor
@@ -213,6 +214,7 @@ class PhantomHourglassClient(DSZeldaClient):
         self.last_actor_scan: list[int] = []
         self.linked_dig_spots: dict[str, int] = {}
         self.key_door_watches: list["Address"] = []
+        self.paired_object_watches: dict[str, "PairedObjects"] = {}
 
 
     async def check_game_version(self, ctx: "BizHawkClientContext") -> bool:
@@ -336,7 +338,7 @@ class PhantomHourglassClient(DSZeldaClient):
             if death_link_pointer:
                 addr, offset = death_link_pointer
                 pointer_1 = await addr.read(ctx)
-                self.health_address = Address.from_pointer(pointer_1 + offset - 0x2000000, size=2, name="link_health")
+                self.health_address = Address.from_pointer(pointer_1 + offset, size=2, name="link_health")
                 self.last_health_pointer = pointer_1
                 read_keys.append(self.health_address)
             printl(f"Health Address = {self.health_address}")
@@ -431,12 +433,22 @@ class PhantomHourglassClient(DSZeldaClient):
             reads = await read_multiple(ctx, self.key_door_watches)
             for a, v in reads.items():
                 if 8 > v > 2:
-
                     await write_multiple(ctx, [a, Address.from_pointer(a+28*4+2, 1)], [7, 0xff])
                     self.key_door_watches.remove(a)
                     break
                 if v == 8:
                     self.key_door_watches.remove(a)
+        if self.paired_object_watches:
+            reads = await read_multiple(ctx, [obj.trigger for obj in self.paired_object_watches.values()])
+            writes = []
+            for read, obj in zip(reads.values(), self.paired_object_watches.copy().values()):
+                if read == obj.comp:
+                    printl(f"Paired object activated: {obj}")
+                    writes += obj.get_writes()
+                    self.paired_object_watches.pop(obj.name)
+            if writes:
+                await bizhawk.write(ctx.bizhawk_ctx, writes)
+
 
         # Map warp entrypoint
         if read_result.get(PHAddr.in_map, 0):
@@ -509,6 +521,7 @@ class PhantomHourglassClient(DSZeldaClient):
                 printl(f"Reloading chests!")
                 await self.set_chest_contents(ctx)
                 await self.load_dig_spots(ctx)
+                await self.process_map_objects(ctx)
         if self.is_dead and not self.chest_reload_watches:
             self.chest_reload_watches.append((self.health_address, 0, "gt"))
             printl(f"Setting Chest reload for death: {self.chest_reload_watches}")
@@ -626,96 +639,6 @@ class PhantomHourglassClient(DSZeldaClient):
 
         # Open boss door
         await self.open_boss_door(ctx)
-
-        # Open pedestal doors. sucks that you can't trigger it with dynaflags. slow code but game is slower
-        if ctx.slot_data.get("randomize_pedestal_items", 0) > 0:
-            async def open_door(start_offset, check_offset, comp_value):
-                door = await self.find_table_object(ctx, start_offset, check_offset, comp_value)
-                printl(f"Opening door {door}")
-                if door:
-                    await door.overwrite(ctx, 0x1000, offset=4 * 26)  # Open
-                    await door.overwrite(ctx, 0, offset=4 * 15)  # disable collision
-                    await door.unset_bits(ctx, 0x10, offset=4 * 1)  # remove map icon
-
-            async def lower_spikes(start_offset, check_offset, comp_value, width):
-
-                spike, offset = await self.find_table_object(ctx, start_offset, check_offset, comp_value, return_index=True)
-                if spike is None:
-                    printl(f"Can't find spikes, probably already removed.")
-                    return
-                reads: list[Address] = [Address.from_pointer(PHAddr.map_obj_table + 4 * (offset-i-1), size=3) for i in range(width-1)]
-                spikes = [spike] + list((await read_multiple(ctx, reads)).values())
-                printl(f"Lowering Spike objects: {spikes}")
-                if spike is None:
-                    await self.print_map_data(ctx)
-                await write_multiple(ctx, [Address.from_pointer(a+4*i, size=4) for a in spikes for i in [1]], [0]*width)
-
-            # === TotOK ===
-            if current_scene == 0x2503:  # B3
-                if self.item_count(ctx, "Force Gem (B3)") >= 3 or self.item_count(ctx, "Force Gems"):
-                    await PHAddr.totok_b3_state.set_bits(ctx, [0xFE, 0x0F])
-            elif current_scene == 0x250B:  # B8
-                if (self.item_count(ctx, "Triangle Crystal (Temple of the Ocean King)")
-                        or self.item_count(ctx, "Triangle Crystals")
-                        or self.item_count(ctx, "Triangle Pedestal B8 (Temple of the Ocean King)")):
-                    await lower_spikes(12, 6, 14336, 3)
-                    await PHAddr.totok_b8_state.set_bits(ctx, 0x4)
-                if (self.item_count(ctx, "Round Crystal (Temple of the Ocean King)")
-                        or self.item_count(ctx, "Round Pedestal B8 (Temple of the Ocean King)")
-                        or self.item_count(ctx, "Round Crystals")):
-                    await lower_spikes(8, 6, 0xFFFF6800, 2)
-                    await PHAddr.totok_b8_state.set_bits(ctx, 0x2)
-            elif current_scene == 0x250C:  # B9
-                if (self.item_count(ctx, "Round Crystal (Temple of the Ocean King)")
-                        or self.item_count(ctx, "Round Pedestal B9 (Temple of the Ocean King)")
-                        or self.item_count(ctx, "Round Crystals")):
-                    await PHAddr.totok_b9_state.set_bits(ctx, 0x4)
-                if (self.item_count(ctx, "Triangle Crystal (Temple of the Ocean King)")
-                        or self.item_count(ctx, "Triangle Pedestal B9 (Temple of the Ocean King)")
-                        or self.item_count(ctx, "Triangle Crystals")):
-                    await PHAddr.totok_b9_state.set_bits(ctx, 0x8)
-                if (self.item_count(ctx, "Square Crystal (Temple of the Ocean King)")
-                        or self.item_count(ctx, "Square Crystals")):
-                    await PHAddr.totok_b9_state.set_bits(ctx,  0x02)
-                    await lower_spikes(10, 6, 0xFFFF3800, 3)
-                if self.item_count(ctx, "Square Pedestal West (Temple of the Ocean King)"):
-                    await lower_spikes(10, 6, 0xFFFF3800, 3)
-                if self.item_count(ctx, "Square Pedestal Center (Temple of the Ocean King)"):
-                    await PHAddr.totok_b9_state.set_bits(ctx,  0x2)
-            elif current_scene == 0x2510:  # B12
-                gem_count = self.item_count(ctx, "Force Gem (B12)") | self.item_count(ctx, "Force Gems")*3
-                if gem_count >= 3:
-                    await PHAddr.totok_b12_state.set_bits(ctx, [0xFE, 0x0F])
-                elif gem_count == 2:
-                    await PHAddr.totok_b12_state.set_bits(ctx, 0xC)
-                elif gem_count == 1:
-                    await PHAddr.totok_b12_state.set_bits(ctx, 0x8)
-                # Remove ability to place force gems on southern pedestals
-                await PHAddr.totok_b12_pedestal_left.overwrite(ctx, 0x9)
-                await PHAddr.totok_b12_pedestal_right.overwrite(ctx, 0x9)
-
-            # === Temple of Courage ===
-            elif current_scene == 0x1E00:
-                if (self.item_count(ctx, "Square Pedestal North (Temple of Courage)")
-                        or self.item_count(ctx, "Square Crystal (Temple of Courage)")
-                        or self.item_count(ctx, "Square Crystals")):
-                    await open_door(40, 6, 0xFFFFBFFC)
-                if (self.item_count(ctx, "Square Pedestal South (Temple of Courage)")
-                        or self.item_count(ctx, "Square Crystal (Temple of Courage)")
-                        or self.item_count(ctx, "Square Crystals")):
-                    await open_door(87, 6, 0xFFFF2FFC)
-
-            # === Ghost Ship ===
-            elif current_scene == 0x2900:
-                if (self.item_count(ctx, "Triangle Crystal (Ghost Ship)")
-                        or self.item_count(ctx, "Triangle Crystals")):
-                    # await self.stage_flag_address.set_bits(ctx, 0x8, offset=1)
-                    await lower_spikes(90, 6, 47104, 4)
-                    await lower_spikes(85, 6, 38912, 3)
-                if (self.item_count(ctx, "Round Crystal (Ghost Ship)")
-                        or self.item_count(ctx, "Round Crystals")):
-                    await lower_spikes(28, 6, 22528, 4)
-                    # await self.stage_flag_address.set_bits(ctx, 0x2, offset=3)
 
         # Find potential dig spots
         await self.load_dig_spots(ctx)
@@ -1546,6 +1469,10 @@ class PhantomHourglassClient(DSZeldaClient):
             await self._remove_vanilla_item(ctx, num_received_items)
         await self.receive_item_post_processing(ctx, item_name, item_data)
 
+    async def detected_new_scene(self, ctx: "BizHawkClientContext"):
+        self.key_door_watches.clear()
+        self.paired_object_watches.clear()
+
     @staticmethod
     async def find_table_object(ctx: "BizHawkClientContext", start_offset: int,
                               check_offset: int, comp_value: int | list,
@@ -1667,14 +1594,143 @@ class PhantomHourglassClient(DSZeldaClient):
             if identifiers.get(ident) in ["Bridge Spawner"]:
                 write_list.append(Address.from_pointer(addr + 15 * 4, size=2).get_inner_write_list(0))
 
+            if identifiers.get(ident) in ["Torch"]:
+                write_list.append(Address.from_pointer(addr + 38 * 4 +2, size=2).get_inner_write_list(0))
+                if self.current_scene == 0x2501 and await Address.from_pointer(addr+6*4, size=4).read(ctx, signed=True) == -10240:
+                    self.paired_object_watches.setdefault("b1_flames", PairedObjects("b1_flames")).trigger = Address.from_pointer(addr+8)
+
+            if identifiers.get(ident) in ["Unspawned Big Chest", "Unspawned Small Chest"]:
+                write_list.append(Address.from_pointer(addr + 28 * 4, size=2).get_inner_write_list(0))
+
+            if identifiers.get(ident) in ["Flames"]:
+                write_list.append(Address.from_pointer(addr + 42 * 4, size=4).get_inner_write_list(0))
+
+                if self.current_scene == 0x2501:
+                    self.paired_object_watches.setdefault("b1_flames", PairedObjects("b1_flames")).to_activate.append(Address.from_pointer(addr+8))
+
+                elif self.current_scene == 0x2502:
+                    if await Address.from_pointer(addr+8*4, size=4).read(ctx, signed=True) == -6144:
+                        self.paired_object_watches.setdefault("b2_lever", PairedObjects("b2_lever")).to_activate.append(Address.from_pointer(addr+8))
+                    else:
+                        self.paired_object_watches.setdefault("b2_switch", PairedObjects("b2_switch")).to_activate.append(Address.from_pointer(addr + 8))
+
+            if identifiers.get(ident) in ["Lever"]:
+                if self.current_scene == 0x2502:
+                    self.paired_object_watches.setdefault("b2_lever", PairedObjects("b2_lever")).set_detection(Address.from_pointer(addr + 8), 3)
+
+            if identifiers.get(ident) in ["Switch"]:
+                if self.current_scene == 0x2502 and await Address.from_pointer(addr+6*4, size=4).read(ctx, signed=True) == -55296:
+                    self.paired_object_watches.setdefault("b2_switch", PairedObjects("b2_switch")).set_detection(Address.from_pointer(addr + 8), 1)
+
+
             # if identifiers.get(i) in ["Boss Door"]:
             #     await self.open_boss_door(ctx, addr)
             #     self.boss_door_addr = addr
+
+        for obj in self.paired_object_watches.copy().values():
+            if not obj.validate():
+                self.paired_object_watches.pop(obj.name)
+        printl(f"Paired Objects: {self.paired_object_watches}")
 
         if write_list:
             printl(f"Deleting Cutscenes: {hex_f(write_list)}")
             await bizhawk.write(ctx.bizhawk_ctx, write_list)
 
+    async def open_gem_doors(self, ctx, door: "Address"):
+        # Open pedestal doors. sucks that you can't trigger it with dynaflags. slow code but game is slower
+        if ctx.slot_data.get("randomize_pedestal_items", 0) == 0:
+            return []
+
+        write_list = []
+
+        async def open_door():
+            printl(f"Opening door {door}")
+            door_open = Address.from_pointer(door+28*4+2, 1)
+            write_list.append(door_open.get_inner_write_list(7))
+            # await door.overwrite(ctx, 0x1000, offset=4 * 26)  # Open
+            # await door.overwrite(ctx, 0, offset=4 * 15)  # disable collision
+            # await door.unset_bits(ctx, 0x10, offset=4 * 1)  # remove map icon
+
+        async def lower_spikes(start_offset, check_offset, comp_value, width):
+            spike, offset = await self.find_table_object(ctx, start_offset, check_offset, comp_value, return_index=True)
+            if spike is None:
+                printl(f"Can't find spikes, probably already removed.")
+                return
+            reads: list[Address] = [Address.from_pointer(PHAddr.map_obj_table + 4 * (offset-i-1), size=3) for i in range(width-1)]
+            spikes = [spike] + list((await read_multiple(ctx, reads)).values())
+            printl(f"Lowering Spike objects: {spikes}")
+            if spike is None:
+                await self.print_map_data(ctx)
+            await write_multiple(ctx, [Address.from_pointer(a+4*i, size=4) for a in spikes for i in [1]], [0]*width)
+
+        # === TotOK ===
+        if self.current_scene == 0x2503:  # B3
+            if self.item_count(ctx, "Force Gem (B3)") >= 3 or self.item_count(ctx, "Force Gems"):
+                await PHAddr.totok_b3_state.set_bits(ctx, [0xFE, 0x0F])
+        elif self.current_scene == 0x250B:  # B8
+            if (self.item_count(ctx, "Triangle Crystal (Temple of the Ocean King)")
+                    or self.item_count(ctx, "Triangle Crystals")
+                    or self.item_count(ctx, "Triangle Pedestal B8 (Temple of the Ocean King)")):
+                await lower_spikes(12, 6, 14336, 3)
+                await PHAddr.totok_b8_state.set_bits(ctx, 0x4)
+            if (self.item_count(ctx, "Round Crystal (Temple of the Ocean King)")
+                    or self.item_count(ctx, "Round Pedestal B8 (Temple of the Ocean King)")
+                    or self.item_count(ctx, "Round Crystals")):
+                await lower_spikes(8, 6, 0xFFFF6800, 2)
+                await PHAddr.totok_b8_state.set_bits(ctx, 0x2)
+        elif self.current_scene == 0x250C:  # B9
+            if (self.item_count(ctx, "Round Crystal (Temple of the Ocean King)")
+                    or self.item_count(ctx, "Round Pedestal B9 (Temple of the Ocean King)")
+                    or self.item_count(ctx, "Round Crystals")):
+                await PHAddr.totok_b9_state.set_bits(ctx, 0x4)
+            if (self.item_count(ctx, "Triangle Crystal (Temple of the Ocean King)")
+                    or self.item_count(ctx, "Triangle Pedestal B9 (Temple of the Ocean King)")
+                    or self.item_count(ctx, "Triangle Crystals")):
+                await PHAddr.totok_b9_state.set_bits(ctx, 0x8)
+            if (self.item_count(ctx, "Square Crystal (Temple of the Ocean King)")
+                    or self.item_count(ctx, "Square Crystals")):
+                await PHAddr.totok_b9_state.set_bits(ctx,  0x02)
+                await lower_spikes(10, 6, 0xFFFF3800, 3)
+            if self.item_count(ctx, "Square Pedestal West (Temple of the Ocean King)"):
+                await lower_spikes(10, 6, 0xFFFF3800, 3)
+            if self.item_count(ctx, "Square Pedestal Center (Temple of the Ocean King)"):
+                await PHAddr.totok_b9_state.set_bits(ctx,  0x2)
+        elif self.current_scene == 0x2510:  # B12
+            gem_count = self.item_count(ctx, "Force Gem (B12)") | self.item_count(ctx, "Force Gems")*3
+            if gem_count >= 3:
+                await PHAddr.totok_b12_state.set_bits(ctx, [0xFE, 0x0F])
+            elif gem_count == 2:
+                await PHAddr.totok_b12_state.set_bits(ctx, 0xC)
+            elif gem_count == 1:
+                await PHAddr.totok_b12_state.set_bits(ctx, 0x8)
+            # Remove ability to place force gems on southern pedestals
+            await PHAddr.totok_b12_pedestal_left.overwrite(ctx, 0x9)
+            await PHAddr.totok_b12_pedestal_right.overwrite(ctx, 0x9)
+
+        # === Temple of Courage ===
+        elif self.current_scene == 0x1E00:
+            if (self.item_count(ctx, "Square Pedestal North (Temple of Courage)")
+                    or self.item_count(ctx, "Square Crystal (Temple of Courage)")
+                    or self.item_count(ctx, "Square Crystals")):
+                await open_door()
+            if (self.item_count(ctx, "Square Pedestal South (Temple of Courage)")
+                    or self.item_count(ctx, "Square Crystal (Temple of Courage)")
+                    or self.item_count(ctx, "Square Crystals")):
+                await open_door()
+
+        # === Ghost Ship ===
+        elif self.current_scene == 0x2900:
+            if (self.item_count(ctx, "Triangle Crystal (Ghost Ship)")
+                    or self.item_count(ctx, "Triangle Crystals")):
+                # await self.stage_flag_address.set_bits(ctx, 0x8, offset=1)
+                await lower_spikes(90, 6, 47104, 4)
+                await lower_spikes(85, 6, 38912, 3)
+            if (self.item_count(ctx, "Round Crystal (Ghost Ship)")
+                    or self.item_count(ctx, "Round Crystals")):
+                await lower_spikes(28, 6, 22528, 4)
+                # await self.stage_flag_address.set_bits(ctx, 0x2, offset=3)
+
+        return write_list
 
     async def get_object_read_addr(self, ctx, location) -> Address | None:
         vanilla_item_model = self.item_data[location["vanilla_item"]].vanilla_model

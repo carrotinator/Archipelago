@@ -1945,14 +1945,17 @@ idents_0: dict[int, str] = {
     0x157340: "Spikes",
     0x179104: "Ice Spikes",
     0x259fc8: "Arena Door",
+    0x157288: "Flames",
 
     0x155fd4: "Small Chest",
     0x1562AC: "Closed Chest",
-    0x1563f4: "Unspawned Chest",
+    0x1563f4: "Unspawned Big Chest",
+    0x156208: "Unspawned Small Chest",
     0x159254: "Bridge Spawner",
 
     0x156fc0: "Stone Tablet",
     0x16c47c: "Gossip Stone",
+    0x157640: "Torch",
 
     0x15759C: "Switch",
     0x16c3d4: "Color Switch",
@@ -1963,8 +1966,10 @@ idents_0: dict[int, str] = {
 
     0x156CF8: "Pot (Hearts)",
     0x156c60: "Pot",
+    0x156d90: "Pot (Safe Zone)",
 
     0x15741c: "Peg",
+    0x1576d4: "Dirt Pile",
 
     0x16CB04: "Staircase",
     0xe2d44: "Staircase",
@@ -1976,8 +1981,10 @@ idents_0: dict[int, str] = {
     0x16c614: "Color Block",
     0x25e448: "Separator",
     0x25a308: "Separator (Corner)",
+    0xe4e04: "Separator",
     0xe289c: "Offscreen",
     0x15a328: "Bombable Wall",
+    0x15a294: "Bombable Block",
     0x157790: "Bombable Rock",
     0x16cbac: "Tree",
 
