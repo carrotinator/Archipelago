@@ -444,10 +444,18 @@ class PhantomHourglassClient(DSZeldaClient):
             writes = []
             for read, obj in zip(reads.values(), self.paired_object_watches.copy().values()):
                 if obj.compare(read):
+                    if obj.state:
+                        continue
                     if not hasattr(obj, "trigger_2") or obj.compare(await obj.trigger_2.read(ctx)):
                         printl(f"Paired object activated: {obj}")
                         writes += obj.get_writes()
-                        self.paired_object_watches.pop(obj.name)
+                        obj.state = True
+                        if not obj.always_active:
+                            self.paired_object_watches.pop(obj.name)
+                elif obj.always_active and obj.state:
+                    obj.state = False
+                    printl(f"Paired object reset: {obj}")
+                    writes += obj.get_writes(True)
             if writes:
                 await bizhawk.write(ctx.bizhawk_ctx, writes)
 
@@ -1569,10 +1577,10 @@ class PhantomHourglassClient(DSZeldaClient):
 
     async def process_map_objects(self, ctx):
 
-        table_size = await PHAddr.map_obj_table_size.read(ctx)*4
-        actor_idents = await self.get_table_data(ctx, PHAddr.map_obj_table, 0,
+        table_size = await PHAddr.map_obj_table_size.read(ctx)
+        obj_idents = await self.get_table_data(ctx, PHAddr.map_obj_table, 0,
                                                  size=3, table_label=False, table_size=table_size)
-        printl(f"map objects ({table_size}): {hex_f(actor_idents)}")
+        printl(f"map objects ({table_size}): {hex_f(obj_idents)}")
 
         identifiers = idents_0
 
@@ -1580,13 +1588,27 @@ class PhantomHourglassClient(DSZeldaClient):
             self.paired_object_watches.setdefault(name, PairedObjects(name)).set_detection(
                 Address.from_pointer(a), **kwargs)
 
-        def add_action(name, a):
-            self.paired_object_watches.setdefault(name, PairedObjects(name)).to_activate.append(
-                Address.from_pointer(a))
+        def add_action(name, a, w=0, r=2):
+            self.paired_object_watches.setdefault(name, PairedObjects(name)).set_action(
+                Address.from_pointer(a), w, r)
+
+        # Count items for rooms before looping
+        has_triangle, has_round, has_square = 0, 0, 0
+        if self.current_scene == 0x2900:
+            has_triangle = (self.item_count(ctx, "Triangle Crystal (Ghost Ship)")
+                    or self.item_count(ctx, "Triangle Crystals"))
+            has_round = (self.item_count(ctx, "Round Crystal (Ghost Ship)")
+                    or self.item_count(ctx, "Round Crystals"))
+
+        # Coordinate reads are currently reeeally slow. Test if faster to read them in bulk for all objects here?
+        xs = await read_multiple(ctx, obj_idents.keys(), signed=True, offset=6*4)
+        zs = await read_multiple(ctx, obj_idents.keys(), signed=True, offset=8*4)
 
         write_list = []
-        for i, pack in enumerate(actor_idents.items()):
-            addr, ident = pack
+        for i, pack in enumerate(zip(obj_idents.items(), list(xs.values()), list(zs.values()))):
+            pack2, x, z = pack
+            addr, ident = pack2
+            # print(i, addr, identifiers.get(ident), x, z)
             if addr == 0x5544:
                 printl("Map Object Overflow!")
                 break
@@ -1603,17 +1625,22 @@ class PhantomHourglassClient(DSZeldaClient):
             if identifiers.get(ident) in ["Spikes"]:
                 write_list.append(Address.from_pointer(addr + 30 * 4, size=2).get_inner_write_list(0))
 
+                if self.current_scene == 0x2900 and 20000 < x < 40000:
+                    if not ctx.slot_data["randomize_pedestal_items"]:
+                        write_list.pop()
+                    elif has_triangle:
+                        write_list.append(addr.get_inner_write_list(0, 8, 1))
+
             if identifiers.get(ident) in ["Bridge Spawner"]:
                 write_list.append(Address.from_pointer(addr + 15 * 4, size=2).get_inner_write_list(0))
 
             if identifiers.get(ident) in ["Torch"]:
                 write_list.append(Address.from_pointer(addr + 38 * 4 +2, size=2).get_inner_write_list(0))
-                if self.current_scene == 0x2501 and await Address.from_pointer(addr+6*4, size=4).read(ctx, signed=True) == -10240:
+                if self.current_scene == 0x2501 and x == -10240:
                     add_detection("b1_flames", addr+8)
-                if (self.current_scene == 0x1c02
-                        and await Address.from_pointer(addr + 8 * 4, size=4).read(ctx, signed=True) < -45000
-                        and await Address.from_pointer(addr + 6 * 4, size=4).read(ctx, signed=True) > -60000):
-                    add_detection("tof_3f_torches", addr+8)
+                if self.current_scene == 0x1c02:
+                    if z < -45000 and x > -60000:
+                        add_detection("tof_3f_torches", addr+8)
 
             if identifiers.get(ident) in ["Unspawned Big Chest", "Unspawned Small Chest"]:
                 write_list.append(Address.from_pointer(addr + 28 * 4, size=2).get_inner_write_list(0))
@@ -1625,20 +1652,20 @@ class PhantomHourglassClient(DSZeldaClient):
                     add_action("b1_flames", addr + 8)
 
                 elif self.current_scene == 0x2502:
-                    if await Address.from_pointer(addr+8*4, size=4).read(ctx, signed=True) == -6144:
+                    if z == -6144:
                         add_action("b2_lever", addr + 8)
                     else:
                         add_action("b2_switch", addr + 8)
 
                 elif self.current_scene == 0x2503:
-                    if await Address.from_pointer(addr + 8 * 4, size=4).read(ctx, signed=True) == -14336:
+                    if z == -14336:
                         write_list.pop()  # Phantom Flames actually use the cutscene flag
                         write_list.append(Address.from_pointer(addr + 42 * 4+2, size=2).get_inner_write_list(0))
                     else:
                         add_action("b3_lever", addr + 8)
 
                 elif self.current_scene == 0x250A:
-                    if await Address.from_pointer(addr + 8 * 4, size=4).read(ctx, signed=True) == -10240:
+                    if z == -10240:
                         add_action("b7_chest", addr + 8)
                     else:
                         write_list.pop()  # Phantom Flames actually use the cutscene flag
@@ -1648,29 +1675,44 @@ class PhantomHourglassClient(DSZeldaClient):
                     write_list.append(Address.from_pointer(addr + 42 * 4 + 2, size=2).get_inner_write_list(0))
 
                 elif self.current_scene == 0x1C00:
-                    coords = await read_multiple(ctx, [Address.from_pointer(addr + 6 * 4, size=4), Address.from_pointer(addr + 8 * 4, size=4)], signed=True)
-                    x, z = list(coords.values())
                     if x == -22528:
                         add_action("tof_1f", addr + 8)
                     elif z == 47104 and x > 20000:
                         add_action("tof_arena", addr + 8)
 
                 elif self.current_scene == 0x1c01:
-                    x = await Address.from_pointer(addr + 6 * 4, size=4).read(ctx, signed=True)
                     if x == 14336:
                         add_action("tof_2f_e", addr + 8)
                     elif x == -26624:
                         add_action("tof_2f_w", addr + 8)
 
                 if self.current_scene == 0x1C02:
-                    coords = await read_multiple(ctx, [Address.from_pointer(addr + 6 * 4, size=4), Address.from_pointer(addr + 8 * 4, size=4)], signed=True)
-                    x, z = list(coords.values())
                     if x < -20000:
                         write_list.pop()
                     elif x > 40000:
                         add_action("tof_3f_candles", addr + 8)
                     else:
                         add_action("tof_3f_torches", addr + 8)
+
+                elif self.current_scene == 0x2900:
+                    if x < 0:
+                        add_action("gs_1f", addr + 8)
+                    elif x < 35000:
+                        if not ctx.slot_data["randomize_pedestal_items"]:
+                            add_action("gs_round", addr + 8)
+                            # write_list.pop()
+                        elif has_round:
+                            write_list.append(addr.get_inner_write_list(0, 8, 1))
+                    else:
+                        if not ctx.slot_data["randomize_pedestal_items"]:
+                            add_action("gs_tri", addr + 8)
+                        elif has_triangle:
+                            write_list.append(addr.get_inner_write_list(0, 8, 1))
+                elif self.current_scene == 0x2902:
+                    if x > 0:
+                        add_action("gs_b3_e", addr + 8)
+                    else:
+                        add_action("gs_b3_w", addr + 8)
 
             if identifiers.get(ident) in ["Lever"]:
                 if self.current_scene == 0x2502:
@@ -1679,19 +1721,21 @@ class PhantomHourglassClient(DSZeldaClient):
                     add_detection("b3_lever", addr + 8, comp=3)
 
             if identifiers.get(ident) in ["Switch"]:
-                if self.current_scene == 0x2502 and await Address.from_pointer(addr+6*4, size=4).read(ctx, signed=True) == -55296:
+                if self.current_scene == 0x2502 and x == -55296:
                     add_detection("b2_switch", addr + 8, comp=1)
 
-                if self.current_scene == 0x1C00 and await Address.from_pointer(addr+8*4, size=4).read(ctx, signed=True) == -10240:
+                if self.current_scene == 0x1C00 and z == -10240:
                     add_detection("tof_1f", addr + 8, comp=1)
 
                 if self.current_scene == 0x1C01:
-                    x = await Address.from_pointer(addr+6*4, size=4).read(ctx, signed=True)
                     if x == 63488:
                         add_detection("tof_2f_e", addr + 8, comp=1)
                     elif x == -63488:
                         add_detection("tof_2f_w", addr + 8, comp=1)
 
+            if identifiers.get(ident) in ["Pressure Pad"]:
+                if self.current_scene == 0x2902:
+                    add_detection("gs_b3_w", addr + 8, comp=2)
 
             if identifiers.get(ident) in ["Small Chest"]:
                 if self.current_scene == 0x250A:
@@ -1705,8 +1749,24 @@ class PhantomHourglassClient(DSZeldaClient):
                 self.boss_door_addr = addr
                 await self.open_boss_door(ctx)
 
+            if identifiers.get(ident) in ["Pedestal"]:
+                if self.current_scene == 0x2900 and not ctx.slot_data["randomize_pedestal_items"]:
+                    if x > 40000:
+                        add_detection("gs_tri", addr + 8, comp=1, always_active=True)
+                    else:
+                        add_detection("gs_round", addr + 8, comp=1, always_active=True)
+
+            if identifiers.get(ident) in ["Small Chest", "Big Chest", "Unspawned Big Chest", "Unspawned Small Chest"]:
+                # Set chest contents?
+                pass
+
         if self.current_scene == 0x1c00:
             add_detection("tof_arena", self.stage_flag_address+0, comp=0x10, comp_exact=False)
+        elif self.current_scene == 0x2900:
+            add_detection("gs_1f", self.stage_flag_address+0, comp=0x4, comp_exact=False)
+        elif self.current_scene == 0x2902:
+            add_detection("gs_b3_e", self.stage_flag_address+3, comp=0x10, comp_exact=False)
+
 
         for obj in self.paired_object_watches.copy().values():
             if not obj.validate():

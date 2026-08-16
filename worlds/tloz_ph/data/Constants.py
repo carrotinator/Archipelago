@@ -1957,9 +1957,11 @@ idents_0: dict[int, str] = {
     0x159254: "Bridge Spawner",
 
     0x16badc: "Boss Door",
+    0x159c10: "Ghost Door",
 
     0x156fc0: "Stone Tablet",
     0x16c47c: "Gossip Stone",
+    0x1592e8: "Gossip Stone (chest count)",
     0x157640: "Torch",
 
     0x15759C: "Switch",
@@ -1971,13 +1973,16 @@ idents_0: dict[int, str] = {
     0x185c44: "Lazer Statue",
     0x178e3c: "Candle",
 
+
     0x156CF8: "Pot (Hearts)",
     0x156c60: "Pot",
     0x156d90: "Pot (Safe Zone)",
+    0x17a1a8: "Barrel",
 
     0x15741c: "Peg",
     0x1576d4: "Dirt Pile",
     0x17a92c: "Force Gem Pedestal",
+    0x16bbb8: "Pedestal",
 
     0x16CB04: "Staircase",
     0xe2d44: "Staircase",

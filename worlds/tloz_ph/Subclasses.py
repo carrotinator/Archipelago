@@ -478,25 +478,36 @@ class PairedObjects:
         self.overwrite = 0
         self.comp_exact = True
 
+        self.always_active: bool = False
+        self.state: bool = False  # toggle state when always active
+        self.reset_write: int = 0  # What to write to reset
+
     def __repr__(self):
         return f"{self.name}: {self.trigger} = {self.comp}, {self.to_activate} = {self.overwrite}"
 
     def validate(self):
         return self.to_activate and hasattr(self, "trigger")
 
-    def get_writes(self):
+    def get_writes(self, reset=False):
         res = []
+        v = self.reset_write if reset else self.overwrite
         for addr in self.to_activate:
-            res.append(addr.get_inner_write_list(self.overwrite))
+            res.append(addr.get_inner_write_list(v))
         return res
 
-    def set_detection(self, trigger, comp=1, comp_exact=True):
+    def set_detection(self, trigger, comp=1, comp_exact=True, always_active=False):
         if not hasattr(self, "trigger"):
             self.trigger = trigger
             self.comp = comp
             self.comp_exact = comp_exact
+            self.always_active = always_active
         else:
             self.trigger_2 = trigger
+
+    def set_action(self, activate, w, r):
+        self.to_activate.append(activate)
+        self.overwrite = w
+        self.reset_write = r
 
     def compare(self, value):
         if self.comp_exact:
