@@ -215,6 +215,7 @@ class PhantomHourglassClient(DSZeldaClient):
         self.linked_dig_spots: dict[str, int] = {}
         self.key_door_watches: list["Address"] = []
         self.paired_object_watches: dict[str, "PairedObjects"] = {}
+        self.boss_door_addr: Address | None = None
 
 
     async def check_game_version(self, ctx: "BizHawkClientContext") -> bool:
@@ -442,13 +443,13 @@ class PhantomHourglassClient(DSZeldaClient):
             reads = await read_multiple(ctx, [obj.trigger for obj in self.paired_object_watches.values()])
             writes = []
             for read, obj in zip(reads.values(), self.paired_object_watches.copy().values()):
-                if read == obj.comp:
-                    printl(f"Paired object activated: {obj}")
-                    writes += obj.get_writes()
-                    self.paired_object_watches.pop(obj.name)
+                if obj.compare(read):
+                    if not hasattr(obj, "trigger_2") or obj.compare(await obj.trigger_2.read(ctx)):
+                        printl(f"Paired object activated: {obj}")
+                        writes += obj.get_writes()
+                        self.paired_object_watches.pop(obj.name)
             if writes:
                 await bizhawk.write(ctx.bizhawk_ctx, writes)
-
 
         # Map warp entrypoint
         if read_result.get(PHAddr.in_map, 0):
@@ -638,7 +639,7 @@ class PhantomHourglassClient(DSZeldaClient):
             await self.force_spawn_swordfish(ctx)
 
         # Open boss door
-        await self.open_boss_door(ctx)
+        # await self.open_boss_door(ctx)
 
         # Find potential dig spots
         await self.load_dig_spots(ctx)
@@ -785,10 +786,12 @@ class PhantomHourglassClient(DSZeldaClient):
     async def open_boss_door(self, ctx):
         data = BOSS_DOOR_DATA.get(self.current_scene, False)
         if data and ctx.slot_data.get("boss_key_behaviour", True) and self.item_count(ctx, f"Boss Key ({data['name']})"):
-            boss_door = await self.find_table_object(ctx, *data["map_obj_comp"])
-            if not boss_door:
-                return
-            open_state = Address.from_pointer(boss_door+2*4)
+            if not self.boss_door_addr:
+                boss_door = await self.find_table_object(ctx, *data["map_obj_comp"])
+                if not boss_door:
+                    return
+                self.boss_door_addr = boss_door
+            open_state = Address.from_pointer(self.boss_door_addr+2*4)
             if await open_state.read(ctx) == 0:
                 await open_state.overwrite(ctx, 3)
 
@@ -1472,6 +1475,7 @@ class PhantomHourglassClient(DSZeldaClient):
     async def detected_new_scene(self, ctx: "BizHawkClientContext"):
         self.key_door_watches.clear()
         self.paired_object_watches.clear()
+        self.boss_door_addr = None
 
     @staticmethod
     async def find_table_object(ctx: "BizHawkClientContext", start_offset: int,
@@ -1572,6 +1576,14 @@ class PhantomHourglassClient(DSZeldaClient):
 
         identifiers = idents_0
 
+        def add_detection(name, a, **kwargs):
+            self.paired_object_watches.setdefault(name, PairedObjects(name)).set_detection(
+                Address.from_pointer(a), **kwargs)
+
+        def add_action(name, a):
+            self.paired_object_watches.setdefault(name, PairedObjects(name)).to_activate.append(
+                Address.from_pointer(a))
+
         write_list = []
         for i, pack in enumerate(actor_idents.items()):
             addr, ident = pack
@@ -1583,7 +1595,7 @@ class PhantomHourglassClient(DSZeldaClient):
                 continue
 
             if identifiers.get(ident) in ["Spirit Door", "Key Door", "Blue Door", "Arena Door"]:
-                write_list.append(Address.from_pointer(addr + 31*4, size=4).get_inner_write_list(0))  # closing
+                write_list.append(Address.from_pointer(addr + 31*4, size=2).get_inner_write_list(0))  # closing
 
                 if identifiers.get(ident) in ["Spirit Door", "Key Door"]:
                     self.key_door_watches.append(Address.from_pointer(addr + 8, 1))
@@ -1597,7 +1609,11 @@ class PhantomHourglassClient(DSZeldaClient):
             if identifiers.get(ident) in ["Torch"]:
                 write_list.append(Address.from_pointer(addr + 38 * 4 +2, size=2).get_inner_write_list(0))
                 if self.current_scene == 0x2501 and await Address.from_pointer(addr+6*4, size=4).read(ctx, signed=True) == -10240:
-                    self.paired_object_watches.setdefault("b1_flames", PairedObjects("b1_flames")).trigger = Address.from_pointer(addr+8)
+                    add_detection("b1_flames", addr+8)
+                if (self.current_scene == 0x1c02
+                        and await Address.from_pointer(addr + 8 * 4, size=4).read(ctx, signed=True) < -45000
+                        and await Address.from_pointer(addr + 6 * 4, size=4).read(ctx, signed=True) > -60000):
+                    add_detection("tof_3f_torches", addr+8)
 
             if identifiers.get(ident) in ["Unspawned Big Chest", "Unspawned Small Chest"]:
                 write_list.append(Address.from_pointer(addr + 28 * 4, size=2).get_inner_write_list(0))
@@ -1606,26 +1622,91 @@ class PhantomHourglassClient(DSZeldaClient):
                 write_list.append(Address.from_pointer(addr + 42 * 4, size=4).get_inner_write_list(0))
 
                 if self.current_scene == 0x2501:
-                    self.paired_object_watches.setdefault("b1_flames", PairedObjects("b1_flames")).to_activate.append(Address.from_pointer(addr+8))
+                    add_action("b1_flames", addr + 8)
 
                 elif self.current_scene == 0x2502:
                     if await Address.from_pointer(addr+8*4, size=4).read(ctx, signed=True) == -6144:
-                        self.paired_object_watches.setdefault("b2_lever", PairedObjects("b2_lever")).to_activate.append(Address.from_pointer(addr+8))
+                        add_action("b2_lever", addr + 8)
                     else:
-                        self.paired_object_watches.setdefault("b2_switch", PairedObjects("b2_switch")).to_activate.append(Address.from_pointer(addr + 8))
+                        add_action("b2_switch", addr + 8)
+
+                elif self.current_scene == 0x2503:
+                    if await Address.from_pointer(addr + 8 * 4, size=4).read(ctx, signed=True) == -14336:
+                        write_list.pop()  # Phantom Flames actually use the cutscene flag
+                        write_list.append(Address.from_pointer(addr + 42 * 4+2, size=2).get_inner_write_list(0))
+                    else:
+                        add_action("b3_lever", addr + 8)
+
+                elif self.current_scene == 0x250A:
+                    if await Address.from_pointer(addr + 8 * 4, size=4).read(ctx, signed=True) == -10240:
+                        add_action("b7_chest", addr + 8)
+                    else:
+                        write_list.pop()  # Phantom Flames actually use the cutscene flag
+                        write_list.append(Address.from_pointer(addr + 42 * 4 + 2, size=2).get_inner_write_list(0))
+                elif self.current_scene in [0x2510, 0x2511]:
+                    write_list.pop()  # Phantom Flames actually use the cutscene flag
+                    write_list.append(Address.from_pointer(addr + 42 * 4 + 2, size=2).get_inner_write_list(0))
+
+                elif self.current_scene == 0x1C00:
+                    coords = await read_multiple(ctx, [Address.from_pointer(addr + 6 * 4, size=4), Address.from_pointer(addr + 8 * 4, size=4)], signed=True)
+                    x, z = list(coords.values())
+                    if x == -22528:
+                        add_action("tof_1f", addr + 8)
+                    elif z == 47104 and x > 20000:
+                        add_action("tof_arena", addr + 8)
+
+                elif self.current_scene == 0x1c01:
+                    x = await Address.from_pointer(addr + 6 * 4, size=4).read(ctx, signed=True)
+                    if x == 14336:
+                        add_action("tof_2f_e", addr + 8)
+                    elif x == -26624:
+                        add_action("tof_2f_w", addr + 8)
+
+                if self.current_scene == 0x1C02:
+                    coords = await read_multiple(ctx, [Address.from_pointer(addr + 6 * 4, size=4), Address.from_pointer(addr + 8 * 4, size=4)], signed=True)
+                    x, z = list(coords.values())
+                    if x < -20000:
+                        write_list.pop()
+                    elif x > 40000:
+                        add_action("tof_3f_candles", addr + 8)
+                    else:
+                        add_action("tof_3f_torches", addr + 8)
 
             if identifiers.get(ident) in ["Lever"]:
                 if self.current_scene == 0x2502:
-                    self.paired_object_watches.setdefault("b2_lever", PairedObjects("b2_lever")).set_detection(Address.from_pointer(addr + 8), 3)
+                    add_detection("b2_lever", addr + 8, comp=3)
+                elif self.current_scene == 0x2503:
+                    add_detection("b3_lever", addr + 8, comp=3)
 
             if identifiers.get(ident) in ["Switch"]:
                 if self.current_scene == 0x2502 and await Address.from_pointer(addr+6*4, size=4).read(ctx, signed=True) == -55296:
-                    self.paired_object_watches.setdefault("b2_switch", PairedObjects("b2_switch")).set_detection(Address.from_pointer(addr + 8), 1)
+                    add_detection("b2_switch", addr + 8, comp=1)
+
+                if self.current_scene == 0x1C00 and await Address.from_pointer(addr+8*4, size=4).read(ctx, signed=True) == -10240:
+                    add_detection("tof_1f", addr + 8, comp=1)
+
+                if self.current_scene == 0x1C01:
+                    x = await Address.from_pointer(addr+6*4, size=4).read(ctx, signed=True)
+                    if x == 63488:
+                        add_detection("tof_2f_e", addr + 8, comp=1)
+                    elif x == -63488:
+                        add_detection("tof_2f_w", addr + 8, comp=1)
 
 
-            # if identifiers.get(i) in ["Boss Door"]:
-            #     await self.open_boss_door(ctx, addr)
-            #     self.boss_door_addr = addr
+            if identifiers.get(ident) in ["Small Chest"]:
+                if self.current_scene == 0x250A:
+                    add_detection("b7_chest", addr + 8, comp=8)
+
+            if identifiers.get(ident) in ["Candle"]:
+                if self.current_scene == 0x1c02:
+                    add_detection("tof_3f_candles", addr + 8, comp=[0, 3])
+
+            if identifiers.get(ident) in ["Boss Door"]:
+                self.boss_door_addr = addr
+                await self.open_boss_door(ctx)
+
+        if self.current_scene == 0x1c00:
+            add_detection("tof_arena", self.stage_flag_address+0, comp=0x10, comp_exact=False)
 
         for obj in self.paired_object_watches.copy().values():
             if not obj.validate():

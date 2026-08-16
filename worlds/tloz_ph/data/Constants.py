@@ -1944,14 +1944,19 @@ idents_0: dict[int, str] = {
     0x156498: "Blue Door",
     0x157340: "Spikes",
     0x179104: "Ice Spikes",
-    0x259fc8: "Arena Door",
+    0x15a3c0: "Arena Door",
     0x157288: "Flames",
+    0x17ad60: "Blue Door",  # Phantom Door
 
     0x155fd4: "Small Chest",
-    0x1562AC: "Closed Chest",
+    0x1562AC: "Big Chest",
     0x1563f4: "Unspawned Big Chest",
-    0x156208: "Unspawned Small Chest",
+    0x156350: "Unspawned Big Chest",  # Boomerang chest enables item menu
+    0x156208: "Unspawned Small Chest",  # totok
+    0x15611c: "Unspawned Small Chest",  # tof
     0x159254: "Bridge Spawner",
+
+    0x16badc: "Boss Door",
 
     0x156fc0: "Stone Tablet",
     0x16c47c: "Gossip Stone",
@@ -1961,8 +1966,10 @@ idents_0: dict[int, str] = {
     0x16c3d4: "Color Switch",
     0x16c2f0: "Lever",
     0x1574b0: "Pressure Pad",
+    0x16c528: "Hammer Switch",
     0x15a628: "Eye Switch",
     0x185c44: "Lazer Statue",
+    0x178e3c: "Candle",
 
     0x156CF8: "Pot (Hearts)",
     0x156c60: "Pot",
@@ -1970,11 +1977,13 @@ idents_0: dict[int, str] = {
 
     0x15741c: "Peg",
     0x1576d4: "Dirt Pile",
+    0x17a92c: "Force Gem Pedestal",
 
     0x16CB04: "Staircase",
     0xe2d44: "Staircase",
     0x156B34: "Cave Exit",
     0x156a0c: "Cave",
+    0x156978: "Indoor Cave",
     0x156aa0: "Bombable Cave",
 
     0x179198: "Ice Bridge",
@@ -1989,6 +1998,8 @@ idents_0: dict[int, str] = {
     0x16cbac: "Tree",
 
     0x16cc40: "Grass",
+    0x16c9dc: "Pit Trap",
+    0x16cc74: "Hammer Catapult"
 }
 
 map_object_idents: dict[int, str] = {

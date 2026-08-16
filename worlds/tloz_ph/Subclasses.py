@@ -467,12 +467,16 @@ class PairedObjects:
     name: str
     trigger: "Address"
     to_activate: list["Address"]
-    overwrite: int = 0
-    comp: int = 1
+    overwrite: int
+    comp: int
+    trigger_2: "Address"
 
     def __init__(self, name):
         self.name = name
         self.to_activate = []
+        self.comp = 1
+        self.overwrite = 0
+        self.comp_exact = True
 
     def __repr__(self):
         return f"{self.name}: {self.trigger} = {self.comp}, {self.to_activate} = {self.overwrite}"
@@ -486,6 +490,17 @@ class PairedObjects:
             res.append(addr.get_inner_write_list(self.overwrite))
         return res
 
-    def set_detection(self, trigger, comp=1):
-        self.trigger = trigger
-        self.comp = comp
+    def set_detection(self, trigger, comp=1, comp_exact=True):
+        if not hasattr(self, "trigger"):
+            self.trigger = trigger
+            self.comp = comp
+            self.comp_exact = comp_exact
+        else:
+            self.trigger_2 = trigger
+
+    def compare(self, value):
+        if self.comp_exact:
+            if isinstance(self.comp, int):
+                return value == self.comp
+            return value in self.comp
+        return value & self.comp
