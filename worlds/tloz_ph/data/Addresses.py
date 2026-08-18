@@ -272,8 +272,8 @@ class PHAddr:
     # island_visible_ = Address()
     # island_visible_ = Address()
 
-    map_obj_table = Address(0x1B8968)  # size biig
-    map_obj_table_size = Address(0x1B896c)
+    map_obj_table = Address(0x1B8968)  # size biig, manager @ 0xF68 -> 0x1B853C + 3
+    map_obj_table_size = Address(0x1B854C, size=2)
 
     defeated_bellum = Address(0x1b5774)
     potion_protector = Address(0x1BA70a)

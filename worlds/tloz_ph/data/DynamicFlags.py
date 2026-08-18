@@ -417,6 +417,11 @@ DYNAMIC_FLAGS = {
         "has_items": [("Courage Crest", 0)],
         "unset_if_true": [(PHAddr.adv_flags_16, 0x04)]
     },
+    "Prevent early courage crest location": {
+        "on_scenes": [0],
+        "not_has_locations": ['Ocean SW Salvage Courage Crest'],
+        "unset_if_true": [(PHAddr.adv_flags_2, 0x40)]
+    },
     # Endgame
     "Spawn Phantoms in Totok B13": {
         "on_scenes": [0x2511],
@@ -1154,6 +1159,11 @@ DYNAMIC_FLAGS = {
         "on_scenes": [0x2900],
         "check_bits": [(PHAddr.flags_clear_fog, 0x10)],
         "set_if_true": [(PHAddr.adv_flags_7, 0x40)]
+    },
+    "Ghost ship block warp": {
+        "on_scenes": [0x2900],
+        "check_bits": [(PHAddr.flags_clear_fog, 0x10, "not")],
+        "unset_if_true": [(PHAddr.adv_flags_7, 0x40)]
     },
     # Vanilla frogs
     "Frogs show glyph": {

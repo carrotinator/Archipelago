@@ -333,7 +333,6 @@ STAGE_LOCATION_GROUPS = {
         "TotOK B12 Kill Everything Chest",
         "TotOK B12 Phantom Chest",
         "TotOK B13 Sea Chart Chest",
-        "GOAL: Triforce Door",
     ],
     "Ocean": [
         "Ocean SW Salvage Courage Crest",
@@ -1282,7 +1281,8 @@ BOSS_EVENT_TO_LOCATION = {
     "EVENT: Defeat Blaaz": "Blaaz Boss Reward",
     "EVENT: Defeat Cyclok": "Cyclok Boss Reward",
     "EVENT: Defeat Crayk": "Crayk Boss Reward",
-    "EVENT: Rescue Tetra": ["Ghost Ship Rescue Tetra", "Cubus Sisters Ghost Key"],
+    "EVENT: Rescue Tetra": "Ghost Ship Rescue Tetra",
+    "EVENT: Defeat Cubus Sisters": "Cubus Sisters Ghost Key",
     "EVENT: Defeat Dongorongo": "Dongorongo Boss Reward",
     "EVENT: Defeat Gleeok": "Gleeok Boss Reward",
     "EVENT: Defeat Eox": "Eox Boss Reward",
@@ -1942,11 +1942,22 @@ idents_0: dict[int, str] = {
     0x17A864: "Spirit Door",
     0x15667C: "Key Door",
     0x156498: "Blue Door",
+    0x15a3c0: "Arena Door",
+    0x17ad60: "Blue Door",  # Phantom Door
+    0x16badc: "Boss Door",
+    0x159c10: "Ghost Door",
+    0x17930c: "Door",  # ToF Door
+    0x1568c0: "Tap Door",
+    0x170ff0: "Door",  # Sun door
+    0x185ce8: "Door", # Courage temple
+    0x263d20: "Door",  # Man of smiles arena door
+    0x16c188: "Door",  # Wireframe, in gt
+    0x17a9b8: "Door",  # Dongorongo's room
+    0x17aa70: "Door", # Dongorongo's room
+
     0x157340: "Spikes",
     0x179104: "Ice Spikes",
-    0x15a3c0: "Arena Door",
     0x157288: "Flames",
-    0x17ad60: "Blue Door",  # Phantom Door
 
     0x155fd4: "Small Chest",
     0x1562AC: "Big Chest",
@@ -1955,14 +1966,13 @@ idents_0: dict[int, str] = {
     0x156208: "Unspawned Small Chest",  # totok
     0x15611c: "Unspawned Small Chest",  # tof
     0x159254: "Bridge Spawner",
-
-    0x16badc: "Boss Door",
-    0x159c10: "Ghost Door",
+    0x17a924: "Bridge",  # Dongorong's room
 
     0x156fc0: "Stone Tablet",
-    0x16c47c: "Gossip Stone",
+    0x16c47c: "Tongue Statue",
     0x1592e8: "Gossip Stone (chest count)",
     0x157640: "Torch",
+    0x157160: "Map",
 
     0x15759C: "Switch",
     0x16c3d4: "Color Switch",
@@ -1973,11 +1983,12 @@ idents_0: dict[int, str] = {
     0x185c44: "Lazer Statue",
     0x178e3c: "Candle",
 
-
     0x156CF8: "Pot (Hearts)",
     0x156c60: "Pot",
     0x156d90: "Pot (Safe Zone)",
     0x17a1a8: "Barrel",
+    0x157054: "Bomb Flower",
+    0x15aaac: "Chestnut",
 
     0x15741c: "Peg",
     0x1576d4: "Dirt Pile",
@@ -1990,6 +2001,7 @@ idents_0: dict[int, str] = {
     0x156a0c: "Cave",
     0x156978: "Indoor Cave",
     0x156aa0: "Bombable Cave",
+    0x15a8d0: "Dungeon Entrance",
 
     0x179198: "Ice Bridge",
     0x16c614: "Color Block",
@@ -1999,10 +2011,14 @@ idents_0: dict[int, str] = {
     0xe289c: "Offscreen",
     0x15a328: "Bombable Wall",
     0x15a294: "Bombable Block",
+    0x15a114: "Block",
     0x157790: "Bombable Rock",
     0x16cbac: "Tree",
+    0x15a080: "Column",
+    0x15a534: "Bridge",
 
     0x16cc40: "Grass",
+    0x16ccd4: "Grass",
     0x16c9dc: "Pit Trap",
     0x16cc74: "Hammer Catapult"
 }
@@ -2033,6 +2049,14 @@ map_object_idents: dict[int, str] = {
     0x11d: "Pedestal",
     0x40d: "Repeater"
 }
+
+pedestal_rooms: list[int] = [
+    0x2900,
+    0x1E00,
+    0x2503,
+    0x250C,
+    0x2510
+]
 
 if __name__ == "__main__":
     for cat, value in CATEGORY_LOCATION_GROUPS.items():
