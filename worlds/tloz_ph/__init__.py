@@ -973,9 +973,6 @@ class PhantomHourglassWorld(World):
 
     def create_item(self, name: str) -> PhantomHourglassItem:
         classification = ITEMS[name].classification
-        if name in self.extra_filler_items:
-            self.extra_filler_items.remove(name)
-            classification = ItemClassification.filler
         if name == "Swordsman's Scroll" and self.options.logic == "glitched":
             classification = ItemClassification.progression
         if self.options.ph_time_logic.value > 2:
@@ -983,6 +980,9 @@ class PhantomHourglassWorld(World):
                 classification = ItemClassification.useful
         if name == "Heart Container" and self.options.ph_heart_time == 0:
             classification = ItemClassification.useful
+        if name in self.extra_filler_items:
+            self.extra_filler_items.remove(name)
+            classification = ItemClassification.filler
 
         ap_code = self.item_name_to_id[name]
         return PhantomHourglassItem(name, classification, ap_code, self.player)
@@ -1135,6 +1135,7 @@ class PhantomHourglassWorld(World):
     def create_items(self):
         item_pool_dict = self.build_item_pool_dict()
         self.get_extra_filler_items(item_pool_dict)
+        # print(f"Extra Filler Items {self.extra_filler_items}")
         items = []
         for item_name, quantity in item_pool_dict.items():
             for _ in range(quantity):
@@ -1159,8 +1160,11 @@ class PhantomHourglassWorld(World):
             if item == "Heart Container" and self.options.ph_heart_time == 0:
                 extra_items_list.extend([item] * count)
 
-        extra_item_count = len(self.locations_to_exclude) - filler_count + 20
-        # print(f"Filler items basic: {len(self.locations_to_exclude)} | have: {filler_count} | "
+
+        excluded_locations = self.locations_to_exclude | self.options.exclude_locations.value
+        extra_item_count = len(excluded_locations) - filler_count + 20
+        # print(f"Excluded locs: {excluded_locations}")
+        # print(f"Filler items basic: {len(excluded_locations)} | have: {filler_count} | "
         #       f"available: {len(extra_items_list)} | total: {extra_item_count}")
 
         # since item pool is created before items are filtered to dungeon pool,
