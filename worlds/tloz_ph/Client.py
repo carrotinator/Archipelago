@@ -1,5 +1,4 @@
-import dataclasses
-from dataclasses import dataclass
+
 from random import randint
 
 from .DSZeldaClient.DSZeldaClient import *
@@ -1967,7 +1966,7 @@ class PhantomHourglassClient(DSZeldaClient):
             # Always remove for previously checked locations
             if model_resets.get(model, ""):
                 printl(f"\tResetting model: {model_resets[model]}")
-                if "gift_addr" in location:
+                if "address" in location:
                     self.delay_reset += 1  # Add delay reset to make sure removal handling runs properly
                 await super()._set_vanilla_item(ctx, location, model_resets.get(model))
             return
@@ -1975,9 +1974,12 @@ class PhantomHourglassClient(DSZeldaClient):
 
     async def process_in_game(self, ctx: "BizHawkClientContext", read_result: dict):
         if read_result[PHAddr.in_cutscene] != 0xD8:
-            self.was_in_cutscene = True
+            if not self.was_in_cutscene:
+                printl(f"In Cutscene!")
+                self.was_in_cutscene = True
             return
         if self.was_in_cutscene:
+            printl(f"Not In Cutscene!")
             self.was_in_cutscene = False
             await self.update_main_read_list(ctx, self.current_stage)
         await super().process_in_game(ctx, read_result)
