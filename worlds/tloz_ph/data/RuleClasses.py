@@ -42,7 +42,6 @@ def beedle_eval(state: CollectionState, player, options: PhantomHourglassOptions
     return count_rupees(state, player) >= price * discount + other_costs
 
 def can_farm_rupees(state, player):
-    return True
     return any([
         all([
             state.has("_has_treasure_teller", player),  # Can Sell Treasure
@@ -113,7 +112,6 @@ class IslandShop(PHShop, game=tloz_ph):
         price: int
 
         def calculate_costs(self, state):
-            return True
             other_costs = 0
             options: PhantomHourglassOptions = state.multiworld.worlds[self.player].options
             if state.has("SW Sea Chart", self.player):
@@ -143,7 +141,6 @@ class BeedleShop(PHShop, game=tloz_ph):
 
         @override
         def _evaluate(self, state: CollectionState) -> bool:
-            return True
             options: PhantomHourglassOptions = state.multiworld.worlds[self.player].options
             return beedle_eval(state, self.player, options, self.price)
 
@@ -157,7 +154,6 @@ class HasBeedlePoints(PHShop, game=tloz_ph):
 
         @override
         def _evaluate(self, state: CollectionState):
-            return True
             if state.has("_UT_Glitched_Logic", self.player):
                 return True
             points = self.price  # lol don't care
@@ -202,7 +198,6 @@ class HasTime(Rule[PhantomHourglassWorld], game=tloz_ph):
 
         @override
         def _evaluate(self, state: CollectionState):
-            return True
             options: PhantomHourglassOptions = state.multiworld.worlds[self.player].options
             time_option = options.ph_time_logic.value
             if state.has("_UT_Glitched_Logic", self.player) or time_option == 5:
@@ -218,7 +213,7 @@ class HasTime(Rule[PhantomHourglassWorld], game=tloz_ph):
             multiplier = time_lookup.get(time_option, 1)
 
             floor_time = self.floor_func(state, self.player) + self.time
-            print(f"Floor Time {floor_time} from {self.floor_func} + {self.time}")
+            # print(f"Floor Time {floor_time} from {self.floor_func} + {self.time}")
             return total_sand >= floor_time // multiplier
 
         def __str__(self):
@@ -245,7 +240,6 @@ class TotOKSmallKeys(Rule[PhantomHourglassWorld], game=tloz_ph):
 
         @override
         def _evaluate(self, state: CollectionState):
-            return True
             sub = 0
             ut_glitched = state.has("_UT_Glitched_Logic", self.player)
             options: PhantomHourglassOptions = state.multiworld.worlds[self.player].options
@@ -336,11 +330,3 @@ class NotToCCrystals(Rule[PhantomHourglassWorld], game=tloz_ph):
 
         def __str__(self):
             return "Not Has any of (Square Crystal (Temple of Courage), Square Crystals, Square Pedestal North (Temple of Courage))"
-
-class HasRequiredMetals(Rule[PhantomHourglassWorld], game=tloz_ph):
-    def _instantiate(self, world: PhantomHourglassWorld) -> Rule.Resolved:
-        return HasGroup("Metals", world.required_metals).resolve(world)
-
-class HasZauzMetals(Rule[PhantomHourglassWorld], game=tloz_ph):
-    def _instantiate(self, world: PhantomHourglassWorld) -> Rule.Resolved:
-        return HasGroup("Metals", world.options.zauz_required_metals.value).resolve(world)

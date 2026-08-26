@@ -173,9 +173,9 @@ def make_overworld_logic():
         ["TotOK B13", "TotOK B13 Chest", False, totok_b13_chest],
         ["TotOK B13", "TotOK B14 South", False, totok_b13_door],
         ["TotOK B14 South", "TotOK B14", False, None],
-        ["TotOK Lobby", "TotOK B14", False, Filtered(HasRequiredMetals(), options=bellum_access_warp)],
+        ["TotOK Lobby", "TotOK B14", False, Filtered(has_metals, options=bellum_access_warp)],
         # Bellum
-        ["TotOK B14", "Bellum", False, HasRequiredMetals()],
+        ["TotOK B14", "Bellum", False, has_metals],
         ["Bellum", "Ghost Ship Fight", False, can_defeat_bellum],
         ["Ghost Ship Fight", "Bellumbeck", False, has_cannon],
 
@@ -485,7 +485,7 @@ def make_overworld_logic():
 
         ["Zauz's Island", "Zauz Dig", False, has_shovel],
         ["Zauz's Island", "Zauz's House", True, None],
-        ["Zauz's House", "Zauz's Blade", False, HasZauzMetals()],
+        ["Zauz's House", "Zauz's Blade", False, HasGroup("Metals", FromOption(PhantomHourglassZauzRequiredMetals))],
         ["Zauz's House", "Zauz's Crest", False, Has("_beat_ghost_ship")],
 
         # ================= Uncharted Island ====================
@@ -885,7 +885,7 @@ def make_overworld_logic():
         ["NE Ocean Salvage", "Salvage 31", False, has_map(31)],
 
         # Goal stuff
-        ["SW Ocean East", "Bellumbeck", False, can_defeat_bellumbeck & HasRequiredMetals() & bellum_access_wreck],
+        ["SW Ocean East", "Bellumbeck", False, can_defeat_bellumbeck & has_metals & bellum_access_wreck],
         ["Bellumbeck", "Beat Bellumbeck", False, can_defeat_bellumbeck],
         ["Beat Bellumbeck", "Goal", False, None],
         ["Goal", "Goal Event", False, None],  # Event stuff

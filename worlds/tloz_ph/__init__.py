@@ -1006,7 +1006,6 @@ class PhantomHourglassWorld(World):
                                                         "Ruins NW Upper One-Way East"])
                 manual_connect(new_exit, new_entrance)
 
-
     def set_rules(self):
         try:
             from .LogicRB import create_connections

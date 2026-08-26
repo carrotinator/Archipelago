@@ -1,4 +1,4 @@
-from rule_builder.rules import *
+from rule_builder.field_resolvers import FromWorldAttr, FromOption
 from ..Options import *
 from .Constants import *
 from typing import Literal
@@ -202,7 +202,9 @@ bellum_access_wreck = [OptionFilter(PhantomHourglassBellumAccess, 3)]
 def charted_sea_monster(quadrant):
     return can_pass_sea_monster & require_sea_chart(quadrant)
 
-win_on_metals = Filtered(HasRequiredMetals(), options=[OptionFilter(PhantomHourglassBellumAccess, PhantomHourglassBellumAccess.option_win)])
+has_metals = HasGroup("Metals", FromWorldAttr("required_metals"))
+
+win_on_metals = Filtered(has_metals, options=[OptionFilter(PhantomHourglassBellumAccess, PhantomHourglassBellumAccess.option_win)])
 
 # Specific locations, move to logic file?
 ember_grapple_chest = has_grapple | sword_glitch
@@ -447,6 +449,7 @@ def has_sand(time):
 
 def has_floor_time(room, time=0):
     floor_func = floor_lookup[room]
+    # floor_func = lambda *args: True
     return HasTime(time, floor_func, room)
 
 
@@ -677,4 +680,4 @@ totok_b13 = And(
 )
 totok_b13_chest = has_floor_time(13, 5)
 totok_b13_door = (has_phantom_sword & has_floor_time(13, 30)
-                  & (bellum_access_staircase_plus | Filtered(HasRequiredMetals(), options=bellum_access_b13)))
+                  & (bellum_access_staircase_plus | Filtered(has_metals, options=bellum_access_b13)))
