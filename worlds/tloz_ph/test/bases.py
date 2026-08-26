@@ -158,11 +158,25 @@ options_excluded_crystals = {"dungeons_required": 8,
                }
 
 options_keys = {
-    "keysanity": "in_own_dungeon",
-    "keyrings": "random_mixed",
+    "keysanity": "anywhere",
+    "keyrings": "all_keyrings",
     "randomize_boss_keys": "in_own_dungeon",
     "boss_keyrings": True,
-    "ph_time_logic": "no_logic"
+    "randomize_pedestal_items": "in_own_dungeon",
+    "pedestal_item_options": "open_per_dungeon",
+
+    "ph_time_logic": "ph_only_b4",
+    "spirit_gem_packs": 5,
+
+    "dungeons_required": 1,
+    "require_specific_bosses": False,
+    "totok_in_dungeon_pool": True,
+    "ghost_ship_in_dungeon_pool": "rescue_tetra",
+    "exclude_non_required_dungeons": True,
+    "additional_metal_names": "vanilla_only",
+    "goal_requirements": "metal_hunt",
+
+
 }
 
 class TestPHGeneration(WorldTestBase):

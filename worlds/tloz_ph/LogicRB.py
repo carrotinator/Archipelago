@@ -909,7 +909,7 @@ def create_connections(world: "PhantomHourglassWorld", player: int, origin_name:
         if entrance_key in test_entrances:
             entrance_data = test_entrances[entrance_key]
             name = entrance_data.name
-            entrance = r1.connect(r2, name)
+            entrance = r1.connect(r2, name, rule)
 
             # Set entrance data
             rando_type_bool = entrance_data.two_way
@@ -918,10 +918,10 @@ def create_connections(world: "PhantomHourglassWorld", player: int, origin_name:
             world.entrances[entrance.name] = entrance  # add to world.entrances
             uncreated_entrances.remove(entrance.name)
         else:
-            entrance = r1.connect(r2, name)
+            r1.connect(r2, name, rule)
 
-        if rule is not None:
-            world.set_rule(entrance, rule)
+        # if rule is not None:
+        #     world.set_rule(entrance, rule)
 
     world.set_completion_rule(Has("_beaten_game"))
     all_logic = [

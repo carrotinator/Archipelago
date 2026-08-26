@@ -862,7 +862,9 @@ class PhantomHourglassOptions(PerGameCommonOptions):
     # Key Randomization
     keysanity: PhantomHourglassKeyRandomization
     randomize_pedestal_items: PhantomHourglassRandomizePedestalItems
+    pedestal_item_options: PhantomHourglassPedestalOptions
     randomize_boss_keys: PhantomHourglassRandomizeBossKeys
+    boss_key_behaviour: PhantomHourglassBossKeyBehavior
     keyrings: PhantomHourglassKeyrings
     boss_keyrings: PhantomHourglassBossKeyrings
 
@@ -886,8 +888,6 @@ class PhantomHourglassOptions(PerGameCommonOptions):
 
     # World Options
     map_warp_options: PhantomHourglassMapWarp
-    boss_key_behaviour: PhantomHourglassBossKeyBehavior
-    pedestal_item_options: PhantomHourglassPedestalOptions
     color_switch_behaviour: PhantomHourglassSwitchBehaviour
     fog_settings: PhantomHourglassFogSettings
     skip_ocean_fights: PhantomHourglassSkipOceanFights
@@ -963,7 +963,9 @@ ph_option_groups = [
     OptionGroup("Key Randomization Options", [
         PhantomHourglassKeyRandomization,
         PhantomHourglassRandomizePedestalItems,
+        PhantomHourglassPedestalOptions,
         PhantomHourglassRandomizeBossKeys,
+        PhantomHourglassBossKeyBehavior,
         PhantomHourglassKeyrings,
         PhantomHourglassBossKeyrings
     ]),
@@ -993,8 +995,6 @@ ph_option_groups = [
         PhantomHourglassDungeonShortcuts,
         PhantomHourglassTotOKCheckpoints,
         PhantomHourglassSwitchBehaviour,
-        PhantomHourglassBossKeyBehavior,
-        PhantomHourglassPedestalOptions
     ]),
     OptionGroup("Spirit Gem Options", [
         PhantomHourglassSpiritGemPacks,

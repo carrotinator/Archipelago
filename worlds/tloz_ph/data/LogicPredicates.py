@@ -73,7 +73,6 @@ def ph_has_spirit_gems(state: CollectionState, player: int, spirit: str, count: 
             state.has(f"{spirit} Gem", player, count),
             state.has(f"{spirit} Gem Pack", player, ceil(count / pack_size)),
         ])
-
     ])
 
 

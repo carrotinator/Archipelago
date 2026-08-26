@@ -304,13 +304,14 @@ class PhantomHourglassWorld(World):
             i: ("Rupees", ITEMS[i].value) for i in ITEM_GROUPS["Rupee Items"] } | {
             i: ("Treasure", prices[self.treasure_price_index]) for i, prices in TREASURE_PRICES.items() } | {
             i: ("Beedle Points", ITEMS[i].value) for i in ITEM_GROUPS["Beedle Point Items"] } | {
-            f"{spirit} Gem": (f"{spirit} Gem Pack", self.options.spirit_gem_packs.value) for spirit in ["Power", "Wisdom", "Courage"] } | {
+            f"{spirit} Gem Pack": (f"{spirit} Gem", self.options.spirit_gem_packs.value) for spirit in ["Power", "Wisdom", "Courage"] } | {
             "Phantom Hourglass": ("Sand", self.options.ph_starting_time),
             "Sand of Hours": ("Sand", self.options.ph_time_increment),
             "Sand of Hours (Boss)": ("Sand", 120),
             "Sand of Hours (Small)": ("Sand", 60),
             "Heart Container": ("Sand", self.options.ph_heart_time)
         }
+        # print(f"Mappings: {self.item_mapping_collect}")
 
     def restrict_non_local_items(self):
         # Restrict non_local_items option in cases where it's incompatible with other options that enforce items
@@ -1034,7 +1035,7 @@ class PhantomHourglassWorld(World):
 
     def build_item_pool_dict(self):
         def force_vanilla():
-            print(f"Forcing vanilla {item_name}")
+            print(f"\tForcing vanilla {item_name}")
             item_obj = self.create_item(item_name)
             loc_obj = self.multiworld.get_location(loc_name, self.player)
             loc_obj.place_locked_item(item_obj)
@@ -1119,7 +1120,7 @@ class PhantomHourglassWorld(World):
         # so add progression items first
         add_items = {"Bombs (Progressive)": 3, "Bow (Progressive)": 3, "Bombchus (Progressive)": 3}
         add_items |= {"Phantom Hourglass": 1}
-        print(f"pre-keys: {item_pool_dict}")
+        # print(f"pre-keys: {item_pool_dict}")
         key_items, filler_change = self.choose_key_items()
         add_items |= key_items
         filler_item_count += filler_change
@@ -1157,7 +1158,7 @@ class PhantomHourglassWorld(World):
             add_items.setdefault(i, 0)
             add_items[i] += 1
         # add items to item pool
-        print(f"Add items: {add_items}")
+        # print(f"Add items: {add_items}")
         for i, count in add_items.items():
             item_pool_dict, filler_item_count = add_items_from_filler(item_pool_dict, filler_item_count, i, count)
         # Add as many filler items as required
@@ -1179,13 +1180,13 @@ class PhantomHourglassWorld(World):
         return item_pool_dict
 
     def choose_key_items(self) -> tuple[list[tuple[str, int]], int]:
-        if not self.options.keysanity.value:
-            return [], 0
         res = {}
 
         # Small keys
         keyring_dungeons = []
-        if self.options.keyrings.value == 2:
+        if not self.options.keysanity.value:
+            pass
+        elif self.options.keyrings.value == 2:
             keyring_dungeons = self.random.choices(list(KEY_COUNTS.keys()), k=self.random.randint(0, len(KEY_COUNTS)))
             # print(f"Choice: {keyring_dungeons}")
             res |= {f"Keyring ({dung})": 1 for dung in keyring_dungeons}
@@ -1339,6 +1340,7 @@ class PhantomHourglassWorld(World):
             global_pedestal_helper("Square", "Temple of Courage")
             global_pedestal_helper("Round", "Ghost Ship")
             global_pedestal_helper("Triangle", "Ghost Ship")
+        print(f"global crystal dungeons: {global_crystal_dungeons}")
 
         # If keysanity is off, dungeon items can only be put inside local dungeon locations, and there are not so many
         # of those which makes them pretty crowded.
@@ -1346,7 +1348,7 @@ class PhantomHourglassWorld(World):
         # To circumvent this, we perform a restricted pre-fill here, placing only those dungeon items
         # before anything else.
         for dung_name in DUNGEON_NAMES:
-            # print(f"pre-filling {dung_name}")
+            print(f"pre-filling {dung_name}")
             # Build a list of locations in this dungeon
             dungeon_location_names = [name for name, loc in LOCATIONS_DATA.items()
                                       if "dungeon" in loc and loc["dungeon"] == dung_name
@@ -1378,7 +1380,10 @@ class PhantomHourglassWorld(World):
                 self.pre_fill_items.remove(item)
             collection_state = self.multiworld.get_all_state()
             # Perform a prefill to place confined items inside locations of this dungeon
+            print(f"Pre fill locs: {dungeon_locations}")
             self.random.shuffle(dungeon_locations)
+
+            print(f"items {confined_dungeon_items}")
             fill_restrictive(self.multiworld, collection_state, dungeon_locations, confined_dungeon_items,
                              single_player_placement=True, lock=True, allow_excluded=True)
 

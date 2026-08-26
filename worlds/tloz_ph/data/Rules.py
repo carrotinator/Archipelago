@@ -2,8 +2,8 @@ from rule_builder.field_resolvers import FromWorldAttr, FromOption
 from ..Options import *
 from .Constants import *
 from typing import Literal
-from .RuleClasses import *
 from .LogicPredicates import floor_lookup
+from .RuleClasses import *
 
 # Options
 is_ut = Has("_is_ut")
@@ -17,7 +17,7 @@ not_glitched_logic = [OptionFilter(PhantomHourglassLogic, 1, "le")]
 keysanity = [OptionFilter(PhantomHourglassKeyRandomization, 2)]
 smart_keys = is_ut & [OptionFilter(PhantomHourglassUTSmartKeys, 1)]
 vanilla_keys = [OptionFilter(PhantomHourglassKeyRandomization, 0)]
-keys_own_dungeon = [OptionFilter(PhantomHourglassKeyRandomization, 1)]
+keys_own_dungeon = [OptionFilter(PhantomHourglassKeyRandomization, 1, "le")]
 pedestals_vanilla = [OptionFilter(PhantomHourglassRandomizePedestalItems, 0)]
 pedestals_abstract_vanilla = [OptionFilter(PhantomHourglassRandomizePedestalItems, 1)]
 pedestals_vanilla_any = [OptionFilter(PhantomHourglassRandomizePedestalItems, 1, "le")]
@@ -48,7 +48,9 @@ def has_spirit(spirit: Literal["Power", "Wisdom", "Courage"], count=1):
     return Has(f"Spirit of {spirit} (Progressive)", count)
 
 def has_spirit_gems(spirit: Literal["Power", "Wisdom", "Courage"], count):
-    return Has(f"{spirit} Gem", count) & has_spirit(spirit)
+    spirits = ["Power", "Wisdom", "Courage"]
+    spirit_index = spirits.index(spirit)
+    return Has(f"{spirit} Gem", count) & Or(*(has_spirit(s) for s in spirits[spirit_index:]))
 
 has_ph = Has("Phantom Hourglass")
 has_phantom_blade = Has("Phantom Blade")
@@ -170,6 +172,8 @@ can_farm_rupees = Or(
     Has("_can_play_harrow") & [OptionFilter(PhantomHourglassRandomizeHarrow, 1)]
 )
 
+
+
 def has_rupees(count):
     return (can_farm_rupees | ut_glitched
             | Has("Rupees", count)
@@ -214,7 +218,7 @@ can_defeat_bellumbeck = has_phantom_sword & has_spirit("Courage")
 bannan_scroll = Has("_wayfarer_trade") & can_pass_sea_monster
 bannan_sea_monster = And(
     require_sea_chart("NW"),
-    can_pass_sea_monster | ut_glitched | NotWayfarerTrade()
+    can_pass_sea_monster | ut_glitched
 )
 ghost_ship_access = And(
     require_sea_chart("NW"),
@@ -340,7 +344,7 @@ def toc_crystals_state(state: CollectionState, player: int, diff: str):
     ])
 toc_door_2 = Or(
     toc_key_doors(3, 3, 2),
-    toc_key_doors(3, 2) & (pedestals_vanilla_any | NotToCCrystals()),
+    toc_key_doors(3, 2) & pedestals_vanilla_any,
     is_ut & Or(
         savescum_keys("Temple of Courage", 1) & has_hammer,
         not_glitched_logic & smart_keys & Or(
@@ -449,7 +453,6 @@ def has_sand(time):
 
 def has_floor_time(room, time=0):
     floor_func = floor_lookup[room]
-    # floor_func = lambda *args: True
     return HasTime(time, floor_func, room)
 
 
@@ -461,7 +464,7 @@ def totok_deep_keys(count):
     return has_small_keys(totok, count) | (has_small_keys(totok, count-1) & has_grapple) | (is_ut & TotOKSmallKeys(count))
 
 def totok_shape_crystals(shape, diff):
-    return has_shape_crystals("Temple of the Ocean King", shape, diff)
+    return has_shape_crystals(totok, shape, diff)
 
 ut_pedestals_vanilla = smart_keys & pedestals_vanilla
 

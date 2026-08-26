@@ -22,7 +22,7 @@ def beedle_eval(state: CollectionState, player, options: PhantomHourglassOptions
     """
     if state.has("_UT_Glitched_Logic", player):
         return True
-    if can_farm_rupees(state, player):
+    if _can_farm_rupees(state, player):
         return True
     # Multiplier only applies to non-linear items
     multiplier = 0.7 if options.shop_hints else 1
@@ -41,7 +41,7 @@ def beedle_eval(state: CollectionState, player, options: PhantomHourglassOptions
         other_costs -= 500 * discount  # Freebie card assumed to be used for the 500r wisdom gem.
     return count_rupees(state, player) >= price * discount + other_costs
 
-def can_farm_rupees(state, player):
+def _can_farm_rupees(state, player):
     return any([
         all([
             state.has("_has_treasure_teller", player),  # Can Sell Treasure
@@ -126,7 +126,7 @@ class IslandShop(PHShop, game=tloz_ph):
         def _evaluate(self, state: CollectionState) -> bool:
             if state.has("_UT_Glitched_Logic", self.player):
                 return True
-            if can_farm_rupees(state, self.player):
+            if _can_farm_rupees(state, self.player):
                 return True
             other_costs = self.calculate_costs(state)
             return count_rupees(state, self.player) >= self.price+other_costs
@@ -204,7 +204,10 @@ class HasTime(Rule[PhantomHourglassWorld], game=tloz_ph):
                 return True
             if time_option > 2:
                 room_lookup = {3: 0, 4: 3}
-                return self.room > room_lookup[time_option]
+                print(f"Room = {self.room}")
+                if isinstance(self.room, str) or self.room > room_lookup[time_option]:
+                    return state.has("Phantom Hourglass", self.player)
+                return True
             if options.ph_required and not state.has("Phantom Hourglass", self.player):
                 return False
 
@@ -240,6 +243,8 @@ class TotOKSmallKeys(Rule[PhantomHourglassWorld], game=tloz_ph):
 
         @override
         def _evaluate(self, state: CollectionState):
+            if state.has("Keyring (Temple of the Ocean King)", self.player):
+                return True
             sub = 0
             ut_glitched = state.has("_UT_Glitched_Logic", self.player)
             options: PhantomHourglassOptions = state.multiworld.worlds[self.player].options
@@ -273,7 +278,7 @@ class LocationNotExcluded(Rule[PhantomHourglassWorld], game=tloz_ph):
 
     def _instantiate(self, world: PhantomHourglassWorld) -> Rule.Resolved:
         return self.Resolved(
-            world.get_location(self.loc),
+            self.loc,
             player=world.player,
             caching_enabled=False)
 
@@ -283,50 +288,12 @@ class LocationNotExcluded(Rule[PhantomHourglassWorld], game=tloz_ph):
         return f"{self.__class__.__name__}({self.loc}{options})"
 
     class Resolved(Rule.Resolved):
-        location: "Location"
+        location: str
 
         @override
         def _evaluate(self, state: CollectionState):
-            return self.location.progress_type != LocationProgressType.EXCLUDED
+            loc = state.multiworld.worlds[self.player].get_location(self.location)
+            return loc.progress_type != LocationProgressType.EXCLUDED
 
         def __str__(self):
             return f"Location {self.location} is not Excluded"
-
-class NotWayfarerTrade(Rule[PhantomHourglassWorld], game=tloz_ph):
-    def _instantiate(self, world: PhantomHourglassWorld) -> Rule.Resolved:
-        return self.Resolved(
-            player=world.player,
-            caching_enabled=False)
-
-    def __str__(self):
-        return f"Not Has _wayfarer_trade"
-
-    class Resolved(Rule.Resolved):
-        @override
-        def _evaluate(self, state: CollectionState):
-            return not state.has("_wayfarer_trade", self.player)
-
-        def __str__(self):
-            return f"Not Has _wayfarer_trade"
-
-class NotToCCrystals(Rule[PhantomHourglassWorld], game=tloz_ph):
-    def _instantiate(self, world: PhantomHourglassWorld) -> Rule.Resolved:
-        return self.Resolved(
-            player=world.player,
-            caching_enabled=False)
-
-    def __str__(self):
-        return "Not Has any of (Square Crystal (Temple of Courage), Square Crystals, Square Pedestal North (Temple of Courage))"
-
-    class Resolved(Rule.Resolved):
-        @override
-        def _evaluate(self, state: CollectionState):
-            shape, dung_name, diff = "Square", "Temple of Courage", "North"
-            return any([
-                state.has(f"{shape} Crystal ({dung_name})", self.player),
-                state.has(f"{shape} Crystals", self.player),
-                state.has(f"{shape} Pedestal {diff} ({dung_name})", self.player),
-            ])
-
-        def __str__(self):
-            return "Not Has any of (Square Crystal (Temple of Courage), Square Crystals, Square Pedestal North (Temple of Courage))"
