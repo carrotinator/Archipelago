@@ -1388,7 +1388,7 @@ def ph_wind_temple_key_ut(state, player):
             all([
                 ph_has_bombs(state, player),
                 ph_ut_small_key_own_dungeon(state, player)]),
-            ph_ut_small_key_own_dungeon(state, player)
+            ph_option_keys_vanilla(state, player)
         ])
     ])
 
@@ -1437,18 +1437,18 @@ def ph_toc_key_door_1(state, player):
     return all([
         ph_has_damage(state, player),
         any([
-        ph_toc_key_doors(state, player, 3, 1),
-        # UT Keys
-        all([
-            ph_option_not_glitched_logic(state, player),
-            ph_ut_small_key_own_dungeon(state, player),
-            any([
-                ph_has_explosives(state, player),
-                ph_option_keys_vanilla(state, player)
-            ])
-        ]),
-    ])
+            ph_toc_key_doors(state, player, 3, 1),
+            # UT Keys
+            all([
+                ph_option_not_glitched_logic(state, player),
+                ph_ut_small_key_own_dungeon(state, player),
+                any([
+                    ph_has_explosives(state, player),
+                    ph_option_keys_vanilla(state, player)
+                ])
+            ]),
         ])
+    ])
 
 
 def ph_toc_key_door_2(state, player):
