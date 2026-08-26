@@ -1031,6 +1031,25 @@ BOSS_ENTRANCE_LOOKUP = {
     "Eox Exit": "Eox Boss Reward",
 }
 
+KEY_COUNTS: dict[str, int] = {
+    "Mountain Passage": 3,
+    "Temple of the Ocean King": 6,
+    "Temple of Fire": 3,
+    "Temple of Wind": 1,
+    "Temple of Courage": 3,
+    "Temple of Ice": 3,
+    "Mutoh's Temple": 2,
+}
+
+BOSS_KEY_DUNGEONS = [
+    "Temple of Fire",
+    "Temple of Wind",
+    "Temple of Courage",
+    "Goron Temple",
+    "Temple of Ice",
+    "Mutoh's Temple",
+]
+
 DUNGEON_KEY_DATA = {
     39: {
         "name": "Mountain Passage",

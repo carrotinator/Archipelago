@@ -786,6 +786,9 @@ def ph_option_goal_midway(state: CollectionState, player: int):
 def ph_option_island_shuffle(state, player):
     return state.multiworld.worlds[player].options.shuffle_ports
 
+def ph_option_boss_keyrings(state, player):
+    return state.multiworld.worlds[player].options.boss_keyrings
+
 def ph_can_pass_sea_monsters(state, player):
     return any([
         ph_has_cannon(state, player),
@@ -872,11 +875,12 @@ def ph_option_vanilla_caves(state, player):
 # ============= Key logic ==============
 
 def ph_has_small_keys(state: CollectionState, player: int, dung_name: str, amount: int = 1):
-    return state.has(f"Small Key ({dung_name})", player, amount)
+    return state.has(f"Small Key ({dung_name})", player, amount) or state.has(f"Keyring ({dung_name})", player)
 
 
 def ph_has_boss_key(state: CollectionState, player: int, dung_name: str):
-    return state.has(f"Boss Key ({dung_name})", player)
+    return (state.has(f"Boss Key ({dung_name})", player)
+            or (state.has(f"Keyring ({dung_name})", player) and ph_option_boss_keyrings(state, player)))
 
 
 def ph_has_boss_key_simple(state: CollectionState, player: int, dung_name: str):

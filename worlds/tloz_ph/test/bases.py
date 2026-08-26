@@ -157,6 +157,13 @@ options_excluded_crystals = {"dungeons_required": 8,
             ]
                }
 
+options_keys = {
+    "keysanity": "in_own_dungeon",
+    "keyrings": "random_mixed",
+    "randomize_boss_keys": "in_own_dungeon",
+    "boss_keyrings": True
+}
+
 class TestPHGeneration(WorldTestBase):
     game = "The Legend of Zelda - Phantom Hourglass"
-    options = options_metal_bug
+    options = options_keys

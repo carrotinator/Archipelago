@@ -813,6 +813,28 @@ class PhantomHourglassSkipChestCutscenes(Toggle):
     display_name = "Skip Chest Cutscenes"
     default = 1
 
+class PhantomHourglassKeyrings(Choice):
+    """
+    Add keyrings instead of singular keys. Does not work with vanilla small key locations.
+    Separate option for boss keys.
+    - no_keyrings: keys are normal.
+    - all_keyrings: all keys are keyrings.
+    - random_mixed: will randomly choose what dungeons have keyrings.
+    """
+    display_name = "Keyrings"
+    option_no_keyrings = 0
+    option_all_keyrings = 1
+    option_random_mixed = 2
+
+class PhantomHourglassBossKeyrings(Toggle):
+    """
+    Include boss keys in keyrings?
+    Follows the location setting of small keys.
+    Does not work with vanilla boss key locations, and requires abstract boss keys.
+    """
+    display_name = "Boss Keys in Keyrings"
+    default = 0
+
 @dataclass
 class PhantomHourglassOptions(PerGameCommonOptions):
     # Accessibility
@@ -837,10 +859,14 @@ class PhantomHourglassOptions(PerGameCommonOptions):
     phantom_combat_difficulty: PhantomHourglassPhantomCombatDifficulty
     boat_requires_sea_chart: PhantomHourglassBoatRequiresSeaChart
 
-    # Item Randomization
+    # Key Randomization
     keysanity: PhantomHourglassKeyRandomization
     randomize_pedestal_items: PhantomHourglassRandomizePedestalItems
     randomize_boss_keys: PhantomHourglassRandomizeBossKeys
+    keyrings: PhantomHourglassKeyrings
+    boss_keyrings: PhantomHourglassBossKeyrings
+
+    # Item Randomization
     randomize_minigames: PhantomHourglassRandomizeMinigames
     randomize_frogs: PhantomHourglassFrogRandomization
     randomize_fishing: PhantomHourglassRandomizeFishing
@@ -934,10 +960,14 @@ ph_option_groups = [
         PhantomHourglassPhantomCombatDifficulty,
         PhantomHourglassBoatRequiresSeaChart
     ]),
-    OptionGroup("Item Randomization Options", [
+    OptionGroup("Key Randomization Options", [
         PhantomHourglassKeyRandomization,
         PhantomHourglassRandomizePedestalItems,
         PhantomHourglassRandomizeBossKeys,
+        PhantomHourglassKeyrings,
+        PhantomHourglassBossKeyrings
+    ]),
+    OptionGroup("Item Randomization Options", [
         PhantomHourglassRandomizeMinigames,
         PhantomHourglassFrogRandomization,
         PhantomHourglassRandomizeFishing,

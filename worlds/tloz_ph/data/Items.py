@@ -2227,6 +2227,78 @@ ITEMS_DATA = {
         "model": 0x1,
         "model_reset": True,
         "item_groups": ["Technical Items"],
+    },
+
+    # Keyrings
+    "Keyring (Temple of the Ocean King)": {
+        "classification": ItemClassification.progression,
+        "id": 223,
+        "model": 0x1,
+        "value": 7,
+        "dungeon": 0x25,
+        "model_reset": True,
+        "item_groups": ["Keyrings", "TotOK Keys", "Small Key TotOK",
+                        "TotOK Keyring"],
+    },
+    "Keyring (Temple of Fire)": {
+        "classification": ItemClassification.progression,
+        "id": 224,
+        "model": 0x1,
+        "value": 3,
+        "dungeon": 0x1c,
+        "model_reset": True,
+        "item_groups": ["Keyrings", "Fire Temple Keys", "Small Key ToF",
+                        "Fire Temple Keyring"],
+    },
+    "Keyring (Temple of Wind)": {
+        "classification": ItemClassification.progression,
+        "id": 225,
+        "model": 0x1,
+        "value": 1,
+        "dungeon": 0x1d,
+        "model_reset": True,
+        "item_groups": ["Keyrings", "Wind Temple Keys", "Small Key ToW",
+                        "Wind Temple Keyring"],
+    },
+    "Keyring (Temple of Courage)": {
+        "classification": ItemClassification.progression,
+        "id": 226,
+        "model": 0x1,
+        "value": 3,
+        "dungeon": 0x1e,
+        "model_reset": True,
+        "item_groups": ["Keyrings", "Courage Temple Keys", "Small Key ToC",
+                        "Courage Temple Keyring"],
+    },
+    "Keyring (Temple of Ice)": {
+        "classification": ItemClassification.progression,
+        "id": 227,
+        "model": 0x1,
+        "value": 3,
+        "dungeon": 0x1f,
+        "model_reset": True,
+        "item_groups": ["Keyrings", "Ice Temple Keys", "Small Key ToI",
+                        "Ice Temple Keyring"],
+    },
+    "Keyring (Mutoh's Temple)": {
+        "classification": ItemClassification.progression,
+        "id": 228,
+        "model": 0x1,
+        "value": 2,
+        "dungeon": 0x21,
+        "model_reset": True,
+        "item_groups": ["Keyrings", "Mutoh's Temple Keys", "Small Key MT",
+                        "Mutoh's Temple Keyring"],
+    },
+    "Keyring (Mountain Passage)": {
+        "classification": ItemClassification.progression,
+        "id": 229,
+        "model": 0x1,
+        "value": 3,
+        "model_reset": True,
+        "item_groups": ["Keyrings", "Mountain Passage Keys", "Small Key MP",
+                        "Mountain Passage Keyring"],
+        "dungeon": 0x27,
     }
 }
 
@@ -2247,7 +2319,7 @@ ITEM_GROUPS["Shape Crystals"] = ITEM_GROUPS["Unique Crystal Items"] | ITEM_GROUP
 ITEM_GROUPS["Pedestal Items"] = ITEM_GROUPS["Shape Crystals"] | ITEM_GROUPS["Force Gem Items"]
 
 ITEM_GROUPS["Throwable Keys"] = ITEM_GROUPS["Boss Keys"] | ITEM_GROUPS["Pedestal Items"]
-ITEM_GROUPS["Keys"] = ITEM_GROUPS["Collection Screen Keys"] | ITEM_GROUPS["Small Keys"] | ITEM_GROUPS["Throwable Keys"] | ITEM_GROUPS["Crests"]
+ITEM_GROUPS["Keys"] = ITEM_GROUPS["Collection Screen Keys"] | ITEM_GROUPS["Small Keys"] | ITEM_GROUPS["Throwable Keys"] | ITEM_GROUPS["Crests"] | ITEM_GROUPS["Keyrings"]
 
 ITEM_GROUPS["Treasure Maps"] |= set(TREASURE_MAPS)
 

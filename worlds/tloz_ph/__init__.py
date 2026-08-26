@@ -272,6 +272,14 @@ class PhantomHourglassWorld(World):
             if not self.options.exclude_non_required_dungeons:
                 self.options.excluded_dungeon_hints.value = 0
 
+            # Keyring restrictions
+            if not self.options.keysanity.value:
+                self.options.keyrings.value = 0
+            if (not self.options.boss_key_behaviour.value
+                    or not self.options.randomize_boss_keys.value
+                    or not self.options.keyrings.value):
+                self.options.boss_keyrings.value = 0
+
             # Treasure Prices
             self.treasure_price_index = self.random.randint(0, 9)
 
@@ -1065,6 +1073,7 @@ class PhantomHourglassWorld(World):
                 continue
             if (item_name in ITEM_GROUPS["Items With Ammo"] |
                     ITEM_GROUPS["Technical Items"] |
+                    ITEM_GROUPS["Small Keys"] | ITEM_GROUPS["Boss Keys"] |
                     ITEM_GROUPS["Potions"] |
                     ITEM_GROUPS["Single Spirit Gems"] |
                     ITEM_GROUPS["Regular Pedestal Items"] |  # These get locked in the dungeon category if vanilla
@@ -1078,6 +1087,7 @@ class PhantomHourglassWorld(World):
         # so add progression items first
         add_items = {"Bombs (Progressive)": 3, "Bow (Progressive)": 3, "Bombchus (Progressive)": 3}
         add_items |= {"Phantom Hourglass": 1}
+        add_items |= self.choose_key_items()
         # If metal hunt create and add metals
         if self.options.goal_requirements == "metal_hunt":
             metal_pool = {}
@@ -1129,8 +1139,41 @@ class PhantomHourglassWorld(World):
                     random_filler_item = self.get_filler_item_name()
                     item_pool_dict[random_filler_item] = item_pool_dict.get(random_filler_item, 0) + 1
 
-        # print(item_pool_dict)
+        print(item_pool_dict)
         return item_pool_dict
+
+    def choose_key_items(self) -> list[tuple[str, int]]:
+        if not self.options.keysanity.value:
+            return []
+        res = {}
+
+        # Small keys
+        keyring_dungeons = []
+        if self.options.keyrings.value == 2:
+            keyring_dungeons = self.random.choices(list(KEY_COUNTS.keys()), k=self.random.randint(0, len(KEY_COUNTS)))
+            print(f"Choice: {keyring_dungeons}")
+            res |= {f"Keyring ({dung})": 1 for dung in keyring_dungeons}
+            res |= {f"Small Key ({dung})": count for dung, count in KEY_COUNTS.items() if dung not in keyring_dungeons}
+        elif self.options.keyrings.value == 1:
+            res |= {f"Keyring ({dung})": 1 for dung in KEY_COUNTS.keys()}
+            keyring_dungeons = list(KEY_COUNTS.keys())
+        else:
+            res |= {f"Small Key ({dung})": count for dung, count in KEY_COUNTS.items()}
+
+        # Boss Keys
+        if self.options.randomize_boss_keys.value:
+            if self.options.boss_keyrings.value:
+                res |= {f"Boss Key ({dung})": 1 for dung in BOSS_KEY_DUNGEONS if dung not in keyring_dungeons}
+            else:
+                res |= {f"Boss Key ({dung})": 1 for dung in BOSS_KEY_DUNGEONS}
+
+        # Exceptions
+        if not self.options.boss_keyrings and "Temple of Wind" in keyring_dungeons:
+            res["Keyring (Temple of Wind)"] = 0
+            res["Small Key (Temple of Wind)"] = 1
+
+        print(f"Key Items: {res}")
+        return [(name, count) for name, count in res.items() if count]
 
     def create_items(self):
         item_pool_dict = self.build_item_pool_dict()
@@ -1195,7 +1238,7 @@ class PhantomHourglassWorld(World):
 
         # Confine small keys to own dungeon if option is enabled
         if self.options.keysanity == "in_own_dungeon":
-            confined_dungeon_items.extend([item for item in items if item.name.startswith("Small Key")])
+            confined_dungeon_items.extend([item for item in items if item.name.startswith("Small Key") or item.name.startswith("Keyring")])
         # Confine small keys to own dungeon if option is enabled
         if self.options.randomize_boss_keys == "in_own_dungeon":
             confined_dungeon_items.extend([item for item in items if item.name.startswith("Boss Key")])
@@ -1382,6 +1425,7 @@ class PhantomHourglassWorld(World):
             # Logic
             "logic", "phantom_combat_difficulty", "boat_requires_sea_chart",
             # Item Randomization
+            "boss_keyrings",
             "randomize_minigames", "randomize_digs", "randomize_fishing",
             "keysanity", "randomize_boss_keys", "randomize_pedestal_items",
             "randomize_frogs", "randomize_salvage",
