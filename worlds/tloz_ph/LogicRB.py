@@ -1,12 +1,11 @@
 from .data.Rules import *
 
-from BaseClasses import MultiWorld, Item, Entrance, EntranceType, Region
+from BaseClasses import Item, Entrance, EntranceType, Region
 from .Options import PhantomHourglassOptions
 from .data.Entrances import ENTRANCES
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .Subclasses import PHRegion
     from .__init__ import PhantomHourglassWorld
 
 def make_overworld_logic():
@@ -55,7 +54,7 @@ def make_overworld_logic():
         ["Long Bridge Cave", "Mercay NE", False, None],
         ["Long Bridge Cave", "Mercay NW Freedle Island", True, None],
         ["Mercay NW Freedle Island", "Mercay NE", False, None],
-        ["Long Bridge Cave", "Long Bridge Cave Chest", False, has_range],
+        ["Long Bridge Cave", "Long Bridge Cave Chest", False, has_beam_range],
         ["Mercay NW Freedle Island", "Mercay NW Freedle Gift", False, has_sea_chart("SE")],
         ["Mercay NE", "Mercay NW Temple", True, None],
         ["Mercay NE Ledge", "Mercay NE", False, None],
@@ -172,7 +171,8 @@ def make_overworld_logic():
         ["TotOK B12", "TotOK B13", False, totok_b13],
 
         ["TotOK B13", "TotOK B13 Chest", False, totok_b13_chest],
-        ["TotOK B13", "TotOK B14", False, totok_b13_door],
+        ["TotOK B13", "TotOK B14 South", False, totok_b13_door],
+        ["TotOK B14 South", "TotOK B14", False, None],
         ["TotOK Lobby", "TotOK B14", False, Filtered(HasRequiredMetals(), options=bellum_access_warp)],
         # Bellum
         ["TotOK B14", "Bellum", False, HasRequiredMetals()],
@@ -301,6 +301,9 @@ def make_overworld_logic():
         # 3F
         ["ToF 3F", "ToF 3F Key Drop", False, tof_key_drop],
         ["ToF 3F", "ToF 3F Key Door", False, tof_key_door],
+        ["ToF 3F Key Door", "ToF 3F OOB", False, grapple_glitch],
+            ["ToF 3F OOB", "ToF 3F Boss Key", False, None],
+            ["ToF 3F OOB", "ToF 4F", False, None],
         ["ToF 3F Key Door", "ToF 3F Boss Key", False, has_boomerang],
         ["ToF 3F Key Door", "ToF 4F", True, tof_bk],
         ["ToF 4F", "Blaaz", True, None],
@@ -418,6 +421,7 @@ def make_overworld_logic():
         ["NW Ocean", "PoRL", False, None],
         ["PoRL", "PoRL Item", False, has_sword],
         ["PoRL", "PoRL Trade", False, Has("Hero's New Clothes")],
+        ["NW Ocean", "Pirate Ambush", False, pirate_ambush_nw],
 
         # ================= Isle of Gust ====================
 
@@ -430,7 +434,7 @@ def make_overworld_logic():
         ["Gust South Cliffs", "Gust North Temple Road", True, None],
         ["Gust South Cliffs", "Gust North Above Temple", True, None],
         ["Gust North Above Temple", "Gust South NW", True, None],
-        ["Gust South NW", "Gust South NW Chest", False, has_shovel],
+        ["Gust South NW", "Gust South NW Chest", False, has_shovel | (grapple_glitch & has_chus)],
         ["Gust South NW", "Gust South NW Ledge", False, has_shovel],
         ["Gust South NW Ledge", "Gust South NW", False, None],
         ["Gust South NW Ledge", "Gust South NW Chest", False, has_grapple],
@@ -451,7 +455,7 @@ def make_overworld_logic():
         ["ToW B2", "ToW B2 Dig", False, has_shovel],
         ["ToW B2", "ToW B2 Bombs", False, has_explosives],
         ["ToW B2", "ToW B2 Key", False, tow_key],
-        ["ToW B2", "ToW 1F NE", False, has_bombs],
+        ["ToW B2 Bombs", "ToW 1F NE", False, has_bombs],
         ["ToW 1F", "ToW 2F", False, tow_bk],
         ["ToW 2F", "Cyclok", True, None],
         ["ToW 2F", "ToW 1F", False, None],
@@ -505,6 +509,7 @@ def make_overworld_logic():
         ["Cubus Sisters", "Ghost Ship Warp", False, has_sword],
         ["Ghost Ship Warp", "Ghost Ship 1F", False, None],
         ["Cubus Sisters", "Post Cubus Sisters", False, has_sword],
+        ["Post Cubus Sisters", "Post Cubus Sisters Event", False, None],
         ["Ghost Ship B2", "Ghost Ship Tetra", False, Has("Ghost Key")],
         ["Ghost Ship Tetra", "Spawn Pirate Ambush", False, None],
 
@@ -529,7 +534,7 @@ def make_overworld_logic():
         ["Dee Ess Island", "Dee Ess Boat", False, None],
             ["Dee Ess Boat", "Dee Ess Island", False, require_sea_chart("SE")],
             ["Dee Ess Boat", "SE Ocean", True, require_sea_chart("SE")],
-        ["SE Ocean", "Pirate Ambush", False, Has("_beat_ghost_ship")],
+        ["SE Ocean", "Pirate Ambush", False, pirate_ambush_se],
         ["SE Ocean", "SS Wayfarer", True, Has("Wood Heart") & Has("_wayfarer_gift")],
         ["SS Wayfarer", "SS Wayfarer Trade", False, Has("Wood Heart")],
         ["SS Wayfarer Trade", "SS Wayfarer Event", False, None],
@@ -656,7 +661,7 @@ def make_overworld_logic():
         ["ToI 3F Right", "ToI 3F", False, has_range | has_bombs],
         ["ToI 3F", "ToI 3F Right", False, has_range],
         ["ToI 3F", "ToI 3F Key Door", True, toi_door_1],
-        ["ToI 3F", "ToI 3F Switch State", False, has_bombs],
+        ["ToI 3F", "ToI 3F Switch State", False, has_bombs | (hard_logic & (has_chus | has_boomerang))],
         ["ToI 3F Switch State", "ToI 3F Boomerang Key", False, toi_3f_boomerang],
         ["ToI 3F Key Door", "ToI 2F Arena", True, None],
         ["ToI 2F Arena", "ToI 2F Post Arena", False, can_kill_dark_yook],
@@ -682,7 +687,7 @@ def make_overworld_logic():
         ["ToI B1 Boss Door", "ToI B1 Mid", False, has_grapple],
         ["ToI B1 Boss Door", "ToI B1 Before Boss", True, toi_bk],
         ["ToI B1 Before Boss", "Gleeok", True, None],
-        ["Gleeok", "Post Gleeok", False, has_grapple],
+        ["Gleeok", "Post Gleeok", False, has_grapple & (has_sword | Has("Bombs (Progressive)", 2) | has_hammer)],
         ["Post Gleeok", "Post ToI", False, None],
         ["ToI B1 Before Boss", "ToI Blue Warp", True, None],
         ["ToI 1F", "ToI Blue Warp", True, Has("_toi_blue_warp")],
@@ -692,7 +697,7 @@ def make_overworld_logic():
         ["ToI B2 North", "ToI B2 BK Chest", False, hammer_glitch],
         ["ToI B2 North", "ToI B2 East", False, None],
         ["ToI B2 East", "ToI B2 Bow", False, has_bow],
-        ["ToI B2 East", "ToI B2 East Arena", False, toi_key_doors(3, 3) | savescum_keys(toi, 1)],
+        ["ToI B2 East", "ToI B2 East Arena", False, toi_door_3],
         ["ToI B2 East Arena", "ToI B2 BK Chest", False, None],
 
         # ================= NE Ocean ====================
@@ -712,7 +717,7 @@ def make_overworld_logic():
             ["Ruins Boat", "NE Ocean", False, require_sea_chart("NE")],
             ["Ruins Boat", "Ruins SW Port", False, Has("Regal Necklace")],
             ["Ruins SW Port", "Ruins Boat", False, None],
-        ["NE Ocean", "Pirate Ambush", False, Has("_beat_ghost_ship")],
+        ["NE Ocean", "Pirate Ambush", False, pirate_ambush_ne],
 
         # ================= IotD ====================
 
@@ -923,7 +928,7 @@ def create_connections(world: "PhantomHourglassWorld", player: int, origin_name:
         make_overworld_logic()
     ]
     # UT creates alias regions
-    if getattr(world.multiworld, "generation_is_fake", False):
+    if world.is_ut:
         from .data.Constants import region_aliases
         from .data.Regions import REGIONS
         alias_logic = []

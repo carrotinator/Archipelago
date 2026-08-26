@@ -226,7 +226,7 @@ ITEMS_DATA = {
         "model": 0x78,
         "ghost_model": True,
         "model_reset": "Sand of Hours (Small)",
-        "item_groups": ["Upgrades", "PH", "Hourglass", "Sand", "Time"],
+        "item_groups": ["Upgrades", "PH", "Hourglass", "Sand", "Time", "Sand Items"],
     },
     "Sand of Hours (Boss)": {
         "classification": DEPRIORITIZED_SKIP_BALANCING_FALLBACK,
@@ -237,7 +237,7 @@ ITEMS_DATA = {
         "id": 18,
         "model": 0x78,
         "ghost_model": True,
-        "item_groups": ["Upgrades", "Sand", "Time", "Technical Items"],
+        "item_groups": ["Upgrades", "Sand", "Time", "Technical Items", "Sand Items"],
     },
     "Sand of Hours (Small)": {
         "classification": DEPRIORITIZED_SKIP_BALANCING_FALLBACK,
@@ -248,7 +248,7 @@ ITEMS_DATA = {
         "id": 19,
         "model": 0x78,
         "ghost_model": True,
-        "item_groups": ["Upgrades", "Sand", "Time", "Technical Items"],
+        "item_groups": ["Upgrades", "Sand", "Time", "Technical Items", "Sand Items"],
     },
     "Sand of Hours": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -260,7 +260,7 @@ ITEMS_DATA = {
         "model": 0x78,
         "ghost_model": True,
         "model_reset": "Sand of Hours (Small)",
-        "item_groups": ["Upgrades", "Sand", "Time"],
+        "item_groups": ["Upgrades", "Sand", "Time", "Sand Items"],
     },
     "Swordsman's Scroll": {
         "classification": ItemClassification.useful,
@@ -462,7 +462,7 @@ ITEMS_DATA = {
         "size": 2,
         "id": 38,
         "model": 0x2,
-        "item_groups": ["Rupees", "Small Rupees", "Green Rupee"],
+        "item_groups": ["Rupees", "Small Rupees", "Green Rupee", "Rupee Items"],
     },
     "Blue Rupee (5)": {
         "classification": ItemClassification.filler,
@@ -472,7 +472,7 @@ ITEMS_DATA = {
         "size": 2,
         "id": 39,
         "model": 0x18,
-        "item_groups": ["Rupees", "Small Rupees", "Blue Rupee"],
+        "item_groups": ["Rupees", "Small Rupees", "Blue Rupee", "Rupee Items"],
     },
     "Red Rupee (20)": {
         "classification": ItemClassification.filler,
@@ -482,7 +482,7 @@ ITEMS_DATA = {
         "size": 2,
         "id": 40,
         "model": 0x19,
-        "item_groups": ["Rupees", "Small Rupees", "Red Rupee"],
+        "item_groups": ["Rupees", "Small Rupees", "Red Rupee", "Rupee Items"],
     },
     "Big Green Rupee (100)": {
         "classification": DEPRIORITIZED_SKIP_BALANCING_FALLBACK,
@@ -492,7 +492,7 @@ ITEMS_DATA = {
         "size": 2,
         "id": 41,
         "model": 0x9,
-        "item_groups": ["Rupees", "Big Rupees", "Big Green Rupee"],
+        "item_groups": ["Rupees", "Big Rupees", "Big Green Rupee", "Rupee Items"],
     },
     "Big Red Rupee (200)": {
         "classification": DEPRIORITIZED_SKIP_BALANCING_FALLBACK,
@@ -502,7 +502,7 @@ ITEMS_DATA = {
         "size": 2,
         "id": 42,
         "model": 0x1a,
-        "item_groups": ["Rupees", "Big Rupees", "Big Red Rupee"],
+        "item_groups": ["Rupees", "Big Rupees", "Big Red Rupee", "Rupee Items"],
     },
     "Gold Rupee (300)": {
         "classification": DEPRIORITIZED_SKIP_BALANCING_FALLBACK,
@@ -512,7 +512,7 @@ ITEMS_DATA = {
         "size": 2,
         "id": 43,
         "model": 0x1b,
-        "item_groups": ["Rupees", "Big Rupees", "Big Gold Rupee", "Gold Rupee"],
+        "item_groups": ["Rupees", "Big Rupees", "Big Gold Rupee", "Gold Rupee", "Rupee Items"],
     },
     "Rupoor (-10)": {
         "classification": ItemClassification.trap,
@@ -522,7 +522,7 @@ ITEMS_DATA = {
         "size": 2,
         "id": 44,
         "model": 0x81,
-        "item_groups": ["Rupees", "Rupoors", "Rupoor"],
+        "item_groups": ["Rupees", "Rupoors", "Rupoor", "Rupee Items"],
     },
     "Big Rupoor (-50)": {
         "classification": ItemClassification.trap,
@@ -532,7 +532,7 @@ ITEMS_DATA = {
         "size": 2,
         "id": 45,
         "model": 0x82,
-        "item_groups": ["Rupees", "Rupoors", "Big Rupoor"],
+        "item_groups": ["Rupees", "Rupoors", "Big Rupoor", "Rupee Items"],
     },
     "Pre-Alpha Rupee (5000)": {
         "classification": ItemClassification.progression,
@@ -541,7 +541,7 @@ ITEMS_DATA = {
         "tags": ["incremental"],
         "size": 2,
         "id": 46,
-        "item_groups": ["Rupees", "Big Rupees","Technical Items"],
+        "item_groups": ["Rupees", "Big Rupees","Technical Items", "Rupee Items"],
     },
     "Treasure": {
         "classification": ItemClassification.filler,
@@ -1801,7 +1801,7 @@ ITEMS_DATA = {
         "id": 167,
         "model": 0x39,
         "ghost_model": True,
-        "item_groups": ["Beedle Points"],
+        "item_groups": ["Beedle Points", "Beedle Point Items"],
     },
     "Beedle Points (20)": {
         "classification": ItemClassification.progression,
@@ -1811,7 +1811,7 @@ ITEMS_DATA = {
         "id": 191,
         "model": 0x39,
         "ghost_model": True,
-        "item_groups": ["Beedle Points"],
+        "item_groups": ["Beedle Points", "Beedle Point Items"],
     },
     "Beedle Points (50)": {
         "classification": ItemClassification.progression,
@@ -1821,7 +1821,7 @@ ITEMS_DATA = {
         "id": 192,
         "model": 0x39,
         "ghost_model": True,
-        "item_groups": ["Beedle Points"],
+        "item_groups": ["Beedle Points", "Beedle Point Items"],
     },
 
     # Frogs

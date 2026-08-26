@@ -1,6 +1,5 @@
 from BaseClasses import LocationProgressType, Location
 from rule_builder.rules import *
-from typing import TYPE_CHECKING
 from .. import PhantomHourglassWorld, PhantomHourglassOptions
 
 cost_multiplier = 0.7
@@ -43,6 +42,7 @@ def beedle_eval(state: CollectionState, player, options: PhantomHourglassOptions
     return count_rupees(state, player) >= price * discount + other_costs
 
 def can_farm_rupees(state, player):
+    return True
     return any([
         all([
             state.has("_has_treasure_teller", player),  # Can Sell Treasure
@@ -113,6 +113,7 @@ class IslandShop(PHShop, game=tloz_ph):
         price: int
 
         def calculate_costs(self, state):
+            return True
             other_costs = 0
             options: PhantomHourglassOptions = state.multiworld.worlds[self.player].options
             if state.has("SW Sea Chart", self.player):
@@ -142,6 +143,7 @@ class BeedleShop(PHShop, game=tloz_ph):
 
         @override
         def _evaluate(self, state: CollectionState) -> bool:
+            return True
             options: PhantomHourglassOptions = state.multiworld.worlds[self.player].options
             return beedle_eval(state, self.player, options, self.price)
 
@@ -155,6 +157,7 @@ class HasBeedlePoints(PHShop, game=tloz_ph):
 
         @override
         def _evaluate(self, state: CollectionState):
+            return True
             if state.has("_UT_Glitched_Logic", self.player):
                 return True
             points = self.price  # lol don't care
@@ -169,30 +172,6 @@ class HasBeedlePoints(PHShop, game=tloz_ph):
 
         def __str__(self):
             return f"Has {self.price} Beedle Points"
-
-class IsUT(Rule[PhantomHourglassWorld], game=tloz_ph):
-    """
-    Is Universal Tracker
-    """
-    toggle: bool
-    def __init__(self, toggle=True):
-        self.toggle = toggle
-
-    def _instantiate(self, world: PhantomHourglassWorld) -> Rule.Resolved:
-        return self.Resolved(
-            self.toggle,
-            player=world.player,
-            caching_enabled=True)
-
-    class Resolved(Rule.Resolved):
-        toggle: bool
-        @override
-        def _evaluate(self, state: CollectionState):
-            return getattr(state.multiworld, "generation_is_fake", False) == self.toggle
-
-        def __str__(self):
-            return f"Is Universal Tracker"
-
 
 class HasTime(Rule[PhantomHourglassWorld], game=tloz_ph):
     """
@@ -223,6 +202,7 @@ class HasTime(Rule[PhantomHourglassWorld], game=tloz_ph):
 
         @override
         def _evaluate(self, state: CollectionState):
+            return True
             options: PhantomHourglassOptions = state.multiworld.worlds[self.player].options
             time_option = options.ph_time_logic.value
             if state.has("_UT_Glitched_Logic", self.player) or time_option == 5:
@@ -238,7 +218,7 @@ class HasTime(Rule[PhantomHourglassWorld], game=tloz_ph):
             multiplier = time_lookup.get(time_option, 1)
 
             floor_time = self.floor_func(state, self.player) + self.time
-
+            print(f"Floor Time {floor_time} from {self.floor_func} + {self.time}")
             return total_sand >= floor_time // multiplier
 
         def __str__(self):
@@ -265,6 +245,7 @@ class TotOKSmallKeys(Rule[PhantomHourglassWorld], game=tloz_ph):
 
         @override
         def _evaluate(self, state: CollectionState):
+            return True
             sub = 0
             ut_glitched = state.has("_UT_Glitched_Logic", self.player)
             options: PhantomHourglassOptions = state.multiworld.worlds[self.player].options
@@ -285,7 +266,7 @@ class TotOKSmallKeys(Rule[PhantomHourglassWorld], game=tloz_ph):
                 ])
             ]):
                 sub += 1
-            return state.has("Small Key (Temple of the Ocean King)", self.base_count - sub)
+            return state.has("Small Key (Temple of the Ocean King)", self.player, self.base_count - sub)
 
     def __str__(self):
         return f"Has {self.base_count}-shortcuts TotOK Small Keys"

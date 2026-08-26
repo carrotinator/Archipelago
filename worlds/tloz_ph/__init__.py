@@ -1,6 +1,5 @@
-import os
+
 import logging
-import random
 from math import ceil
 from typing import List, Union, ClassVar, Any, Optional, Tuple, TYPE_CHECKING
 
@@ -8,7 +7,6 @@ import settings
 from BaseClasses import Tutorial, Region, Location, LocationProgressType, Item, ItemClassification, Entrance, \
     CollectionState
 from Fill import fill_restrictive, FillError
-from Options import Accessibility, OptionError
 from entrance_rando import randomize_entrances, bake_target_group_lookup, EntranceRandomizationError, disconnect_entrance_for_randomization
 from worlds.AutoWorld import WebWorld, World
 
@@ -141,7 +139,7 @@ def add_pedestal_items(place, option, excluded_dungeons):
 
     return res
 
-class PhantomHourglassWorld(CachedRuleBuilderWorld):
+class PhantomHourglassWorld(World):
     """
     The Legend of Zelda: Phantom Hourglass is the sea bound handheld sequel to the Wind Waker.
     """
@@ -479,6 +477,11 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         return metal_items[:count]
 
     def create_events(self):
+        if self.is_ut:
+            self.create_event("Menu", "_is_ut")
+        else:
+            self.create_event("Menu", "_is_not_ut")
+
         # Create events for required dungeons
         if self.options.goal_requirements == "defeat_bosses":
             if "Blaaz Boss Reward" in self.required_bosses:
@@ -1007,6 +1010,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
     def set_rules(self):
         try:
             from .LogicRB import create_connections
+            # raise ModuleNotFoundError
         except ModuleNotFoundError:
             from .Logic import create_connections
 

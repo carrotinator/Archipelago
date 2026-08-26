@@ -161,7 +161,8 @@ options_keys = {
     "keysanity": "in_own_dungeon",
     "keyrings": "random_mixed",
     "randomize_boss_keys": "in_own_dungeon",
-    "boss_keyrings": True
+    "boss_keyrings": True,
+    "ph_time_logic": "no_logic"
 }
 
 class TestPHGeneration(WorldTestBase):

@@ -6,6 +6,8 @@ from .RuleClasses import *
 from .LogicPredicates import floor_lookup
 
 # Options
+is_ut = Has("_is_ut")
+is_not_ut = Has("_is_not_ut")
 ut_glitched = Has("_UT_Glitched_Logic")
 hard_logic = [OptionFilter(PhantomHourglassLogic, 0, "gt")] | ut_glitched
 glitched_logic = [OptionFilter(PhantomHourglassLogic, 1, "gt")] | ut_glitched
@@ -13,7 +15,7 @@ normal_logic = [OptionFilter(PhantomHourglassLogic, 0)]
 not_glitched_logic = [OptionFilter(PhantomHourglassLogic, 1, "le")]
 
 keysanity = [OptionFilter(PhantomHourglassKeyRandomization, 2)]
-smart_keys = IsUT() & [OptionFilter(PhantomHourglassUTSmartKeys, 1)]
+smart_keys = is_ut & [OptionFilter(PhantomHourglassUTSmartKeys, 1)]
 vanilla_keys = [OptionFilter(PhantomHourglassKeyRandomization, 0)]
 keys_own_dungeon = [OptionFilter(PhantomHourglassKeyRandomization, 1)]
 pedestals_vanilla = [OptionFilter(PhantomHourglassRandomizePedestalItems, 0)]
@@ -24,8 +26,11 @@ pedestals_anywhere = [OptionFilter(PhantomHourglassRandomizePedestalItems, 3)]
 pedestals_not_vanilla = [OptionFilter(PhantomHourglassRandomizePedestalItems, 0, "gt")]
 
 vanilla_caves = [OptionFilter(PhantomHourglassShuffleCaves, 0)]
+vanilla_dungeons = [OptionFilter(PhantomHourglassShuffleDungeonEntrances, 0)]
+vanilla_bosses = [OptionFilter(PhantomHourglassShuffleBosses, 0)]
 
 randomize_minigames = [OptionFilter(PhantomHourglassRandomizeMinigames, 0, "gt")]
+
 
 # Basic Items
 has_sword = Has("Sword (Progressive)") | Has("Oshus' Sword")
@@ -108,6 +113,7 @@ can_kill_bubble = has_swordless_damage | has_stun_sword | has_fire_sword
 can_steal_from_phantom = can_kill_bat | clever_pots
 
 has_range = Or(has_boomerang, has_bow, has_grapple)
+has_beam_range = has_range | has_beam_sword
 has_mid_range = has_range | has_beam_sword | has_hammer
 has_short_range = has_mid_range | clever_bombs
 has_pot_range = has_short_range | clever_pots
@@ -131,10 +137,10 @@ sword_scroll_clip = has_sword & glitched_logic & Has("Swordsman's Scroll")
 
 # Keys
 def has_small_keys(dung_name, count=1):
-    return Has(f"Small Key ({dung_name})", count)
+    return Has(f"Small Key ({dung_name})", count) | Has(f"Keyring ({dung_name})")
 
 def has_boss_key(dung_name):
-    return Has(f"Boss Key ({dung_name})")
+    return Has(f"Boss Key ({dung_name})") | Has(f"Keyring ({dung_name})", options=[OptionFilter(PhantomHourglassBossKeyrings, 1)])
 
 def has_force_gems(floor, count=3):
     return Has(f"Force Gem (B{floor})", count) | Has(f"Force Gems", 1)
@@ -227,13 +233,32 @@ def simple_boss_key(dung):
     return Or(has_boss_key(dung),
               smart_keys & boss_keys_vanilla)
 
+# Pirate Ambush
+pirate_ambush_nw = Has("_beat_cubus_sisters") & Has("_beat_ghost_ship") & vanilla_dungeons & vanilla_bosses & (
+    has_sea_chart("SW") | (
+    has_frog_n & (has_frog_square | has_frog_se)
+    )
+)
+pirate_ambush_ne = Has("_beat_ghost_ship") & (
+    has_sea_chart("SE") | (
+        has_frog_square & (
+            has_frog_x | has_frog_phi | has_frog_n
+        )
+    ) | (
+        hard_logic & has_sea_chart("NW")
+    )
+)
+pirate_ambush_se = Has("_beat_ghost_ship") & (
+    has_sea_chart("SW") | has_sea_chart("NE") | (has_frog_se & has_frog_n)
+)
+
 # Mountain Passage
 mp_rat = can_kill_bat | (clever_pots & vanilla_caves)
 can_reach_mp2 = Or(
     has_small_keys("Mountain Passage", 2),
     Filtered(Or(
         And(
-            smart_keys | IsUT(False),
+            smart_keys | is_not_ut,
             mp_rat
         ),
         Filtered(has_small_keys("Mountain Passage", 1), options=vanilla_caves)
@@ -248,7 +273,7 @@ mp2_bypass_fore = Or(
     And(
         Filtered(Or(), options=vanilla_caves) | keys_own_dungeon,
         has_small_keys("Mountain Passage", 2),
-        IsUT(False) | smart_keys
+        is_not_ut | smart_keys
     )
 )
 mp2_bypass = Or(
@@ -260,7 +285,7 @@ mp3 = Or(
     has_small_keys("Mountain Passage", 3),
     savescum_keys("Mountain Passage", 1),
     has_small_keys("Mountain Passage", 1) & ut_keys_own_dungeon,
-    keys_own_dungeon & IsUT(False) & mp_rat
+    keys_own_dungeon & is_not_ut & mp_rat
 )
 mp3_back = Or(
     has_small_keys("Mountain Passage", 3),
@@ -279,7 +304,7 @@ tof_key_door = has_small_keys("Temple of Fire", 3) | (ut_keys_own_dungeon & tof_
 tof_bk = has_boss_key("Temple of Fire") | (has_boomerang & ut_boss_keys_own_dungeon)
 
 # ToW
-tow_key_ut = IsUT() & has_shovel & (
+tow_key_ut = is_ut & has_shovel & (
     vanilla_keys | (has_bombs & keys_own_dungeon)
 )
 tow_key = has_small_keys("Temple of Wind") | tow_key_ut
@@ -314,7 +339,7 @@ def toc_crystals_state(state: CollectionState, player: int, diff: str):
 toc_door_2 = Or(
     toc_key_doors(3, 3, 2),
     toc_key_doors(3, 2) & (pedestals_vanilla_any | NotToCCrystals()),
-    IsUT() & Or(
+    is_ut & Or(
         savescum_keys("Temple of Courage", 1) & has_hammer,
         not_glitched_logic & smart_keys & Or(
             keys_own_dungeon & has_explosives & has_grapple & has_bow,
@@ -328,7 +353,7 @@ toc_all_checks_door_3 = Or(
 )
 toc_door_3 = Or(
     toc_key_doors(3, 3, 3),
-    IsUT() & Or(
+    is_ut & Or(
         smart_keys & toc_all_checks_door_3,
         savescum_keys("Temple of Courage", 1) & has_hammer,
         savescum_keys("Temple of Courage", 2) & has_grapple,
@@ -353,7 +378,7 @@ def toi_key_doors(glitched, not_glitched):
 toi_all_doors_ut = smart_keys & keys_own_dungeon & has_grapple & has_explosives & has_bow & quick_switches
 toi_3f_boomerang = quick_switches & (has_boomerang | has_grapple)
 toi_door_1 = toi_key_doors(3, 1) | (
-    IsUT() & Or(
+    is_ut & Or(
         savescum_keys(toi, 1),
         smart_keys & Or(
             And(
@@ -366,7 +391,7 @@ toi_door_1 = toi_key_doors(3, 1) | (
 )
 toi_door_2 = Or(
     toi_key_doors(3, 2),
-    IsUT() & Or(
+    is_ut & Or(
         Filtered(keys_own_dungeon & quick_switches, options=not_glitched_logic),
         savescum_keys(toi, 1),
     toi_all_doors_ut
@@ -375,6 +400,13 @@ toi_door_2 = Or(
 toi_b2 = has_bow & has_grapple & Or(
     quick_switches & Has("_toi_b1_switch"),
     chu_glitch & has_boomerang
+)
+toi_door_3 = Or(
+    toi_key_doors(3, 3),
+    toi_all_doors_ut,
+    And(
+        ut_glitched, has_small_keys("Temple of Ice", 1), has_hammer, has_grapple, has_explosives
+    )
 )
 toi_bk = has_boss_key(toi) | (ut_boss_keys_own_dungeon & toi_all_doors_ut)
 
@@ -420,10 +452,10 @@ def has_floor_time(room, time=0):
 
 totok = "Temple of the Ocean King"
 def totok_keys(count):
-    return has_small_keys(totok, count) | (IsUT() & TotOKSmallKeys(count))
+    return has_small_keys(totok, count) | (is_ut & TotOKSmallKeys(count))
 
 def totok_deep_keys(count):
-    return has_small_keys(totok, count) | (has_small_keys(totok, count-1) & has_grapple) | (IsUT() & TotOKSmallKeys(count))
+    return has_small_keys(totok, count) | (has_small_keys(totok, count-1) & has_grapple) | (is_ut & TotOKSmallKeys(count))
 
 def totok_shape_crystals(shape, diff):
     return has_shape_crystals("Temple of the Ocean King", shape, diff)
