@@ -153,6 +153,7 @@ REGIONS = [
     "TotOK B13",
     "TotOK B13 Chest",
 
+    "TotOK B14 South",
     "TotOK B14",
     "Bellum",
     "Ghost Ship Fight",

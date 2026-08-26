@@ -997,6 +997,7 @@ class PhantomHourglassWorld(World):
 
     def build_item_pool_dict(self):
         def force_vanilla():
+            print(f"Forcing vanilla {item_name}")
             item_obj = self.create_item(item_name)
             loc_obj = self.multiworld.get_location(loc_name, self.player)
             loc_obj.place_locked_item(item_obj)
@@ -1043,12 +1044,6 @@ class PhantomHourglassWorld(World):
                         and item_name in ITEM_GROUPS["Regular Pedestal Items"]):
                     force_vanilla()
                     continue
-                if (loc_name in ["Mountain Passage 1F Entrance Chest", "Mountain Passage 2F Rat Key"]
-                        and self.options.accessibility.value in [0, 1] # full accessibility
-                        and self.options.keysanity == "in_own_dungeon"):
-                    forced_item = self.create_item(item_name)
-                    self.multiworld.get_location(loc_name, self.player).place_locked_item(forced_item)
-                    continue
             if item_name in ITEM_GROUPS["Golden Frog Glyphs"]:
                 if self.options.randomize_frogs == "vanilla":
                     forced_item = self.create_item(item_name)
@@ -1087,7 +1082,10 @@ class PhantomHourglassWorld(World):
         # so add progression items first
         add_items = {"Bombs (Progressive)": 3, "Bow (Progressive)": 3, "Bombchus (Progressive)": 3}
         add_items |= {"Phantom Hourglass": 1}
-        add_items |= self.choose_key_items()
+        print(f"pre-keys: {item_pool_dict}")
+        key_items, filler_change = self.choose_key_items()
+        add_items |= key_items
+        filler_item_count += filler_change
         # If metal hunt create and add metals
         if self.options.goal_requirements == "metal_hunt":
             metal_pool = {}
@@ -1122,6 +1120,7 @@ class PhantomHourglassWorld(World):
             add_items.setdefault(i, 0)
             add_items[i] += 1
         # add items to item pool
+        print(f"Add items: {add_items}")
         for i, count in add_items.items():
             item_pool_dict, filler_item_count = add_items_from_filler(item_pool_dict, filler_item_count, i, count)
         # Add as many filler items as required
@@ -1139,19 +1138,19 @@ class PhantomHourglassWorld(World):
                     random_filler_item = self.get_filler_item_name()
                     item_pool_dict[random_filler_item] = item_pool_dict.get(random_filler_item, 0) + 1
 
-        print(item_pool_dict)
+        # print(item_pool_dict)
         return item_pool_dict
 
-    def choose_key_items(self) -> list[tuple[str, int]]:
+    def choose_key_items(self) -> tuple[list[tuple[str, int]], int]:
         if not self.options.keysanity.value:
-            return []
+            return [], 0
         res = {}
 
         # Small keys
         keyring_dungeons = []
         if self.options.keyrings.value == 2:
             keyring_dungeons = self.random.choices(list(KEY_COUNTS.keys()), k=self.random.randint(0, len(KEY_COUNTS)))
-            print(f"Choice: {keyring_dungeons}")
+            # print(f"Choice: {keyring_dungeons}")
             res |= {f"Keyring ({dung})": 1 for dung in keyring_dungeons}
             res |= {f"Small Key ({dung})": count for dung, count in KEY_COUNTS.items() if dung not in keyring_dungeons}
         elif self.options.keyrings.value == 1:
@@ -1172,8 +1171,18 @@ class PhantomHourglassWorld(World):
             res["Keyring (Temple of Wind)"] = 0
             res["Small Key (Temple of Wind)"] = 1
 
+        filler_change = 0
+        if (self.options.accessibility.value in [0, 1]  # full accessibility
+                and self.options.keysanity == "in_own_dungeon"
+                and "Mountain Passage" not in keyring_dungeons):
+            res["Small Key (Mountain Passage)"] = 1
+            filler_change = -2
+            for loc_name in ["Mountain Passage 1F Entrance Chest", "Mountain Passage 2F Rat Key"]:
+                forced_item = self.create_item("Small Key (Mountain Passage)")
+                self.multiworld.get_location(loc_name, self.player).place_locked_item(forced_item)
+
         print(f"Key Items: {res}")
-        return [(name, count) for name, count in res.items() if count]
+        return [(name, count) for name, count in res.items() if count], filler_change
 
     def create_items(self):
         item_pool_dict = self.build_item_pool_dict()

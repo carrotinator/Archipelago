@@ -2299,6 +2299,13 @@ ITEMS_DATA = {
         "item_groups": ["Keyrings", "Mountain Passage Keys", "Small Key MP",
                         "Mountain Passage Keyring"],
         "dungeon": 0x27,
+    },
+    "Time-Based Reward": {
+        "classification": ItemClassification.filler,
+        "id": 230,
+        "model": 0x87,
+        "item_groups": ["Technical Items"],
+        "dummy": True,
     }
 }
 

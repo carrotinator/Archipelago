@@ -991,6 +991,30 @@ LOCATIONS_DATA = {
         "hint_entrance": "TotOK Lobby Exit",
         "chest_offset": 3,
     },
+    "TotOK Flooded Chamber Left Chest": {
+        "region_id": "TotOK B14 South",
+        "vanilla_item": "Time-Based Reward",
+        "farmable": True,
+        "stage_id": 0x25,
+        "floor_id": 0x12,
+        "x_max": 0,
+        "dungeon": "Temple of the Ocean King",
+        "id": 331,
+        "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 14,
+    },
+    "TotOK Flooded Chamber Right Chest": {
+        "region_id": "TotOK B14 South",
+        "vanilla_item": "Time-Based Reward",
+        "farmable": True,
+        "stage_id": 0x25,
+        "floor_id": 0x12,
+        "x_min": 0,
+        "dungeon": "Temple of the Ocean King",
+        "id": 332,
+        "hint_entrance": "TotOK Lobby Exit",
+        "chest_offset": 15,
+    },
 
     # ========== Ocean SW ============
 

@@ -333,6 +333,8 @@ STAGE_LOCATION_GROUPS = {
         "TotOK B12 Kill Everything Chest",
         "TotOK B12 Phantom Chest",
         "TotOK B13 Sea Chart Chest",
+        "TotOK Flooded Chamber Left Chest",
+        "TotOK Flooded Chamber Right Chest"
     ],
     "Ocean": [
         "Ocean SW Salvage Courage Crest",

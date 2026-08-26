@@ -171,7 +171,8 @@ def make_overworld_logic():
         ["TotOK B12", "TotOK B13", False, "totok_b13"],
 
         ["TotOK B13", "TotOK B13 Chest", False, "totok_b13_chest"],
-        ["TotOK B13", "TotOK B14", False, "b13_door"],
+        ["TotOK B13", "TotOK B14 South", False, "b13_door"],
+        ["TotOK B14 South", "TotOK B14", False, None],
         ["TotOK Lobby", "TotOK B14", False, "bellum_warp"],
         # Bellum
         ["TotOK B14", "Bellum", False, "bellum_staircase"],

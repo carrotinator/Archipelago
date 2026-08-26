@@ -1780,6 +1780,10 @@ def ph_toi_key_door_1_ut(state, player):
                 ph_has_grapple(state, player)
             ]),
             any([
+                ph_has_bombs(state, player),
+                ph_has_chus(state, player) and ph_option_hard_logic(state, player)
+            ]),
+            any([
                 ph_ut_small_key_vanilla_location(state, player),
                 all([
                     ph_ut_small_key_own_dungeon(state, player),

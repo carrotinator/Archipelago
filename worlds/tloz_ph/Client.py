@@ -819,7 +819,7 @@ class PhantomHourglassClient(DSZeldaClient):
         data = BOSS_DOOR_DATA.get(self.current_scene, False)
         if data and ctx.slot_data.get("boss_key_behaviour", True) and (
                 self.item_count(ctx, f"Boss Key ({data['name']})")
-                or self.item_count(ctx, f"Keyring ({data['name']})")):
+                or (ctx.slot_data["boss_keyrings"] and self.item_count(ctx, f"Keyring ({data['name']})"))):
             if not self.boss_door_addr:
                 boss_door = await self.find_table_object(ctx, *data["map_obj_comp"])
                 if not boss_door:
@@ -1927,6 +1927,9 @@ class PhantomHourglassClient(DSZeldaClient):
                 # Set chest contents?
                 pass
 
+            if identifiers.get(ident) == "Unspawned Small Chest" and self.current_scene == 0x2512:
+                write_list.append(addr.get_inner_write_list(1, 8, 1))
+
         if self.current_scene == 0x1c00:
             add_detection("tof_arena", self.stage_flag_address+0, comp=0x10, comp_exact=False)
         elif self.current_scene == 0x2900:
@@ -1994,7 +1997,7 @@ class PhantomHourglassClient(DSZeldaClient):
             fish_offset_table = [46, 53, 26, 34]
             swordfish_addr = await self.find_table_object(ctx,
                                                           fish_offset_table[self.current_scene],
-                                                          375/4, 0, 2,
+                                                          375//4, 0, 2,
                                                           PHAddr.sea_actor_table, max_search=4)
             if swordfish_addr:
                 printl(f"\tRNG Swordfish successful, spawning swordfish immediately {swordfish_addr}")
