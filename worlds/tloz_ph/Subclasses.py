@@ -2,10 +2,10 @@ from typing import TYPE_CHECKING
 from BaseClasses import Entrance, Region
 from enum import IntEnum
 
-from .DSZeldaClient.subclasses import DSTransition, split_bits, AddrFromPointer
+from .DSZeldaClient.subclasses import DSTransition, split_bits, Address
 from .DSZeldaClient.ItemClass import DSItem, remove_vanilla_normal
 from .data.SwitchLogic import *
-from .data.Constants import EQUIPPED_SHIP_PARTS_ADDR, BOSS_DOOR_DATA, ITEM_GROUPS
+from .data.Constants import EQUIPPED_SHIP_PARTS_ADDR, BOSS_DOOR_DATA
 from .data.Addresses import PHAddr
 
 if TYPE_CHECKING:
@@ -29,6 +29,7 @@ async def receive_boss_key(client: "PhantomHourglassClient", ctx: "BizHawkClient
         last_value = await data["address"].read(ctx)
         new_value = last_value | data["value"]
         res += data["address"].get_write_list(new_value)
+        await client.open_boss_door(ctx)
     return res
 
 async def receive_potion(client: "PhantomHourglassClient", ctx: "BizHawkClientContext", item: "PHItem", _):
@@ -44,7 +45,8 @@ async def receive_potion(client: "PhantomHourglassClient", ctx: "BizHawkClientCo
             break
     return res
 
-async def receive_dummy(*args): return []
+async def receive_dummy(*args):
+    return []
 
 async def receive_full_heal(client, ctx, item, rii):
     await client.full_heal(ctx)
@@ -71,7 +73,7 @@ async def remove_vanilla_potion(client: "PhantomHourglassClient", ctx: "BizHawkC
     print(f"Removing potion rupees")
     prev_rupees = await PHAddr.rupee_count.read(ctx)
     rupee_count = max(prev_rupees - rupee_item.value, 0)
-    return PHAddr.rupee_count.get_write_list(ctx, rupee_count)
+    return PHAddr.rupee_count.get_write_list(rupee_count)
 
 async def remove_vanilla_oshus_sword(client: "PhantomHourglassClient", ctx: "BizHawkClientContext", item: "PHItem", _):
     res = item.ammo_address.get_write_list(0)
@@ -98,9 +100,11 @@ async def remove_vanilla_throwable_keys(client: "PhantomHourglassClient", ctx: "
         bk_id = await PHAddr.link_held_item_2.read(ctx, silent=True)
     else:
         bk_id = await PHAddr.link_held_item.read(ctx, silent=True)
+    if bk_id == 0:
+        return []
 
     # Get the actor table
-    actor_table_addr =  AddrFromPointer(await PHAddr.actor_table_pointer.read(ctx, silent=True) - 0x2000000, size=250)
+    actor_table_addr =  Address.from_pointer(await PHAddr.actor_table_pointer.read(ctx, silent=True), size=256)
     actor_table = hex(await actor_table_addr.read(ctx, silent=True))
     actor_table = "0" + actor_table[2:]
     print(f"Removing throwable key {item.name} with bk_id {bk_id}")
@@ -110,20 +114,30 @@ async def remove_vanilla_throwable_keys(client: "PhantomHourglassClient", ctx: "
         actor_data = actor_table[_i * 8:(_i + 1) * 8]
         if actor_data[1] == "0":  # filter out empty slots
             continue
-        actor_id_addr = AddrFromPointer(int(actor_data, 16) + 8 - 0x2000000, size=4)
-        actor_id = await actor_id_addr.read(ctx,  silent=True)
+        print(actor_data)
+        actor_id_addr = Address.from_pointer(int(actor_data, 16) + 8 - 0x2000000, size=4)
+        actor_id = await actor_id_addr.read(ctx, silent=True)
         # If you find the boss key, delete its pointer
         if actor_id == bk_id:
-            little_endian_lol = AddrFromPointer(actor_table_addr + len(actor_table) // 2 - (_i + 1) * 4, size=4)
+            little_endian_lol = Address.from_pointer(actor_table_addr + len(actor_table) // 2 - (_i + 1) * 4, size=4)
             print(f"Found bk pointer: {actor_table_addr} at index {_i}")
             await little_endian_lol.overwrite(ctx, 0, silent=True)
             break
     return []
 
 class PHItem(DSItem):
+    model: int = None  # int for what item to swap chest contents with
+    vanilla_model: list[int] = None
+    ghost_model: bool = False  # client gives you your item
+    model_reset: bool = False  # client removes the item received from the model
+
 
     def __init__(self, name, data, all_items):
         super().__init__(name, data, all_items)
+        if self.vanilla_model is None:
+            self.vanilla_model = [self.model]
+        elif isinstance(self.vanilla_model, int):
+            self.vanilla_model = [self.vanilla_model]
 
     def get_receive_function(self):
         receive_func = super().get_receive_function()
@@ -140,6 +154,7 @@ class PHItem(DSItem):
         return receive_func
 
     def get_remove_vanilla_function(self):
+        from .data.Items import ITEM_GROUPS
         if self.name == "Treasure":
             return remove_vanilla_treasure
         if self.name  == "Ship Part":
@@ -448,3 +463,55 @@ def update_switch_logic(old_ex: "PHEntrance", entr: "PHEntrance", er_state, logi
         ex.global_switch_state = old_ex.global_switch_state
         ex.switch_state = old_ex.switch_state
 
+class PairedObjects:
+    name: str
+    trigger: "Address"
+    to_activate: list["Address"]
+    overwrite: int
+    comp: int
+    trigger_2: "Address"
+
+    def __init__(self, name):
+        self.name = name
+        self.to_activate = []
+        self.comp = 1
+        self.overwrite = 0
+        self.comp_exact = True
+
+        self.always_active: bool = False
+        self.state: bool = False  # toggle state when always active
+        self.reset_write: int = 0  # What to write to reset
+
+    def __repr__(self):
+        return f"{self.name}: {self.trigger} = {self.comp}, {self.to_activate} = {self.overwrite}"
+
+    def validate(self):
+        return self.to_activate and hasattr(self, "trigger")
+
+    def get_writes(self, reset=False):
+        res = []
+        v = self.reset_write if reset else self.overwrite
+        for addr in self.to_activate:
+            res.append(addr.get_inner_write_list(v))
+        return res
+
+    def set_detection(self, trigger, comp=1, comp_exact=True, always_active=False):
+        if not hasattr(self, "trigger"):
+            self.trigger = trigger
+            self.comp = comp
+            self.comp_exact = comp_exact
+            self.always_active = always_active
+        else:
+            self.trigger_2 = trigger
+
+    def set_action(self, activate, w, r):
+        self.to_activate.append(activate)
+        self.overwrite = w
+        self.reset_write = r
+
+    def compare(self, value):
+        if self.comp_exact:
+            if isinstance(self.comp, int):
+                return value == self.comp
+            return value in self.comp
+        return value & self.comp

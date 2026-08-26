@@ -153,6 +153,7 @@ REGIONS = [
     "TotOK B13",
     "TotOK B13 Chest",
 
+    "TotOK B14 South",
     "TotOK B14",
     "Bellum",
     "Ghost Ship Fight",
@@ -235,6 +236,7 @@ REGIONS = [
     "ToF 3F",
     "ToF 3F Key Drop",
     "ToF 3F Key Door",
+    "ToF 3F OOB",
     "ToF 3F Boss Key",
     "ToF 4F",
     "Blaaz",
@@ -385,6 +387,7 @@ REGIONS = [
     "Ghost Ship Warp",
     "Cubus Sisters",
     "Post Cubus Sisters",
+    "Post Cubus Sisters Event",
     "Ghost Ship Tetra",
     "Spawn Pirate Ambush",
 

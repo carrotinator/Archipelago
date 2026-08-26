@@ -1,4 +1,4 @@
-from ..DSZeldaClient.subclasses import Address, Pointer, SRAM
+from ..DSZeldaClient.subclasses import Address, SRAM, DTCM
 
 addr_null = Address(0, 0)
 
@@ -31,7 +31,11 @@ class PHAddr:
     link_z = Address(0x1B6FF4, size=4, name="link_z")
     boat_x = Address(0x1B8518, size=4, name="boat_x")
     boat_z = Address(0x1B8520, size=4, name="boat_y")
-    
+
+    boat_speed = Address(0x1FA0A4, size=4)
+    boat_max_speed = Address(0x13674C, size=4)
+    boat_gear = Address(0x1F8FD0)
+
     # Technical Reads
     getting_location = Address(0x1B6F44)
     shot_frog = Address(0x1B7038)
@@ -45,7 +49,7 @@ class PHAddr:
     
     saving = Address(0x19B7CF)
     changing_map_scene = Address(0x1BA700)
-    pen_mode_pointer = Address(0x1CCCEC, size=4)
+    pen_mode_pointer = Address(0x1CCCEC, size=3)
     lower_water = Address(0x1B5582)
     
     text_speed = Address(0x0EC754)  # Sus
@@ -60,8 +64,9 @@ class PHAddr:
     in_map = Address(0x1B2D60)
     using_cyclone_slate = Address(0x1B636C)
     
-    loading_stage = Address(0x1B2E78)  # 0 when loading stage, some sorta pointer
+    loading_stage = Address(0x1BA8C7)  # 0 when loading stage, some sorta pointer
     loading_room = Address(0x10BD6F) # 0 when not loading room
+
     in_cutscene = Address(0x1BBCF4)
     in_short_cs = Address(0x1B6FE8)
     started_save_file = Address(0x1B7FB8)  # Used to trigger precision stuff from menu
@@ -70,15 +75,15 @@ class PHAddr:
     link_held_item_2 = Address(0x1CDAE0, size=2)
     link_held_item = Address(0x1CD510, size=2)
 
-    actor_table_pointer = Address(0x1BA8C4, size=4)
+    actor_table_pointer = Address(0x1BA8C4, size=3)
 
     # Pointers
-    gItemManager = Pointer(0x0fb4)
-    gPlayerManager = Pointer(0x0fbc)
-    gAdventureFlags = Pointer(0x0f74)
-    gPlayer = Pointer(0x0f90)
-    # gOverlayManager_mLoadedOverlays_4 = Pointer(0x0910)
-    gMapManager = Pointer(0x0e60)
+    gItemManager = DTCM(0x0fb4)
+    gPlayerManager = DTCM(0x0fbc)
+    gAdventureFlags = DTCM(0x0f74)
+    gPlayer = DTCM(0x0f90)
+    # gOverlayManager_mLoadedOverlays_4 = DTCM(0x0910)
+    gMapManager = DTCM(0x0e60)
     
     # Adventure flags
     adv_flags = Address(0x1B557C, size=52)
@@ -134,8 +139,6 @@ class PHAddr:
     adv_flags_49 = Address(0x1b55ad)
     adv_flags_50 = Address(0x1b55ae)
     adv_flags_51 = Address(0x1b55af)
-    
-    
     
     small_key_storage_1 = Address(0x1BA64E)
     small_key_storage_2 = Address(0x1BA64F)
@@ -268,6 +271,23 @@ class PHAddr:
     # island_visible_ = Address()
     # island_visible_ = Address()
     # island_visible_ = Address()
+
+    map_obj_table = Address(0x1B8968)  # size biig, manager @ 0xF68 -> 0x1B853C + 3
+    map_obj_table_size = Address(0x1B854C, size=2)
+
+    defeated_bellum = Address(0x1b5774)
+    potion_protector = Address(0x1BA70a)
+    in_minigame = Address(0x307D77)
+
+    sea_actor_table = Address(0x257950)  # Size biig
+    swordfish_pointer_sw = Address(0x257A08, size=3)  # 46
+    swordfish_pointer_nw = Address(0x257A24, size=3)  # 53
+    swordfish_pointer_se = Address(0x2579B8, size=3)  # 26
+    swordfish_pointer_ne = Address(0x2579D4, size=3)  # 34
+    swordfish_pointers = [swordfish_pointer_sw,
+                          swordfish_pointer_nw,
+                          swordfish_pointer_se,
+                          swordfish_pointer_ne]
 
 class PHSRAM:
     # SRAM

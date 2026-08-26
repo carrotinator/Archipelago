@@ -3,7 +3,8 @@ from math import floor, ceil
 from BaseClasses import CollectionState
 from Options import Accessibility
 from .Constants import *
-
+from .Items import ITEM_GROUPS
+from .. import PhantomHourglassOptions
 
 
 # =========== Item States =============
@@ -63,9 +64,11 @@ def ph_has_spirit(state: CollectionState, player: int, spirit: str, count: int =
 
 
 def ph_has_spirit_gems(state: CollectionState, player: int, spirit: str, count: int = 1):
-    pack_size = state.multiworld.worlds[player].options.spirit_gem_packs
+    pack_size = state.multiworld.worlds[player].options.spirit_gem_packs.value
+    spirits = ["Power", "Wisdom", "Courage"]
+    spirit_index = spirits.index(spirit)
     return all([
-        ph_has_spirit(state, player, spirit),
+        any([ph_has_spirit(state, player, s) for s in spirits[spirit_index:]]),
         any([
             state.has(f"{spirit} Gem", player, count),
             state.has(f"{spirit} Gem Pack", player, ceil(count / pack_size)),
@@ -154,14 +157,11 @@ def ph_has_big_catch_lure(state, player):
 
 
 def ph_has_swordfish_shadows(state, player):
-    return state.has("Swordfish Shadows", player)
+    return state.has("Swordfish Shadows", player) and ph_has_big_catch_lure(state, player)
 
 
 def ph_can_catch_rsf(state, player):
-    return any([
-        ph_has_big_catch_lure(state, player),
-        ph_has_swordfish_shadows(state, player)
-    ])
+    return ph_has_big_catch_lure(state, player)
 
 
 def ph_ut_can_stowfish(state, player):
@@ -361,6 +361,8 @@ def ph_totok_phantom_steal_object(state, player):
 def ph_has_range(state: CollectionState, player: int):
     return state.has_any(["Boomerang", "Bow (Progressive)", "Grappling Hook"], player)
 
+def ph_beam_range(state, player):
+    return ph_has_range(state, player) or ph_has_beam_sword(state, player)
 
 def ph_has_short_range(state: CollectionState, player: int):
     return any([ph_has_mid_range(state, player),
@@ -500,7 +502,7 @@ def ph_can_farm_rupees(state: CollectionState, player: int):
 
 def ph_island_shop(state, player, price):
     other_costs = 0
-    if ph_has_sea_chart(state, player, "SW"):
+    if state.has_group("Sea Charts", player):
         # Includes cannon island, but not salvage arm cause that also unlocks treasure shop
         other_costs += 1550
         if ph_option_randomize_masked_beedle(state, player):
@@ -633,7 +635,10 @@ def ph_option_phantoms_hard(state: CollectionState, player: int):
             state.multiworld.worlds[player].options.phantom_combat_difficulty in ["require_weapon"],
             ph_UT_glitched_logic(state, player)
         ]),
-        ph_has_grapple(state, player)
+        any([
+            ph_has_grapple(state, player),
+            ph_has_boomerang(state, player)
+        ]),
     ])
 
 
@@ -781,6 +786,9 @@ def ph_option_goal_midway(state: CollectionState, player: int):
 def ph_option_island_shuffle(state, player):
     return state.multiworld.worlds[player].options.shuffle_ports
 
+def ph_option_boss_keyrings(state, player):
+    return state.multiworld.worlds[player].options.boss_keyrings
+
 def ph_can_pass_sea_monsters(state, player):
     return any([
         ph_has_cannon(state, player),
@@ -867,11 +875,12 @@ def ph_option_vanilla_caves(state, player):
 # ============= Key logic ==============
 
 def ph_has_small_keys(state: CollectionState, player: int, dung_name: str, amount: int = 1):
-    return state.has(f"Small Key ({dung_name})", player, amount)
+    return state.has(f"Small Key ({dung_name})", player, amount) or state.has(f"Keyring ({dung_name})", player)
 
 
 def ph_has_boss_key(state: CollectionState, player: int, dung_name: str):
-    return state.has(f"Boss Key ({dung_name})", player)
+    return (state.has(f"Boss Key ({dung_name})", player)
+            or (state.has(f"Keyring ({dung_name})", player) and ph_option_boss_keyrings(state, player)))
 
 
 def ph_has_boss_key_simple(state: CollectionState, player: int, dung_name: str):
@@ -1162,7 +1171,7 @@ def ph_mp3_back(state, player):
         all([
             any([
                 ph_option_vanilla_caves(state, player),
-                ph_option_keys_in_own_dungeon(state, player)
+                # ph_option_keys_in_own_dungeon(state, player) # Reverse mp 2f
             ]),
             ph_has_small_keys(state, player, "Mountain Passage", 2),
         ]),
@@ -1184,6 +1193,14 @@ def ph_mercay_passage_rat(state, player):
 def ph_nyave_fight(state, player):
     return any([ph_has_cave_damage(state, player), ph_clever_pots(state, player)])
 
+def ph_gust_ledge(state, player):
+    return any([
+        ph_has_shovel(state, player),
+        all([
+            ph_can_grapple_glitch(state, player),
+            ph_has_chus(state, player)
+        ])
+    ])
 
 def ph_bannan_scroll(state, player):
     return all([
@@ -1441,7 +1458,7 @@ def ph_toc_key_door_2(state, player):
             ph_toc_key_doors(state, player, 3, 2),
             any([
                 ph_option_pedestals_vanilla_any(state, player),
-                not ph_has_shape_crystal(state, player, "Temple of Courage", "Square", "North")
+                # not ph_has_shape_crystal(state, player, "Temple of Courage", "North")
             ])
         ]),
         # UT stuff
@@ -1606,25 +1623,36 @@ def ph_goron_south_reverse(state, player):
     ])
 
 def ph_goron_entrance(state, player):
-    return all([
-        ph_has_shovel(state, player),
-        any([
-            ph_has_explosives(state, player),
-            ph_has_hammer(state, player)
+    return any([
+        all([
+            ph_has_shovel(state, player),
+            any([
+                ph_has_explosives(state, player),
+                ph_has_hammer(state, player),
+            ])
+        ]),
+        all([
+            ph_option_glitched_logic(state, player),
+            ph_has_bow(state, player),
+            ph_has_grapple(state, player),
+            ph_has_chus(state, player)
         ])
     ])
 
 def ph_goron_chus(state, player):
-    return all([
-        ph_has_shovel(state, player),
-        any([
-            all([
-                ph_has_hammer(state, player),
-                ph_option_hard_logic(state, player)
-                ]),
-            ph_has_bow(state, player),
-            ph_has_grapple(state, player),
-        ])
+    return any([
+        all([
+            ph_has_shovel(state, player),
+            any([
+                all([
+                    ph_has_hammer(state, player),
+                    ph_option_hard_logic(state, player)
+                    ]),
+                ph_has_bow(state, player),
+                ph_has_grapple(state, player),
+            ])
+        ]),
+        ph_can_hammer_clip(state, player)
     ])
 
 def ph_meet_all_gorons(state, player):
@@ -1637,7 +1665,16 @@ def ph_gt_b1(state, player):
     return all([
         ph_has_explosives(state, player),
         ph_can_kill_eye_brute(state, player),
-        ph_has_sword(state, player)])
+        any([
+            ph_has_sword(state, player),
+            ph_option_hard_logic(state, player),
+            # all([  # rip
+            #     ph_can_grapple_glitch(state, player),
+            #     ph_has_chus(state, player)
+            # ])
+        ])
+
+    ])
 
 def ph_gt_b2_back(state, player):
     return any([
@@ -1714,8 +1751,12 @@ def ph_toi_b2(state, player):
         ph_has_grapple(state, player),
         any([
             all([
+                state.has("_toi_b1_switch", player),
                 ph_quick_switches(state, player),
-                state.has("_toi_b1_switch", player)
+                any([
+                    ph_option_hard_logic(state, player),
+                    ph_has_hammer(state, player)
+                ])
             ]),
             all([
                 ph_can_bcl(state, player),
@@ -1737,6 +1778,10 @@ def ph_toi_key_door_1_ut(state, player):
             any([
                 ph_has_boomerang(state, player),
                 ph_has_grapple(state, player)
+            ]),
+            any([
+                ph_has_bombs(state, player),
+                ph_has_chus(state, player) and ph_option_hard_logic(state, player)
             ]),
             any([
                 ph_ut_small_key_vanilla_location(state, player),
@@ -1825,7 +1870,10 @@ def ph_toi_key_door_3(state, player):
         ph_toi_all_key_doors_ut(state, player),
         all([
             ph_UT_glitched_logic(state, player),
-            ph_has_small_keys(state, player, "Temple of Ice", 1)
+            ph_has_small_keys(state, player, "Temple of Ice", 1),
+            ph_has_hammer(state, player),
+            ph_has_grapple(state, player),
+            ph_has_explosives(state, player)
         ])
     ])
 
@@ -1834,6 +1882,16 @@ def ph_toi_b2_north(state, player):
         ph_can_kill_yook(state, player),
         ph_has_grapple(state, player),
         ph_can_hit_spin_switches(state, player)
+    ])
+
+def ph_gleeok(state, player):
+    return all([
+        ph_has_grapple(state, player),
+        any([
+            ph_has_sword(state, player),
+            state.has("Bombs (Progressive)", player, 2),
+            ph_has_hammer(state, player)
+        ])
     ])
 
 # Mutoh's
@@ -1900,8 +1958,11 @@ def ph_mutoh_bk_chest(state, player):
             ph_has_small_keys(state, player, "Mutoh's Temple", 2),
             ph_ut_small_key_own_dungeon(state, player),
             all([
-                ph_has_small_keys(state, player, "Mutoh's Temple", 1),
-                ph_UT_glitched_logic(state, player)
+                ph_UT_glitched_logic(state, player),
+                any([
+                    ph_has_small_keys(state, player, "Mutoh's Temple", 1),
+                    ph_has_explosives(state, player)
+                ])
             ])
     ])
 
@@ -2774,7 +2835,10 @@ def ph_totok_b12_ghost(state, player):
 
 
 def ph_totok_b12_hammer(state, player):
-    return ph_totok_has_floor_time(state, player, '12_h', 10)
+    return any([
+        ph_totok_has_floor_time(state, player, '12_h', 10),
+        ph_option_hard_logic(state, player) and ph_totok_has_floor_time(state, player, 12, 20)
+    ])
 
 
 def ph_totok_b13(state, player):
@@ -2817,6 +2881,58 @@ def ph_get_switch_state(state: "CollectionState", player, entrance):
 
 def ph_switch_state_red(state, player, entrance):
     return ph_get_switch_state(state, player, entrance) & 0x1
+
+def ph_pirate_ambush_ne(state, player):
+    return all([
+        ph_beat_ghost_ship(state, player),
+        any([
+            ph_has_sea_chart(state, player, "SE"),
+            all([
+                ph_has_frog_square(state, player),
+                any([
+                    ph_has_frog_x(state, player),
+                    ph_has_frog_phi(state, player),
+                    ph_has_frog_n(state, player),
+                ])
+            ]),
+            all([
+                ph_option_hard_logic(state, player),
+                ph_has_sea_chart(state, player, "NW")
+            ])
+        ])
+    ])
+
+def ph_pirate_ambush_se(state, player):
+    return all([
+        ph_beat_ghost_ship(state, player),
+        any([
+            ph_has_sea_chart(state, player, "SW"),
+            ph_has_sea_chart(state, player, "NE"),
+            all([
+                ph_has_se_frogs(state, player),
+                ph_has_frog_n(state, player)
+            ])
+        ])
+    ])
+
+def ph_pirate_ambush_nw(state, player):
+    options: PhantomHourglassOptions = state.multiworld.worlds[player].options
+    return all([
+        options.shuffle_bosses.value == 0,
+        options.shuffle_dungeon_entrances == 0,
+        ph_beat_ghost_ship(state, player),  # rescue tetra
+        state.has("_beat_cubus_sisters", player),
+        any([
+            ph_has_sea_chart(state, player, "SW"),
+            all([
+                ph_has_frog_n(state, player),
+                any([
+                    ph_has_frog_square(state, player),
+                    ph_has_se_frogs(state, player),
+                ])
+            ])
+        ])
+    ])
 
 # This is pretty stupid, but is niceish when writing logic. Was originally intended for exporting logic to
 # poptracker but with the advancements in UT tracker that probably won't be necessary any more
@@ -2900,6 +3016,7 @@ RULE_DICT = {
     "dark_yook": ph_can_kill_dark_yook,
     "can_steal_from_phantom": ph_totok_phantom_steal_object,
     "range": ph_has_range,
+    "beam_range": ph_beam_range,
     "long_range": ph_has_range,
     "short_range": ph_has_short_range,
     "mid_range": ph_has_mid_range,
@@ -3019,6 +3136,10 @@ RULE_DICT = {
     "ruins_stalfos_n": ph_ruins_stalfos_n,
     "ruins_stalfos_s": ph_ruins_stalfos_n,
     "ice_field": ph_ice_field,
+    # pirate ambush
+    "pirate_ambush_ne": ph_pirate_ambush_ne,
+    "pirate_ambush_se": ph_pirate_ambush_se,
+    "pirate_ambush_nw": ph_pirate_ambush_nw,
     # ToF
     "tof_3f": ph_tof_3f,
     "tof_maze": ph_tof_maze,
@@ -3076,6 +3197,7 @@ RULE_DICT = {
     "toi_b1_switch": ph_toi_b2_switch_room,
     "toi_b2_north": ph_toi_b2_north,
     "toi_boss_door": ph_toi_boss_door,
+    "gleeok": ph_gleeok,
     # MT
     "mutoh_entrance": ph_mutoh_entrance,
     "mutoh_water": ph_mutoh_water,
@@ -3151,5 +3273,6 @@ RULE_DICT = {
     "totok_b13_chest": ph_totok_b13_chest,
     "b13_door": ph_totok_b13_door,
     # State Rules
-    "has": ph_has
+    "has": ph_has,
+    "gust_ledge": ph_gust_ledge
 }

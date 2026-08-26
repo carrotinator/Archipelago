@@ -54,7 +54,7 @@ def make_overworld_logic():
         ["Long Bridge Cave", "Mercay NE", False, None],
         ["Long Bridge Cave", "Mercay NW Freedle Island", True, None],
         ["Mercay NW Freedle Island", "Mercay NE", False, None],
-        ["Long Bridge Cave", "Long Bridge Cave Chest", False, "range"],
+        ["Long Bridge Cave", "Long Bridge Cave Chest", False, "beam_range"],
         ["Mercay NW Freedle Island", "Mercay NW Freedle Gift", False, "sea_chart", "SE"],
         ["Mercay NE", "Mercay NW Temple", True, None],
         ["Mercay NE Ledge", "Mercay NE", False, None],
@@ -171,7 +171,8 @@ def make_overworld_logic():
         ["TotOK B12", "TotOK B13", False, "totok_b13"],
 
         ["TotOK B13", "TotOK B13 Chest", False, "totok_b13_chest"],
-        ["TotOK B13", "TotOK B14", False, "b13_door"],
+        ["TotOK B13", "TotOK B14 South", False, "b13_door"],
+        ["TotOK B14 South", "TotOK B14", False, None],
         ["TotOK Lobby", "TotOK B14", False, "bellum_warp"],
         # Bellum
         ["TotOK B14", "Bellum", False, "bellum_staircase"],
@@ -300,6 +301,9 @@ def make_overworld_logic():
         # 3F
         ["ToF 3F", "ToF 3F Key Drop", False, "tof_key_drop"],
         ["ToF 3F", "ToF 3F Key Door", False, "tof_3f_key_door"],
+        ["ToF 3F Key Door", "ToF 3F OOB", False, "grapple_glitch"],
+            ["ToF 3F OOB", "ToF 3F Boss Key", False, None],
+            ["ToF 3F OOB", "ToF 4F", False, None],
         ["ToF 3F Key Door", "ToF 3F Boss Key", False, "boomerang"],
         ["ToF 3F Key Door", "ToF 4F", True, "tof_bk"],
         ["ToF 4F", "Blaaz", True, None],
@@ -415,8 +419,9 @@ def make_overworld_logic():
             ["Ghost Ship Boat", "Ghost Ship 1F", False, "ghost_ship"],
             ["Ghost Ship 1F", "Ghost Ship Boat", False, None],
         ["NW Ocean", "PoRL", False, None],
-        ["PoRL", "PoRL Item", False, "sword"],
-        ["PoRL", "PoRL Trade", False, "heroes_new_clothes"],
+            ["PoRL", "PoRL Item", False, "sword"],
+            ["PoRL", "PoRL Trade", False, "heroes_new_clothes"],
+        ["NW Ocean", "Pirate Ambush", False, "pirate_ambush_nw"],
 
         # ================= Isle of Gust ====================
 
@@ -429,7 +434,7 @@ def make_overworld_logic():
         ["Gust South Cliffs", "Gust North Temple Road", True, None],
         ["Gust South Cliffs", "Gust North Above Temple", True, None],
         ["Gust North Above Temple", "Gust South NW", True, None],
-        ["Gust South NW", "Gust South NW Chest", False, "shovel"],
+        ["Gust South NW", "Gust South NW Chest", False, "gust_ledge"],
         ["Gust South NW", "Gust South NW Ledge", False, "shovel"],
         ["Gust South NW Ledge", "Gust South NW", False, None],
         ["Gust South NW Ledge", "Gust South NW Chest", False, "grapple"],
@@ -450,7 +455,7 @@ def make_overworld_logic():
         ["ToW B2", "ToW B2 Dig", False, "shovel"],
         ["ToW B2", "ToW B2 Bombs", False, "explosives"],
         ["ToW B2", "ToW B2 Key", False, "tow_key"],
-        ["ToW B2", "ToW 1F NE", False, "bombs"],
+        ["ToW B2 Bombs", "ToW 1F NE", False, "bombs"],
         ["ToW 1F", "ToW 2F", False, "tow_cyclok"],
         ["ToW 2F", "Cyclok", True, None],
         ["ToW 2F", "ToW 1F", False, None],
@@ -504,6 +509,7 @@ def make_overworld_logic():
         ["Cubus Sisters", "Ghost Ship Warp", False, "sword"],
         ["Ghost Ship Warp", "Ghost Ship 1F", False, None],
         ["Cubus Sisters", "Post Cubus Sisters", False, "sword"],
+        ["Post Cubus Sisters", "Post Cubus Sisters Event", False, None],
         ["Ghost Ship B2", "Ghost Ship Tetra", False, "ghost_key"],
         ["Ghost Ship Tetra", "Spawn Pirate Ambush", False, None],
 
@@ -528,7 +534,7 @@ def make_overworld_logic():
         ["Dee Ess Island", "Dee Ess Boat", False, None],
             ["Dee Ess Boat", "Dee Ess Island", False, "require_chart", "SE"],
             ["Dee Ess Boat", "SE Ocean", True, "require_chart", "SE"],
-        ["SE Ocean", "Pirate Ambush", False, "beat_gs"],
+        ["SE Ocean", "Pirate Ambush", False, "pirate_ambush_se"],
         ["SE Ocean", "SS Wayfarer", True, "ss_wayfarer"],
         ["SS Wayfarer", "SS Wayfarer Trade", False, "wood_heart"],
         ["SS Wayfarer Trade", "SS Wayfarer Event", False, None],
@@ -655,7 +661,7 @@ def make_overworld_logic():
         ["ToI 3F Right", "ToI 3F", False, "toi_3f"],
         ["ToI 3F", "ToI 3F Right", False, "range"],
         ["ToI 3F", "ToI 3F Key Door", True, "toi_key_door_1"],
-        ["ToI 3F", "ToI 3F Switch State", False, "bombs"],
+        ["ToI 3F", "ToI 3F Switch State", False, "toi_3f_switch"],
         ["ToI 3F Switch State", "ToI 3F Boomerang Key", False, "toi_3f_boomerang"],
         ["ToI 3F Key Door", "ToI 2F Arena", True, None],
         ["ToI 2F Arena", "ToI 2F Post Arena", False, "dark_yook"],
@@ -681,7 +687,7 @@ def make_overworld_logic():
         ["ToI B1 Boss Door", "ToI B1 Mid", False, "grapple"],
         ["ToI B1 Boss Door", "ToI B1 Before Boss", True, "toi_boss_door"],
         ["ToI B1 Before Boss", "Gleeok", True, None],
-        ["Gleeok", "Post Gleeok", False, "grapple"],
+        ["Gleeok", "Post Gleeok", False, "gleeok"],
         ["Post Gleeok", "Post ToI", False, None],
         ["ToI B1 Before Boss", "ToI Blue Warp", True, None],
         ["ToI 1F", "ToI Blue Warp", True, "has", "_toi_blue_warp"],
@@ -691,7 +697,7 @@ def make_overworld_logic():
         ["ToI B2 North", "ToI B2 BK Chest", False, "hammer_clip"],
         ["ToI B2 North", "ToI B2 East", False, None],
         ["ToI B2 East", "ToI B2 Bow", False, "bow"],
-        ["ToI B2 East", "ToI B2 East Arena", False, "toi_key_doors", 3, 3],
+        ["ToI B2 East", "ToI B2 East Arena", False, "toi_key_door_3"],
         ["ToI B2 East Arena", "ToI B2 BK Chest", False, None],
 
         # ================= NE Ocean ====================
@@ -711,7 +717,7 @@ def make_overworld_logic():
             ["Ruins Boat", "NE Ocean", False, "require_chart", "NE"],
             ["Ruins Boat", "Ruins SW Port", False, "regal_necklace"],
             ["Ruins SW Port", "Ruins Boat", False, None],
-        ["NE Ocean", "Pirate Ambush", False, "beat_gs"],
+        ["NE Ocean", "Pirate Ambush", False, "pirate_ambush_ne"],
 
         # ================= IotD ====================
 

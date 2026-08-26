@@ -1,5 +1,6 @@
 from typing import TYPE_CHECKING
 from ..data.Entrances import ENTRANCES, entrance_id_to_region
+from ..data.Locations import LOCATIONS_DATA
 
 if TYPE_CHECKING:
     from ..__init__ import PhantomHourglassWorld
@@ -261,7 +262,7 @@ def get_hidden_entrances(world: "PhantomHourglassWorld"):
     active_entrances = [int(i) for i in world.ut_pairings]
     # print(f"active entrances: {[i for i in active_entrances]}")
     entr_hidden: dict[str, list[str]] = {}
-    locs_hidden: dict[str, list[int]] = {}
+    locs_hidden: dict[str, list[int]] = {}  # map_name: [loc_ids]
     events_hidden = {}
     map_coord_checks = {}
     # Move event data from locations to entrances
@@ -320,6 +321,10 @@ def get_hidden_entrances(world: "PhantomHourglassWorld"):
     if ENTRANCES["Ruins NW Pyramid"].id in active_entrances:
         entr_hidden.setdefault("Isle of Ruins", []).append("EVENT: Bremeur's Temple Lower Water")
         entr_hidden.setdefault("Isle of Ruins NW", []).append("EVENT: Bremeur's Temple Lower Water")
+    if ENTRANCES["IotD Pyramid"].id in active_entrances:
+        entr_hidden.setdefault("Isle of the Dead", []).append("Brant's Chamber Staircase")
+    if ENTRANCES["IotD Crown Staircase"].id in active_entrances:
+        entr_hidden.setdefault("Isle of the Dead", []).append("Brant's Maze Exit")
     if ENTRANCES["Fuzo's Interior Door"].id not in active_entrances:
         entr_hidden.setdefault("Cannon Island", []).append("EVENT: Open Eddo's Door")
         entr_hidden.setdefault("Eddo's Workshop", []).append("EVENT: Open Eddo's Door")
@@ -381,7 +386,6 @@ def get_hidden_entrances(world: "PhantomHourglassWorld"):
     if ENTRANCES["Ruins Enter Temple"].id in active_entrances:
         entr_hidden.setdefault("Isle of Ruins", []).append("EVENT: Defeat Eox")
         entr_hidden.setdefault("Isle of Ruins NE", []).append("EVENT: Defeat Eox")
-
 
     # for i, v in entr_hidden.items():
     #     print(f"{i}: {v}")

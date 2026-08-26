@@ -35,13 +35,14 @@ from test.bases import *
 #                }
 
 options_metal_bug = {
-        "goal_requirements": "defeat_bosses",
-        "bellum_access": "spawn_bellumbeck",
-        "dungeons_required": 7,
-        "require_specific_bosses": False,
-        "exclude_non_required_dungeons": False,
-        "ghost_ship_in_dungeon_pool": False,
-        "totok_in_dungeon_pool": False,
+    "goal_requirements": "defeat_bosses",
+    "bellum_access": "spawn_bellumbeck",
+    "dungeons_required": 7,
+    "require_specific_bosses": False,
+    "exclude_non_required_dungeons": False,
+    "ghost_ship_in_dungeon_pool": False,
+    "totok_in_dungeon_pool": False,
+    "exclude_locations": ["Temple of the Ocean King"],
 
     "keysanity": "in_own_dungeon",
     "randomize_pedestal_items": "vanilla_abstract",
@@ -144,13 +145,25 @@ options_excluded_crystals = {"dungeons_required": 8,
                "ghost_ship_in_dungeon_pool": False,
                "randomize_pedestal_items": "anywhere",
                "pedestal_item_options": "unique_pedestals",
-               "shuffle_bosses": "no_shuffle",
+               "shuffle_bosses": "simple_mixed_pool",
                "randomize_boss_keys": "in_own_dungeon",
                # "shuffle_houses": "shuffle",
                "entrance_directionality": "disregard_all",
-                "ph_time_logic": "no_logic"
+               "shuffle_houses": "simple_mixed_pool",
+               # "shuffle_bosses": "simple_mixed_pool",
+            "plando_transitions": [
+                {"entrance": "Mercay SW Apricot's House",
+                 "exit": "Cyclok Exit"}
+            ]
                }
+
+options_keys = {
+    "keysanity": "in_own_dungeon",
+    "keyrings": "random_mixed",
+    "randomize_boss_keys": "in_own_dungeon",
+    "boss_keyrings": True
+}
 
 class TestPHGeneration(WorldTestBase):
     game = "The Legend of Zelda - Phantom Hourglass"
-    options = options_excluded_crystals
+    options = options_keys

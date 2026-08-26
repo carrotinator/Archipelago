@@ -17,7 +17,7 @@ from .Options import *
 
 from .data import LOCATIONS_DATA
 from .data.Constants import *
-from .data.Items import ITEMS
+from .data.Items import ITEMS, ITEM_GROUPS
 from .data.Regions import REGIONS
 from .data.Entrances import ENTRANCES, entrance_id_to_region, EVENTS, entrance_id_to_entrance
 from .Subclasses import PHRegion, decode_entrance_groups, update_switch_logic, EntranceGroups, OPPOSITE_ENTRANCE_GROUPS
@@ -30,6 +30,9 @@ dev_prints = False
 
 if TYPE_CHECKING:
     from .Subclasses import ERPlacementState, PHEntrance, PHRegion, PHTransition
+
+class PhantomHourglassItem(Item):
+    game = "Phantom Hourglass"
 
 class PhantomHourglassWeb(WebWorld):
     setup_en = Tutorial(
@@ -68,8 +71,15 @@ class PhantomHourglassSettings(settings.Group):
         For use with universal tracker.
         Toggles if universal tracker can use unlocked shortcuts and map warps to find shorter paths for /get_logical_path.
         """
+    class BoatSpeed(int):
+        """Your boat's max speed. Default is 266."""
+
+    class BoatFastAccel(str):
+        """Makes your boat accelerate instantly after charting a route or changing gear."""
 
     ut_get_logical_path_shortcuts: Union[PHGetLogicalPathShortcuts, bool] = True
+    boat_speed: BoatSpeed = 0x10A
+    boat_snap_speed: Union[BoatFastAccel, bool] = True
 
 
 # Adds a consistent count of items to pool, independent of how many are from locations
@@ -172,7 +182,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
     def __init__(self, multiworld, player):
         super().__init__(multiworld, player)
 
-        self.pre_fill_items: List[Item] = []
+        self.pre_fill_items: List[PhantomHourglassItem] = []
         self.required_dungeons = []
         self.boss_reward_items_pool = []
         self.boss_reward_location_names = []
@@ -222,15 +232,16 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                     setattr(self.options, key, opt.from_any(value))
 
             # Set randomized data that effects exclusions etc
-            self.required_dungeons = slot_data["required_dungeons"]
+            self.required_dungeons = list(slot_data["required_dungeons"])
             self.boss_reward_items_pool = slot_data["boss_reward_items_pool"]
             self.ut_pairings = slot_data.get("er_pairings", {})
             self.treasure_price_index = slot_data.get("treasure_price_index", 0)
+            required_dungeon_locations = slot_data.get("required_dungeon_locations", [])
 
             # Figure out what events are active, and add to ut_pairings
             print(F"Generating early")
             print(f"UT Pairings: {self.ut_pairings}")
-            if self.options.ut_events:
+            if self.options.ut_events and getattr(self.multiworld, "enforce_deferred_connections", "default") != "off":
                 for event in EVENTS.values():
                     if self.options.ut_events == "unique_events" and event.extra_data.get("shared_event", False):
                         continue
@@ -246,8 +257,13 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                         continue
                     if not self.options.shuffle_overworld_transitions and event.name == "EVENT: Gust Windmills":
                         continue
+                    if "Unnamed Entrance" in event.name:
+                        continue
+                    if (self.options.dungeon_hint_type.value == 2 and event.name in BOSS_EVENT_TO_LOCATION
+                            and BOSS_EVENT_TO_LOCATION[event.name] not in required_dungeon_locations):
+                        continue
 
-                    print(f"Adding Event: {event.name}")
+                    print(f"Adding Event: {event.name} {event.id} => {event.vanilla_reciprocal.id}")
                     self.ut_pairings[str(event.id)] = event.vanilla_reciprocal.id
 
             # Hide stuff in UT map page based on what entrances are randomized
@@ -266,6 +282,14 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                 self.options.dungeon_hint_type.value = 1
             if not self.options.exclude_non_required_dungeons:
                 self.options.excluded_dungeon_hints.value = 0
+
+            # Keyring restrictions
+            if not self.options.keysanity.value:
+                self.options.keyrings.value = 0
+            if (not self.options.boss_key_behaviour.value
+                    or not self.options.randomize_boss_keys.value
+                    or not self.options.keyrings.value):
+                self.options.boss_keyrings.value = 0
 
             # Treasure Prices
             self.treasure_price_index = self.random.randint(0, 9)
@@ -343,7 +367,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         region = self.multiworld.get_region(region_name, self.player)
         location = Location(self.player, region_name + ".event", None, region)
         region.locations.append(location)
-        location.place_locked_item(Item(event_item_name, ItemClassification.progression, None, self.player))
+        location.place_locked_item(PhantomHourglassItem(event_item_name, ItemClassification.progression, None, self.player))
 
     def location_is_active(self, location_name, location_data):
         if not location_data.get("conditional", False):
@@ -484,6 +508,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         self.create_event("Post ToI", "_beat_toi")
         self.create_event("Post MT", "_beat_mt")
         self.create_event("Spawn Pirate Ambush", "_beat_ghost_ship")
+        self.create_event("Post Cubus Sisters Event", "_beat_cubus_sisters")
         # Farmable minigame events
         self.create_event("Bannan Cannon Game", "_can_play_cannon_game")
         self.create_event("Archery Game", "_can_play_archery")
@@ -628,12 +653,11 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                 if ENTRANCES[e.name].id in disconnect_ids:
                     target_name = ENTRANCES[e.name].vanilla_reciprocal.name
                     disconnect_entrance_for_randomization(e, one_way_target_name=target_name)
-            if hasattr(self.multiworld, "enforce_deferred_connections"):
-                if getattr(self.multiworld, "enforce_deferred_connections") == "off":
-                    for i, pairing in self.ut_pairings.items():
-                        _exit: "Entrance" = self.get_entrance(entrance_id_to_entrance[int(i)].name)
-                        entrance_region: "Region" = self.get_region(entrance_id_to_region[pairing])
-                        _exit.connect(entrance_region)
+            if getattr(self.multiworld, "enforce_deferred_connections", "default") == "off":
+                for i, pairing in self.ut_pairings.items():
+                    _exit: "Entrance" = self.get_entrance(entrance_id_to_entrance[int(i)].name)
+                    entrance_region: "Region" = self.get_region(entrance_id_to_region[pairing])
+                    _exit.connect(entrance_region)
         else:
             # What option corresponds with what type
             type_option_lookup = {
@@ -744,10 +768,12 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                 try:
                     if not self.options.decouple_entrances: self.manual_er()
                     self.er_placement_state = randomize_entrances(self, coupled, groups, on_connect=on_connect)
+                    if dev_prints:
+                        print(self.er_placement_state.pairings)
                     break
 
                 except EntranceRandomizationError as error:
-                    print(f"Phantom Hourglass ER failed {i+1} time(s)")
+                    print(f"Phantom Hourglass ER failed {i+1} time(s), retrying")
                     if i >= ph_max_er_attempts-1:
                         raise EntranceRandomizationError(
                             f"Phantom Hourglass: failed GER after {ph_max_er_attempts} attempts.")
@@ -819,20 +845,20 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
 
     # Based on the messenger's plando connection by Aaron Wagner
     def connect_plando(self, plando_connections: "PhantomHourglassEntrancePlando") -> None:
-        def remove_dangling_exit(region: Region) -> None:
+        def remove_dangling_exit(region: Region, name) -> None:
             # find the disconnected exit and remove references to it
             for _exit in region.exits:
-                if not _exit.connected_region:
+                if not _exit.connected_region and _exit.name == name:
                     break
             else:
                 raise ValueError(f"Unable to find randomized transition for {plando_connection}")
 
             region.exits.remove(_exit)
 
-        def remove_dangling_entrance(region: Region) -> None:
+        def remove_dangling_entrance(region: Region, name) -> None:
             # find the disconnected entrance and remove references to it
             for _entrance in region.entrances:
-                if not _entrance.parent_region:
+                if not _entrance.parent_region and _entrance.name == name:
                     break
             else:
                 raise ValueError(f"Invalid target region for {plando_connection}")
@@ -842,11 +868,11 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             # get the connecting regions
             r1 = ENTRANCES[plando_connection.entrance]
             reg1 = self.get_region(r1.entrance_region)
-            remove_dangling_exit(reg1)
+            remove_dangling_exit(reg1, plando_connection.entrance)
 
             r2 = ENTRANCES[plando_connection.exit]
             reg2 = self.get_region(r2.entrance_region)
-            remove_dangling_entrance(reg2)
+            remove_dangling_entrance(reg2, plando_connection.exit)
             # connect the regions
             reg1.connect(reg2)
             self.plando_er_pairings.append((r1.name, r2.name))
@@ -857,8 +883,8 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             # pretend the user set the plando direction as "both" regardless of what they actually put on coupled
             if (self.options.decouple_entrances == "couple_all"
                  or plando_connection.direction == "both"):
-                remove_dangling_exit(reg2)
-                remove_dangling_entrance(reg1)
+                remove_dangling_exit(reg2, plando_connection.exit)
+                remove_dangling_entrance(reg1, plando_connection.entrance)
                 reg2.connect(reg1)
                 self.plando_er_pairings.append((r2.name, r1.name))
                 if dev_prints:
@@ -987,11 +1013,8 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         create_connections(self, self.player, self.origin_region_name, self.options)
         # self.multiworld.completion_condition[self.player] = lambda state: state.has("_beaten_game", self.player)
 
-    def create_item(self, name: str) -> Item:
+    def create_item(self, name: str) -> PhantomHourglassItem:
         classification = ITEMS[name].classification
-        if name in self.extra_filler_items:
-            self.extra_filler_items.remove(name)
-            classification = ItemClassification.filler
         if name == "Swordsman's Scroll" and self.options.logic == "glitched":
             classification = ItemClassification.progression
         if self.options.ph_time_logic.value > 2:
@@ -999,12 +1022,16 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                 classification = ItemClassification.useful
         if name == "Heart Container" and self.options.ph_heart_time == 0:
             classification = ItemClassification.useful
+        if name in self.extra_filler_items:
+            self.extra_filler_items.remove(name)
+            classification = ItemClassification.filler
 
         ap_code = self.item_name_to_id[name]
-        return Item(name, classification, ap_code, self.player)
+        return PhantomHourglassItem(name, classification, ap_code, self.player)
 
     def build_item_pool_dict(self):
         def force_vanilla():
+            print(f"Forcing vanilla {item_name}")
             item_obj = self.create_item(item_name)
             loc_obj = self.multiworld.get_location(loc_name, self.player)
             loc_obj.place_locked_item(item_obj)
@@ -1025,6 +1052,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                 continue
 
             item_name = loc_data.get("item_override", loc_data["vanilla_item"])
+            # print(f"item: {item_name} from {loc_name}")
             if item_name == "Filler Item":
                 filler_item_count += 1
                 continue
@@ -1050,12 +1078,6 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                         and item_name in ITEM_GROUPS["Regular Pedestal Items"]):
                     force_vanilla()
                     continue
-                if (loc_name in ["Mountain Passage 1F Entrance Chest", "Mountain Passage 2F Rat Key"]
-                        and self.options.accessibility.value in [0, 1] # full accessibility
-                        and self.options.keysanity == "in_own_dungeon"):
-                    forced_item = self.create_item(item_name)
-                    self.multiworld.get_location(loc_name, self.player).place_locked_item(forced_item)
-                    continue
             if item_name in ITEM_GROUPS["Golden Frog Glyphs"]:
                 if self.options.randomize_frogs == "vanilla":
                     forced_item = self.create_item(item_name)
@@ -1080,6 +1102,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                 continue
             if (item_name in ITEM_GROUPS["Items With Ammo"] |
                     ITEM_GROUPS["Technical Items"] |
+                    ITEM_GROUPS["Small Keys"] | ITEM_GROUPS["Boss Keys"] |
                     ITEM_GROUPS["Potions"] |
                     ITEM_GROUPS["Single Spirit Gems"] |
                     ITEM_GROUPS["Regular Pedestal Items"] |  # These get locked in the dungeon category if vanilla
@@ -1093,6 +1116,10 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         # so add progression items first
         add_items = {"Bombs (Progressive)": 3, "Bow (Progressive)": 3, "Bombchus (Progressive)": 3}
         add_items |= {"Phantom Hourglass": 1}
+        print(f"pre-keys: {item_pool_dict}")
+        key_items, filler_change = self.choose_key_items()
+        add_items |= key_items
+        filler_item_count += filler_change
         # If metal hunt create and add metals
         if self.options.goal_requirements == "metal_hunt":
             metal_pool = {}
@@ -1127,6 +1154,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             add_items.setdefault(i, 0)
             add_items[i] += 1
         # add items to item pool
+        print(f"Add items: {add_items}")
         for i, count in add_items.items():
             item_pool_dict, filler_item_count = add_items_from_filler(item_pool_dict, filler_item_count, i, count)
         # Add as many filler items as required
@@ -1144,11 +1172,56 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                     random_filler_item = self.get_filler_item_name()
                     item_pool_dict[random_filler_item] = item_pool_dict.get(random_filler_item, 0) + 1
 
+        # print(item_pool_dict)
         return item_pool_dict
+
+    def choose_key_items(self) -> tuple[list[tuple[str, int]], int]:
+        if not self.options.keysanity.value:
+            return [], 0
+        res = {}
+
+        # Small keys
+        keyring_dungeons = []
+        if self.options.keyrings.value == 2:
+            keyring_dungeons = self.random.choices(list(KEY_COUNTS.keys()), k=self.random.randint(0, len(KEY_COUNTS)))
+            # print(f"Choice: {keyring_dungeons}")
+            res |= {f"Keyring ({dung})": 1 for dung in keyring_dungeons}
+            res |= {f"Small Key ({dung})": count for dung, count in KEY_COUNTS.items() if dung not in keyring_dungeons}
+        elif self.options.keyrings.value == 1:
+            res |= {f"Keyring ({dung})": 1 for dung in KEY_COUNTS.keys()}
+            keyring_dungeons = list(KEY_COUNTS.keys())
+        else:
+            res |= {f"Small Key ({dung})": count for dung, count in KEY_COUNTS.items()}
+
+        # Boss Keys
+        if self.options.randomize_boss_keys.value:
+            if self.options.boss_keyrings.value:
+                res |= {f"Boss Key ({dung})": 1 for dung in BOSS_KEY_DUNGEONS if dung not in keyring_dungeons}
+            else:
+                res |= {f"Boss Key ({dung})": 1 for dung in BOSS_KEY_DUNGEONS}
+
+        # Exceptions
+        if not self.options.boss_keyrings and "Temple of Wind" in keyring_dungeons:
+            res["Keyring (Temple of Wind)"] = 0
+            res["Small Key (Temple of Wind)"] = 1
+
+        filler_change = 0
+        if (self.options.accessibility.value in [0, 1]  # full accessibility
+                and self.options.keysanity == "in_own_dungeon"
+                and "Mountain Passage" not in keyring_dungeons):
+            res["Small Key (Mountain Passage)"] = 1
+            filler_change = -2
+            for loc_name in ["Mountain Passage 1F Entrance Chest", "Mountain Passage 2F Rat Key"]:
+                forced_item = self.create_item("Small Key (Mountain Passage)")
+                self.multiworld.get_location(loc_name, self.player).place_locked_item(forced_item)
+
+        print(f"Key Items: {res}")
+        return [(name, count) for name, count in res.items() if count], filler_change
 
     def create_items(self):
         item_pool_dict = self.build_item_pool_dict()
         self.get_extra_filler_items(item_pool_dict)
+        # print(f"Extra Filler Items {self.extra_filler_items}")
         items = []
         for item_name, quantity in item_pool_dict.items():
             for _ in range(quantity):
@@ -1173,8 +1246,11 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             if item == "Heart Container" and self.options.ph_heart_time == 0:
                 extra_items_list.extend([item] * count)
 
-        extra_item_count = len(self.locations_to_exclude) - filler_count + 20
-        # print(f"Filler items basic: {len(self.locations_to_exclude)} | have: {filler_count} | "
+
+        excluded_locations = self.locations_to_exclude | self.options.exclude_locations.value
+        extra_item_count = len(excluded_locations) - filler_count + 20
+        # print(f"Excluded locs: {excluded_locations}")
+        # print(f"Filler items basic: {len(excluded_locations)} | have: {filler_count} | "
         #       f"available: {len(extra_items_list)} | total: {extra_item_count}")
 
         # since item pool is created before items are filtered to dungeon pool,
@@ -1200,12 +1276,12 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         self.pre_fill_boss_rewards()
         self.pre_fill_dungeon_items()
 
-    def filter_confined_dungeon_items_from_pool(self, items: List[Item]):
+    def filter_confined_dungeon_items_from_pool(self, items: List[PhantomHourglassItem]):
         confined_dungeon_items = []
 
         # Confine small keys to own dungeon if option is enabled
         if self.options.keysanity == "in_own_dungeon":
-            confined_dungeon_items.extend([item for item in items if item.name.startswith("Small Key")])
+            confined_dungeon_items.extend([item for item in items if item.name.startswith("Small Key") or item.name.startswith("Keyring")])
         # Confine small keys to own dungeon if option is enabled
         if self.options.randomize_boss_keys == "in_own_dungeon":
             confined_dungeon_items.extend([item for item in items if item.name.startswith("Boss Key")])
@@ -1380,6 +1456,28 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             state.prog_items[self.player][mapping[0]] -= mapping[1]
 
         return True
+    def get_location_models(self):
+        # get item placement models to send to client
+        location_models = {}
+        for loc in self.get_locations():
+            item = loc.item
+            if item is None: continue
+            loc_data = LOCATIONS_DATA.get(loc.name, {})
+            if not loc_data or not ('chest_offset' in loc_data or 'gift_addr' in loc_data):
+                continue
+            if item.game in ["Phantom Hourglass"]:
+                if ITEMS[item.name].model is not None:
+                    if not (item.name.startswith("Treasure Map") and loc.name in CATEGORY_LOCATION_GROUPS["Counter Shops"]):
+                        location_models[loc_data['id']] = ITEMS[item.name].model
+                        continue
+
+            if item.classification & ItemClassification.progression or item.classification & ItemClassification.useful:
+                location_models[loc_data['id']] = 0x1E  # blue force gem
+            else:
+                location_models[loc_data['id']] = 0x1D  # red force gem
+
+        return location_models
+        # print(f"Location Models: {location_models}")
 
     def fill_slot_data(self) -> dict:
         options = [
@@ -1393,6 +1491,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             # Logic
             "logic", "phantom_combat_difficulty", "boat_requires_sea_chart",
             # Item Randomization
+            "boss_keyrings",
             "randomize_minigames", "randomize_digs", "randomize_fishing",
             "keysanity", "randomize_boss_keys", "randomize_pedestal_items",
             "randomize_frogs", "randomize_salvage",
@@ -1412,7 +1511,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             # PH settings
             "ph_time_logic", "ph_starting_time", "ph_time_increment", "ph_heart_time", "ph_required",
             # Cosmetic
-            "additional_metal_names",
+            "additional_metal_names", "chest_cutscene_skips",
             # ER
             "shuffle_dungeon_entrances", "shuffle_ports", "shuffle_caves", "shuffle_houses",
             "shuffle_overworld_transitions", "shuffle_bosses",
@@ -1435,6 +1534,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         slot_data["required_dungeon_locations"] = self.required_bosses  # for dungeon hints
         slot_data["boss_reward_items_pool"] = self.boss_reward_items_pool
         slot_data["treasure_price_index"] = self.treasure_price_index
+        slot_data["location_models"] = self.get_location_models()
 
         # Create ER Pairings, as ids to save space
         pairings = {}
@@ -1442,7 +1542,6 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             for e1, e2 in self.er_placement_state.pairings + self.manual_er_pairings + self.plando_er_pairings:
                 pairings[ENTRANCES[e1].id] = ENTRANCES[e2].id
         slot_data["er_pairings"] = pairings
-
         return slot_data
 
     def write_spoiler(self, spoiler_handle):
@@ -1506,10 +1605,15 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                     # print(f"Pairing {pairing} {entrance_id_to_entrance[i].name}")
                     # print(f"UT pairings {self.ut_pairings}")
                     if pairing is not None:
+                        exit_name = entrance_id_to_entrance[i].name
                         _exit: "Entrance" = self.get_entrance(entrance_id_to_entrance[i].name)
                         entrance_region: "Region" = self.get_region(entrance_id_to_region[pairing])
                         print(f"Connecting: {_exit} => {entrance_region} | {i}: {pairing}")
                         _exit.connect(entrance_region)
+
+                        if exit_name in BOSS_EVENT_TO_LOCATION:
+                            print(f"Globally connecting menu => {_exit.parent_region}")
+                            self.get_region("Menu").connect(_exit.parent_region)
 
                 self.ut_connected_entrances |= new_entrances
 
@@ -1529,6 +1633,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                     e.connected_region = None
                     # Create target
                     parent_region.create_er_target(e.name)
+
 
         if "ph_keylocking" in key and stored_data:
             print(f"Attempting to keylock stuff!")
@@ -1556,51 +1661,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                         self.get_region(reg1).connect(self.get_region(reg2), name)
                     self.ut_created_events.append(stored_name)
 
-            # Sent on getting location. Does not show event in UT
             manage_ut_event("1f", "TotOK 1F Chart", "_UT_got_chart")
-            # Connected on flag read
-            connect_existing_regions("gsb", "Goron NW Shortcut", "Goron NW Outside Temple")
-            connect_existing_regions("fi", "Mercay NE", "Mercay NW Freedle Island")
-            connect_existing_regions("gms", "Goron NE Middle", "Goron NE")
-            connect_existing_regions("gss", "Goron NE South", "Goron NE")
-            connect_existing_regions("gls", "Goron NW Outside Temple", "Goron NW Like Like")
-
-            connect_existing_regions("rb", "Ruins SE Return Bridge West", "Ruins SE Return Bridge East")
-            connect_existing_regions("fif", "Frost SE Exit", "Frost SE")
-            connect_existing_regions("ub", "Uncharted Outside Cave", "Uncharted Island")
-            connect_existing_regions("md", "Molida Outside Temple", "Molida North")
-            connect_existing_regions("cb", "Cannon Outside Eddo", "Cannon Bomb Garden")
-            connect_existing_regions("mcb", "Sun Lake Cave", "Sun Lake Cave Back")
-
-            connect_existing_regions("tfw", "ToF 1F", "ToF 4F")
-            connect_existing_regions("tww", "ToW 1F", "ToW 2F")
-            connect_existing_regions("tcw", "ToC 1F", "ToC 3F")
-            connect_existing_regions("gtw", "GT 1F", "GT B4")
-            connect_existing_regions("tiw", "ToI 1F", "ToI Blue Warp")
-            connect_existing_regions("mtw", "MT 1F", "MT B3")
-
-            # map warp connections
-            connect_existing_regions("wsw", "Menu", "SW Ocean East", "Warp to SW Ocean")
-            connect_existing_regions("wse", "Menu", "SE Ocean", "Warp to SE Ocean")
-            connect_existing_regions("wnw", "Menu", "NW Ocean", "Warp to NW Ocean")
-            connect_existing_regions("wne", "Menu", "NE Ocean", "Warp to NE Ocean")
-
-            connect_existing_regions("wmc", "Menu", "Mercay SE", "Warp to Mercay Island")
-            connect_existing_regions("wc", "Menu", "Cannon Island", "Warp to Cannon Island")
-            connect_existing_regions("we", "Menu", "Ember Port", "Warp to Isle of Ember")
-            connect_existing_regions("wml", "Menu", "Molida South", "Warp to Molida Island")
-            connect_existing_regions("ws", "Menu", "Spirit Island", "Warp to Spirit Island")
-
-            connect_existing_regions("wgu", "Menu", "Gust South", "Warp to Isle of Gust")
-            connect_existing_regions("wb", "Menu", "Bannan Island", "Warp to Bannan Island")
-            connect_existing_regions("wz", "Menu", "Zauz's Island", "Warp to Zauz' Island")
-            connect_existing_regions("wu", "Menu", "Uncharted Island", "Warp to Uncharted Island")
-
-            connect_existing_regions("wgo", "Menu", "Goron SW", "Warp to Goron Island")
-            connect_existing_regions("wf", "Menu", "Frost SW", "Warp to Isle of Frost")
-            connect_existing_regions("wh", "Menu", "Harrow Island", "Warp to Harrow Island")
-            connect_existing_regions("wds", "Menu", "Dee Ess Island", "Warp to Dee Ess Island")
-
-            connect_existing_regions("wd", "Menu", "IotD Port", "Warp to Isle of the Dead")
-            connect_existing_regions("wr", "Menu", "Ruins SW Port", "Warp to Isle of Ruins")
-            connect_existing_regions("wmz", "Menu", "Maze Island", "Warp to Maze Island")
+            for event_tag in stored_data:
+                if event_tag in hidden_event_connect:
+                    connect_existing_regions(event_tag, *hidden_event_connect[event_tag])
