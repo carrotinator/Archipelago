@@ -159,8 +159,8 @@ def has_shape_crystals(dung_name, shape, diff=""):
 
 ut_vanilla_keys = smart_keys & vanilla_keys
 ut_keys_own_dungeon = smart_keys & keys_own_dungeon
-boss_keys_vanilla = [OptionFilter(PhantomHourglassRandomizeBossKeys, 0)]
-boss_keys_own_dungeon = [OptionFilter(PhantomHourglassRandomizeBossKeys, 1, "le")]
+boss_keys_vanilla = [OptionFilter(PhantomHourglassRandomizeBossKeys, [0, 3], "in")]
+boss_keys_own_dungeon = [OptionFilter(PhantomHourglassRandomizeBossKeys, 2, "ne")]
 ut_boss_keys_own_dungeon = boss_keys_own_dungeon & smart_keys
 
 # Rupees

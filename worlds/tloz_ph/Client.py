@@ -835,7 +835,7 @@ class PhantomHourglassClient(DSZeldaClient):
 
     async def open_boss_door(self, ctx):
         data = BOSS_DOOR_DATA.get(self.current_scene, False)
-        if data and ctx.slot_data.get("boss_key_behaviour", True) and (
+        if data and ctx.slot_data["randomize_boss_keys"] != 3 and (
                 self.item_count(ctx, f"Boss Key ({data['name']})")
                 or (ctx.slot_data["boss_keyrings"] and self.item_count(ctx, f"Keyring ({data['name']})"))):
             if not self.boss_door_addr:

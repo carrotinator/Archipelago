@@ -22,7 +22,7 @@ async def receive_ship(client: "PhantomHourglassClient", ctx: "BizHawkClientCont
 
 async def receive_boss_key(client: "PhantomHourglassClient", ctx: "BizHawkClientContext", item: "PHItem", _):
     res = []
-    if (ctx.slot_data.get("boss_key_behaviour", True)
+    if (ctx.slot_data["randomize_boss_keys"] != 3
             and client.current_stage in BOSS_DOOR_DATA
             and BOSS_DOOR_DATA[client.current_stage]["name"] in item.name):  # TODO: Add boss door data to boss key items?
         data = BOSS_DOOR_DATA[client.current_stage]
@@ -87,7 +87,7 @@ async def remove_vanilla_sea_charts(client: "PhantomHourglassClient", ctx: "BizH
 
 async def remove_vanilla_throwable_keys(client: "PhantomHourglassClient", ctx: "BizHawkClientContext", item: "PHItem", _):
     # Don't do anything if vanilla bk behaviour
-    if "Boss Key" in item.name and not ctx.slot_data["boss_key_behaviour"]:
+    if "Boss Key" in item.name and ctx.slot_data["randomize_boss_keys"] == 3:
         return []
     # Don't do anything if vanilla pedestal item behaviour
     if ("Crystal" in item.name or "Force Gem" in item.name) and not ctx.slot_data.get("randomize_pedestal_items", 0):

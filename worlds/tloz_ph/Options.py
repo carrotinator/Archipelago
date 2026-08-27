@@ -129,13 +129,16 @@ class PhantomHourglassKeyRandomization(Choice):
 
 class PhantomHourglassRandomizeBossKeys(Choice):
     """
-    Randomize Boss Keys. Automatically sets boss_key_behaviour to inventory if not vanilla.
+    Randomize Boss Keys.
+    Boss keys turn into abstract items that don't need to be carried for all options except vanilla.
     - vanilla: Boss Keys are not randomized
+    - vanilla_abstract: Boss keys are not randomized, but you don't have to carry them.
     - in_own_dungeon: Boss Keys can be found in their own dungeon
     - anywhere: Boss Keys can be found anywhere
     """
     display_name = "Boss Key Randomization Settings"
     option_vanilla = 0
+    option_vanilla_abstract = 3
     option_in_own_dungeon = 1
     option_anywhere = 2
     default = 0
@@ -646,18 +649,6 @@ class PhantomHourglassPreserveDirectionality(Choice):
     option_disregard_simple_mixed_pool = 2
     option_disregard_all_but_simple_mixed_pool = 3
 
-class PhantomHourglassBossKeyBehavior(Choice):
-    """
-    How boss keys work as items
-    - vanilla: boss key has to be carried to the boss door. Not compatible with boss key rando or internal dungeon shuffle.
-    - inventory: getting the boss key item automatically opens it's boss door.
-    You may need to reload the room if you got the key in the same room as it's door.
-    """
-    option_vanilla = 0
-    option_inventory = 1
-    default = 0
-    display_name = "Boss Key Behavior"
-
 class PhantomHourglassSwitchBehaviour(Choice):
     """
     Modify the behaviour of color switches.
@@ -894,7 +885,6 @@ class PhantomHourglassOptions(PerGameCommonOptions):
     randomize_pedestal_items: PhantomHourglassRandomizePedestalItems
     pedestal_item_options: PhantomHourglassPedestalOptions
     randomize_boss_keys: PhantomHourglassRandomizeBossKeys
-    boss_key_behaviour: PhantomHourglassBossKeyBehavior
     keyrings: PhantomHourglassKeyrings
     boss_keyrings: PhantomHourglassBossKeyrings
 
@@ -1000,7 +990,6 @@ ph_option_groups = [
         PhantomHourglassRandomizePedestalItems,
         PhantomHourglassPedestalOptions,
         PhantomHourglassRandomizeBossKeys,
-        PhantomHourglassBossKeyBehavior,
         PhantomHourglassKeyrings,
         PhantomHourglassBossKeyrings
     ]),

@@ -273,8 +273,6 @@ class PhantomHourglassWorld(World):
             self.pick_required_dungeons()
             if self.options.shuffle_dungeon_entrances:
                 self.options.dungeon_shortcuts.value = 0
-            if self.options.randomize_boss_keys:
-                self.options.boss_key_behaviour.value = 1
             # Dungeon hint restrictions
             if self.options.shuffle_bosses.value == 2 and self.options.dungeon_hint_type == "hint_dungeon":
                 self.options.dungeon_hint_type.value = 1
@@ -284,8 +282,7 @@ class PhantomHourglassWorld(World):
             # Keyring restrictions
             if not self.options.keysanity.value:
                 self.options.keyrings.value = 0
-            if (not self.options.boss_key_behaviour.value
-                    or not self.options.randomize_boss_keys.value
+            if (self.options.randomize_boss_keys.value in [0, 3]
                     or not self.options.keyrings.value):
                 self.options.boss_keyrings.value = 0
 
@@ -1072,7 +1069,7 @@ class PhantomHourglassWorld(World):
                 if "Small Key" in item_name:
                     force_vanilla()
                     continue
-            if self.options.randomize_boss_keys == "vanilla" and "Boss Key" in item_name:
+            if self.options.randomize_boss_keys.value in [0, 3] and "Boss Key" in item_name:
                 force_vanilla()
                 continue
             if "force_vanilla" in loc_data and loc_data["force_vanilla"]:
@@ -1239,7 +1236,7 @@ class PhantomHourglassWorld(World):
             res |= {f"Small Key ({dung})": count for dung, count in KEY_COUNTS.items()}
 
         # Boss Keys
-        if self.options.randomize_boss_keys.value:
+        if self.options.randomize_boss_keys.value not in [0, 3]:
             if self.options.boss_keyrings.value:
                 res |= {f"Boss Key ({dung})": 1 for dung in BOSS_KEY_DUNGEONS if dung not in keyring_dungeons}
             else:
@@ -1301,7 +1298,7 @@ class PhantomHourglassWorld(World):
         # since item pool is created before items are filtered to dungeon pool,
         # remove the worst case scenario for excluded key items to lighten the pool
         ed = len(self.excluded_dungeons)
-        extra_item_count -= ([0] + list(range(8)))[ed] if self.options.randomize_boss_keys.value in [0, 1] else 0  # boss keys iod
+        extra_item_count -= ([0] + list(range(8)))[ed] if self.options.randomize_boss_keys.value != 2 else 0  # boss keys iod
         extra_item_count -= [0, 0, 0, 1, 3, 6, 9, 12][ed] if self.options.keysanity.value in [0, 1] else 0  # keys iod
         extra_item_count -= [0, 0, 0, 0, 0, 0, 1, 3][ed] if (self.options.randomize_pedestal_items.value in [0, 1, 2]
                                                              and self.options.pedestal_item_options in [0, 1]) else 0
@@ -1551,7 +1548,7 @@ class PhantomHourglassWorld(World):
             "map_warp_options",
             "fog_settings", "skip_ocean_fights",
             "dungeon_shortcuts", "totok_checkpoints",
-            "boss_key_behaviour", "color_switch_behaviour", "pedestal_item_options",
+            "color_switch_behaviour", "pedestal_item_options",
             # Spirit Packs
             "spirit_gem_packs", "additional_spirit_gems",
             # Hint settings
