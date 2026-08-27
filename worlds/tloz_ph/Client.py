@@ -295,6 +295,7 @@ class PhantomHourglassClient(DSZeldaClient):
     def update_metal_count(self, ctx):
         metal_ids = [self.item_data[i].id for i in ITEM_GROUPS["Metals"]]
         self.metal_count = sum(1 for i in ctx.items_received if i.item in metal_ids)
+        print(f"\tUpdated metal count: {self.metal_count}")
 
     async def update_treasure_tracker(self, ctx):
         self.last_treasures = await PHAddr.all_treasure_count.read(ctx)
@@ -758,7 +759,7 @@ class PhantomHourglassClient(DSZeldaClient):
 
                 # Goal Check
                 if "goal_requirement" in d:
-                    printl(f"Metal check: {self.metal_count} metals out of {ctx.slot_data['required_metals']}")
+                    printl(f"\tMetal check: {self.metal_count} metals out of {ctx.slot_data['required_metals']}")
                     return self.metal_count >= ctx.slot_data["required_metals"]
             return True
 
