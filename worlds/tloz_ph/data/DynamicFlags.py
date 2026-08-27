@@ -251,11 +251,12 @@ DYNAMIC_FLAGS = {
         "set_if_true": [(PHAddr.fairies_0, 0x80)],
     },
     "Always reset spirit island": {
-        "on_scenes": [0x1701],
-        "reset_flags": ["RESET Spirit of power 0", "RESET Spirit of power 1", "RESET Spirit of power 2",
-                        "RESET Spirit of wisdom 0", "RESET Spirit of wisdom 1", "RESET Spirit of wisdom 2",
-                        "RESET Spirit of courage 0", "RESET Spirit of courage 1", "RESET Spirit of courage 2",
-                        "RESET Spirit of Wisdom boss flag", "RESET Spirit of Courage boss flag"]
+        "on_scenes": [0x1701],  # Canceled!
+        "reset_flags": ["RESET Spirit of Wisdom boss flag", "RESET Spirit of Courage boss flag",
+            # "RESET Spirit of power 0", "RESET Spirit of power 1", "RESET Spirit of power 2",
+            #             "RESET Spirit of wisdom 0", "RESET Spirit of wisdom 1", "RESET Spirit of wisdom 2",
+            #             "RESET Spirit of courage 0", "RESET Spirit of courage 1", "RESET Spirit of courage 2",
+                        ]
     },
     "RESET Spirit of power 0": {
         # "on_scenes": [0x1700],
@@ -311,9 +312,33 @@ DYNAMIC_FLAGS = {
         "set_if_true": [(PHAddr.adv_flags_3, 0x40)],
         "reset_flags": ["RESET Spirit of Wisdom boss flag"]
     },
+    "Spirit of Wisdom boss flag singles": {
+        "on_scenes": [0x1701],
+        "has_items": [("Spirit of Wisdom", 1)],
+        "set_if_true": [(PHAddr.adv_flags_3, 0x40)],
+        "reset_flags": ["RESET Spirit of Wisdom boss flag"]
+    },
+    "Spirit of Wisdom boss flag prog spirits": {
+        "on_scenes": [0x1701],
+        "has_items": [("Spirit (Progressive)", 2)],
+        "set_if_true": [(PHAddr.adv_flags_3, 0x40)],
+        "reset_flags": ["RESET Spirit of Wisdom boss flag"]
+    },
     "Spirit of Courage boss flag": {
         "on_scenes": [0x1701],
         "has_items": [("Spirit of Courage (Progressive)", 1)],
+        "set_if_true": [(PHAddr.adv_flags_3, 0xC0)],
+        "reset_flags": ["RESET Spirit of Wisdom boss flag", "RESET Spirit of Courage boss flag"]
+    },
+    "Spirit of Courage boss flag single": {
+        "on_scenes": [0x1701],
+        "has_items": [("Spirit of Courage", 1)],
+        "set_if_true": [(PHAddr.adv_flags_3, 0xC0)],
+        "reset_flags": ["RESET Spirit of Wisdom boss flag", "RESET Spirit of Courage boss flag"]
+    },
+    "Spirit of Courage boss flag prog spirits": {
+        "on_scenes": [0x1701],
+        "has_items": [("Spirit (Progressive)", 3)],
         "set_if_true": [(PHAddr.adv_flags_3, 0xC0)],
         "reset_flags": ["RESET Spirit of Wisdom boss flag", "RESET Spirit of Courage boss flag"]
     },
@@ -484,6 +509,20 @@ DYNAMIC_FLAGS = {
         "set_if_true": [(PHAddr.adv_flags_31, 0x1)],
         "has_slot_data": [["bellum_access", 3]],
     },
+    "Spawn phantom wreckage single": {
+        "on_scenes": [0x0],
+        "goal_requirement": True,
+        "has_items": [("Sword (Progressive)", 2), ("Spirit of Courage", 1)],
+        "set_if_true": [(PHAddr.adv_flags_31, 0x1)],
+        "has_slot_data": [["bellum_access", 3]],
+    },
+    "Spawn phantom wreckage progressive": {
+        "on_scenes": [0x0],
+        "goal_requirement": True,
+        "has_items": [("Sword (Progressive)", 2), ("Spirit (Progressive)", 3)],
+        "set_if_true": [(PHAddr.adv_flags_31, 0x1)],
+        "has_slot_data": [["bellum_access", 3]],
+    },
     "Not Triforce Crest Rando": {
         "on_scenes": [0x2507],
         "set_if_true": [(PHAddr.adv_flags_4, 0x2)],
@@ -554,13 +593,35 @@ DYNAMIC_FLAGS = {
         "set_if_true": [(PHAddr.adv_flags_3, 0x20)]
     },
     # Fog
-    "No fog add fog if spirits": {
+    "No fog add fog if spirits progressive single": {
         "on_scenes": [0x01],
         "not_last_scenes": [0x2903],
         "not_on_entrance": [5],
         "has_items": [("Spirit of Power (Progressive)", 1),
                       ("Spirit of Wisdom (Progressive)", 1),
                       ("Spirit of Courage (Progressive)", 1)],
+        "not_has_locations": ["Ghost Ship Rescue Tetra"],
+        "has_slot_data": [("fog_settings", 0)],
+        "unset_if_true": [(PHAddr.flags_clear_fog, 0x80)],
+        "set_if_true": [(PHAddr.flags_fog_done, 0x10)]
+    },
+    "No fog add fog if spirits normal": {
+        "on_scenes": [0x01],
+        "not_last_scenes": [0x2903],
+        "not_on_entrance": [5],
+        "has_items": [("Spirit of Power", 1),
+                      ("Spirit of Wisdom", 1),
+                      ("Spirit of Courage", 1)],
+        "not_has_locations": ["Ghost Ship Rescue Tetra"],
+        "has_slot_data": [("fog_settings", 0)],
+        "unset_if_true": [(PHAddr.flags_clear_fog, 0x80)],
+        "set_if_true": [(PHAddr.flags_fog_done, 0x10)]
+    },
+    "No fog add fog if spirits progressive spirit": {
+        "on_scenes": [0x01],
+        "not_last_scenes": [0x2903],
+        "not_on_entrance": [5],
+        "has_items": [("Spirit (Progressive)", 3)],
         "not_has_locations": ["Ghost Ship Rescue Tetra"],
         "has_slot_data": [("fog_settings", 0)],
         "unset_if_true": [(PHAddr.flags_clear_fog, 0x80)],
@@ -579,6 +640,24 @@ DYNAMIC_FLAGS = {
         "has_items": [("Spirit of Power (Progressive)", 1),
                       ("Spirit of Wisdom (Progressive)", 1),
                       ("Spirit of Courage (Progressive)", 1)],
+        "not_has_locations": ["Ghost Ship Rescue Tetra"],
+        "set_if_true": [(PHAddr.flags_fog_spirits, 0x10)],
+    },
+    "Spawn Spirits in fog singles": {
+        "on_scenes": [0x1],
+        "not_last_scenes": [0x2903],
+        "not_on_entrance": [5],
+        "has_items": [("Spirit of Power", 1),
+                      ("Spirit of Wisdom", 1),
+                      ("Spirit of Courage", 1)],
+        "not_has_locations": ["Ghost Ship Rescue Tetra"],
+        "set_if_true": [(PHAddr.flags_fog_spirits, 0x10)],
+    },
+    "Spawn Spirits in fog prog spirits": {
+        "on_scenes": [0x1],
+        "not_last_scenes": [0x2903],
+        "not_on_entrance": [5],
+        "has_items": [("Spirit (Progressive)", 3)],
         "not_has_locations": ["Ghost Ship Rescue Tetra"],
         "set_if_true": [(PHAddr.flags_fog_spirits, 0x10)],
     },

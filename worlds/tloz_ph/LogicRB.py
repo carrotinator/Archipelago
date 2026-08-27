@@ -687,7 +687,7 @@ def make_overworld_logic():
         ["ToI B1 Boss Door", "ToI B1 Mid", False, has_grapple],
         ["ToI B1 Boss Door", "ToI B1 Before Boss", True, toi_bk],
         ["ToI B1 Before Boss", "Gleeok", True, None],
-        ["Gleeok", "Post Gleeok", False, has_grapple & (has_sword | Has("Bombs (Progressive)", 2) | has_hammer)],
+        ["Gleeok", "Post Gleeok", False, gleeok],
         ["Post Gleeok", "Post ToI", False, None],
         ["ToI B1 Before Boss", "ToI Blue Warp", True, None],
         ["ToI 1F", "ToI Blue Warp", True, Has("_toi_blue_warp")],

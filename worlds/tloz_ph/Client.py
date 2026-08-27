@@ -358,19 +358,34 @@ class PhantomHourglassClient(DSZeldaClient):
 
     async def refill_ammo(self, ctx, text=""):
         items = [i + " (Progressive)" for i in ["Bombs", "Bombchus", "Bow"]]
+        base = ["Bomb Bag", "Bombchu Bag", "Bow"]
+        upgrades = ["Bomb Bag Upgrade", "Bombchu Bag Upgrade", "Quiver Upgrade"]
 
         # Count upgrades
-        counts = {self.item_data[i].id: 0 for i in items}
-        for i in ctx.items_received:
-            for k in counts:
-                if k == i.item:
-                    counts[k] += 1
+        counts = [0, 0, 0]
+        counts_base = [0, 0, 0]
+        counts_upgrades = [0, 0, 0]
+        loops = [[self.item_data[i].id for i in j] for j in zip(items, base, upgrades)]
+        for k in ctx.items_received:
+            for i, g in enumerate(loops):
+                p, b, u = g
+                if p == k.item:
+                    counts[i] += 1
+                if b == k.item:
+                    counts_base[i] = 1
+                if u == k.item:
+                    counts_upgrades[i] += 1
+        for i, g in enumerate(zip(counts, counts_base, counts_upgrades)):
+            p, b, u = g
+            if b:
+                counts[i] = max(p, u+1)
 
         # Write Upgrades
         write_list = []
-        for i, count in enumerate(counts.values()):
+        for i, count in enumerate(counts):
             data = self.item_data[items[i]]
             write_list += data.ammo_address.get_write_list(data.give_ammo[min(count - 1, 2)])
+        printl(f"Writing ammo: {hex_f(write_list)}")
         await bizhawk.write(ctx.bizhawk_ctx, write_list)
         await self.full_heal(ctx)
         if text == "milk_bar":
@@ -633,6 +648,8 @@ class PhantomHourglassClient(DSZeldaClient):
         if self.last_scene is not None:
             if current_scene == 0x2509 and self.last_scene == 0x2507:
                 await self.write_totok_midway_keys(ctx)
+            if self.last_scene == 0x1701:
+                await self.reset_spirit_shrine(ctx)
 
         # Repair salvage arm in certain rooms
         if current_scene in [0x130A, 0x500]:
@@ -1993,7 +2010,7 @@ class PhantomHourglassClient(DSZeldaClient):
     async def force_spawn_swordfish(self, ctx):
         printl(f"Checking RNG Swordfish {self.current_room}")
         if (self.item_count(ctx, "Swordfish Shadows")  # Progressive fishing when :(
-            and self.item_count(ctx, "Big Catch Lure")
+            and (self.item_count(ctx, "Big Catch Lure") or self.item_count(ctx, "Fishing Rod (Progressive)") > 2)
         ):
             fish_offset_table = [46, 53, 26, 34]
             swordfish_addr = await self.find_table_object(ctx,
@@ -2093,6 +2110,37 @@ class PhantomHourglassClient(DSZeldaClient):
                     await spot_data[loc].reset(ctx)
                 self.linked_dig_spots.pop(loc)
 
+    async def reset_spirit_shrine(self, ctx):
+        progs = [f"Spirit of {s} (Progressive)" for s in SPIRITS]
+        base = [f"Spirit of {s}" for s in SPIRITS]
+        upgrades = [f"{s} Upgrade" for s in SPIRITS]
 
+        loops = [[self.item_data[i].id for i in j] for j in zip(progs, base, upgrades)]
+        count, base_count, upgrade_count = [0, 0, 0], [0, 0, 0], [0, 0, 0]
+        spirit_count, prog_upgrade_count = 0, 0
+        prog_spirit = self.item_data["Spirit (Progressive)"].id
+        prog_upgrade = self.item_data["Spirit Upgrade"].id
+        for k in ctx.items_received:
+            for i, g in enumerate(loops):
+                p, b, u = g
+                if k.item == p:
+                    count[i] += 1
+                elif k.item == b:
+                    base_count[i] = 1
+                elif k.item == u:
+                    base_count[i] += 1
+                elif k.item == prog_spirit:
+                    spirit_count += 1
+                elif k.item == prog_upgrade:
+                    prog_upgrade_count += 1
+        for i, g in enumerate(zip(count, base_count, upgrade_count)):
+            p, b, u = g
+            count[i] = min(max(p, 1+u+prog_upgrade_count if b else 0, 1+u+prog_upgrade_count if spirit_count > i else 0), 3)
 
-
+        spirit_writes = {PHAddr.fairies_0: 0, PHAddr.fairies_1: 0}
+        for name, prog_count in zip(progs, count):
+            item = self.item_data[name]
+            for addr, _value in item.progressive[:prog_count]:
+                spirit_writes[addr] |= _value
+        printl(f"Spirit writes {hex_f(spirit_writes)}")
+        await write_multiple(ctx, spirit_writes.keys(), spirit_writes.values())

@@ -289,6 +289,9 @@ class PhantomHourglassWorld(World):
                     or not self.options.keyrings.value):
                 self.options.boss_keyrings.value = 0
 
+            if self.options.spirit_type.value == 0 and self.options.global_spirit_upgrades.value:
+                self.options.spirit_type.value = 1
+
             # Treasure Prices
             self.treasure_price_index = self.random.randint(0, 9)
 
@@ -1106,6 +1109,7 @@ class PhantomHourglassWorld(World):
                 continue
             if (item_name in ITEM_GROUPS["Items With Ammo"] |
                     ITEM_GROUPS["Technical Items"] |
+                    ITEM_GROUPS["Swords"] | ITEM_GROUPS["Spirits"] |
                     ITEM_GROUPS["Small Keys"] | ITEM_GROUPS["Boss Keys"] |
                     ITEM_GROUPS["Potions"] |
                     ITEM_GROUPS["Single Spirit Gems"] |
@@ -1118,8 +1122,8 @@ class PhantomHourglassWorld(World):
 
         # Fill filler count with consistent amounts of items, when filler count is empty it won't add any more items
         # so add progression items first
-        add_items = {"Bombs (Progressive)": 3, "Bow (Progressive)": 3, "Bombchus (Progressive)": 3}
-        add_items |= {"Phantom Hourglass": 1}
+        add_items = {"Phantom Hourglass": 1}
+        add_items |= self.choose_progressive_items()
         # print(f"pre-keys: {item_pool_dict}")
         key_items, filler_change = self.choose_key_items()
         add_items |= key_items
@@ -1179,7 +1183,44 @@ class PhantomHourglassWorld(World):
         # print(item_pool_dict)
         return item_pool_dict
 
-    def choose_key_items(self) -> tuple[list[tuple[str, int]], int]:
+    def choose_progressive_items(self) -> dict[str, int]:
+        res: dict[str, int] = {}
+
+        # Inventory Items
+        if self.options.progressive_items.value:
+            res |= {"Sword (Progressive)": 2,
+                    "Bombs (Progressive)": 3,
+                    "Bow (Progressive)": 3,
+                    "Bombchus (Progressive)": 3}
+            if self.options.randomize_fishing.value:
+                res |= {"Fishing Rod (Progressive)": 3}
+        else:
+            res |= {
+                "Oshus' Sword": 1, "Phantom Sword": 1,
+                "Bomb Bag": 1, "Bomb Bag Upgrade": 2,
+                "Bow": 1, "Quiver Upgrade": 1,
+                "Bombchu Bag": 1, "Bombchu Bag Upgrade": 2}
+            if self.options.randomize_fishing.value:
+                res |= {"Fishing Rod": 1, "Big Catch Lure": 1, "Swordfish Shadows": 1}
+
+        # Spirits
+        def add_upgrades():
+            if self.options.global_spirit_upgrades.value:
+                return {f"Spirit Upgrade": 2}
+            else:
+                return {f"{s} Upgrade": 2 for s in SPIRITS}
+
+        if self.options.spirit_type == 0:
+            res |= {f"Spirit of {s} (Progressive)": 3 for s in SPIRITS}
+        elif self.options.spirit_type == 1:
+            res |= {f"Spirit of {s}": 1 for s in SPIRITS}
+            res |= add_upgrades()
+        elif self.options.spirit_type == 2:
+            res |= {"Spirit (Progressive)": 3}
+            res |= add_upgrades()
+        return res
+
+    def choose_key_items(self) -> tuple[dict[str, int], int]:
         res = {}
 
         # Small keys
@@ -1220,7 +1261,7 @@ class PhantomHourglassWorld(World):
                 self.multiworld.get_location(loc_name, self.player).place_locked_item(forced_item)
 
         print(f"Key Items: {res}")
-        return [(name, count) for name, count in res.items() if count], filler_change
+        return res, filler_change
 
     def create_items(self):
         item_pool_dict = self.build_item_pool_dict()

@@ -184,6 +184,8 @@ class PHAddr:
     inventory_4 = fairies_1 = Address(0x1ba647)  # Fairies 1
     inventory_5 = Address(0x1ba648)
     inventory_6 = Address(0x1ba649)
+
+    fairies = Address(0x1ba646, size=2)
     
     rupee_count = Address(0x1ba53e, size=2)
     

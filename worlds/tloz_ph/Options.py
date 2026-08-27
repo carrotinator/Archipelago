@@ -835,6 +835,36 @@ class PhantomHourglassBossKeyrings(Toggle):
     display_name = "Boss Keys in Keyrings"
     default = 0
 
+class PhantomHourglassProgressiveItems(Toggle):
+    """
+    Are Link's items progressive or not?
+    Affects sword, bombs, bow, chus and fishing rod.
+    Spirits have their own option.
+    """
+    display_name = "Progressive Items"
+    default = 1
+
+class PhantomHourglassSpiritTypes(Choice):
+    """
+    How to model base spirit items.
+    - progressive_single_spirits: you get 3 `Spirit of Power (Progressive)` items for each spirit type. Global upgrade option needs to be false.
+    - single_spirits: You get 1 'Spirit of Power' item of each spirit type. Upgrades handled in separate option.
+    - progressive_global_spirits: You get 3 `Spirit (Progressive)` items, that unlock power then wisdom then courage spirits. Upgrades handled in separate option.
+    """
+    display_name = "Spirit Type"
+    option_progressive_single_spirits = 0
+    option_single_spirits = 1
+    option_progressive_global_spirits = 2
+
+class PhantomHourglassGlobalSpiritUpgrades(Toggle):
+    """
+    Toggle if spirit upgrades are global and affect all spirit types, with 2 `Spirit Upgrade (Progressive)` in the pool;
+      or single, 2 `Power Upgrade (Progressive)` for each spirit type.
+    Needs to be false for progressive_single_spirits to work.
+    """
+    display_name = "Global Spirit Upgrades"
+    default = 0
+
 @dataclass
 class PhantomHourglassOptions(PerGameCommonOptions):
     # Accessibility
@@ -869,6 +899,11 @@ class PhantomHourglassOptions(PerGameCommonOptions):
     boss_keyrings: PhantomHourglassBossKeyrings
 
     # Item Randomization
+    progressive_items: PhantomHourglassProgressiveItems
+    spirit_type: PhantomHourglassSpiritTypes
+    global_spirit_upgrades: PhantomHourglassGlobalSpiritUpgrades
+
+    # Additional Locations
     randomize_minigames: PhantomHourglassRandomizeMinigames
     randomize_frogs: PhantomHourglassFrogRandomization
     randomize_fishing: PhantomHourglassRandomizeFishing
@@ -969,7 +1004,12 @@ ph_option_groups = [
         PhantomHourglassKeyrings,
         PhantomHourglassBossKeyrings
     ]),
-    OptionGroup("Item Randomization Options", [
+    OptionGroup("Item Options", [
+        PhantomHourglassProgressiveItems,
+        PhantomHourglassSpiritTypes,
+        PhantomHourglassGlobalSpiritUpgrades
+    ]),
+    OptionGroup("Extra Location Options", [
         PhantomHourglassRandomizeMinigames,
         PhantomHourglassFrogRandomization,
         PhantomHourglassRandomizeFishing,

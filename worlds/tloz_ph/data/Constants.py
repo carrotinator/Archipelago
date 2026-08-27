@@ -175,6 +175,8 @@ STAGES = {
 
 }
 
+SPIRITS = ["Power", "Wisdom", "Courage"]
+
 ISLANDS = [
     "Mercay Island",
     "Cannon Island",

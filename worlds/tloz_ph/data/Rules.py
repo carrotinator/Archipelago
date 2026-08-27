@@ -35,22 +35,25 @@ randomize_minigames = [OptionFilter(PhantomHourglassRandomizeMinigames, 0, "gt")
 # Basic Items
 has_sword = Has("Sword (Progressive)") | Has("Oshus' Sword")
 has_phantom_sword = Has("Sword (Progressive)", 2) | (has_sword & Has("Phantom Sword"))
-has_shield = True_
+has_shield = True_()
 has_shovel = Has("Shovel")
-has_bow = Has("Bow (Progressive)")
-has_bombs = Has("Bombs (Progressive)")
-has_chus = Has("Bombchus (Progressive)")
+has_bow = Has("Bow (Progressive)") | Has("Bow")
+has_bombs = Has("Bombs (Progressive)") | Has("Bomb Bag")
+has_chus = Has("Bombchus (Progressive)") | Has("Bombchu Bag")
 has_grapple = Has("Grappling Hook")
 has_hammer = Has("Hammer")
 has_boomerang = Has("Boomerang")
 
 def has_spirit(spirit: Literal["Power", "Wisdom", "Courage"], count=1):
-    return Has(f"Spirit of {spirit} (Progressive)", count)
+    spirit_index = SPIRITS.index(spirit)+1
+    if count > 1:
+        return Or(Has(f"Spirit of {spirit} (Progressive)", count),
+                  (Has(f"Spirit of {spirit}") | Has(f"Spirit (Progressive)", spirit_index)) & (Has(f"Spirit Upgrade", count-1) | Has(f"{spirit} Upgrade", count-1)))
+    return Has(f"Spirit of {spirit}") | Has(f"Spirit of {spirit} (Progressive)") | Has(f"Spirit (Progressive)", spirit_index)
 
 def has_spirit_gems(spirit: Literal["Power", "Wisdom", "Courage"], count):
-    spirits = ["Power", "Wisdom", "Courage"]
-    spirit_index = spirits.index(spirit)
-    return Has(f"{spirit} Gem", count) & Or(*(has_spirit(s) for s in spirits[spirit_index:]))
+    spirit_index = SPIRITS.index(spirit)
+    return Has(f"{spirit} Gem", count) & Or(*(has_spirit(s) for s in SPIRITS[spirit_index:]))
 
 has_ph = Has("Phantom Hourglass")
 has_phantom_blade = Has("Phantom Blade")
@@ -62,9 +65,9 @@ def has_sea_chart(quadrant: Literal["NW", "NE", "SW", "SE"]):
 
 has_cannon = Has("Cannon")
 has_salvage = Has("Salvage Arm")
-has_fishing_rod = Has("Fishing Rod")
-has_lure = Has("Big Catch Lure")
-has_swordfish_shadows = Has("Swordfish Shadows")
+has_fishing_rod = Has("Fishing Rod") | Has("Fishing Rod (Progressive)")
+has_lure = Has("Big Catch Lure") | Has("Fishing Rod (Progressive)", 2)
+has_swordfish_shadows = Has("Swordfish Shadows") | Has("Fishing Rod (Progressive)", 3)
 can_catch_rsf = has_lure | has_swordfish_shadows
 can_catch_stowfish = has_swordfish_shadows & (has_lure | ut_glitched)
 
@@ -415,6 +418,8 @@ toi_door_3 = Or(
     )
 )
 toi_bk = has_boss_key(toi) | (ut_boss_keys_own_dungeon & toi_all_doors_ut)
+gleeok = has_grapple & (has_sword | Has("Bombs (Progressive)", 2) | has_hammer | (Has("Bomb Bag") & Has("Bomb Bag Upgrade")))
+
 
 # MT
 mt = "Mutoh's Temple"
