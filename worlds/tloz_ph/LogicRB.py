@@ -892,7 +892,7 @@ def make_overworld_logic():
         ["Goal", "Goal Event Triforce", False, None],  # Event stuff
         ["Goal", "Goal Event Bellumbeck", False, None],  # Event stuff
         ["TotOK B6 Midway", "Goal", False, Filtered(Or(), options=goal_midway)],
-        ["Menu", "Goal", False, win_on_metals],
+        ["Zauz's House", "Goal", False, win_on_metals],
 
     ]
 

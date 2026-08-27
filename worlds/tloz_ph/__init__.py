@@ -246,9 +246,9 @@ class PhantomHourglassWorld(World):
                     if "GOAL" in event.name:
                         if self.options.goal_requirements != "triforce_door" and event.name in ["GOAL: Triforce Door"]:
                             continue
-                        if self.options.bellum_access != "win" and event.name in ["GOAL"]:
+                        if self.options.bellum_access != "zauz" and event.name in ["GOAL"]:
                             continue
-                        if ((self.options.goal_requirements == "triforce_door" or self.options.bellum_access == "win")
+                        if ((self.options.goal_requirements == "triforce_door" or self.options.bellum_access == "zauz")
                               and event.name in ["GOAL: Bellumbeck"]):
                             continue
                     if not self.options.shuffle_houses and event.name == "EVENT: Open Eddo's Door":
@@ -298,6 +298,10 @@ class PhantomHourglassWorld(World):
             self.required_metals = self.options.metal_hunt_required.value
         elif self.options.goal_requirements == "defeat_bosses":
             self.required_metals = self.options.dungeons_required.value
+
+        if self.options.bellum_access == "zauz":
+            self.options.zauz_required_metals.value = self.required_metals
+            self.locations_to_exclude.add("Zauz's House Phantom Blade")
 
     def create_item_mappings(self):
         self.item_mapping_collect |= {

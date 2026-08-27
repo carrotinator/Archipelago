@@ -172,14 +172,15 @@ class PhantomHourglassBellumAccess(Choice):
     - unlock_staircase: getting your goal requirement unlocks the staircase to bellum. The phantoms on B13 spawn by default, and killing them unlocks the warp for later
     - warp_to_bellum: getting your goal requirement spawns the warp to bellum in TotOK. The phantoms are spawned by default, and the staircase to bellum is blocked off until reaching the goal
     - spawn_bellumbeck: getting your goal requirement spawns the ruins of the ghost ship in the SW quadrant, and you can skip bellum 1 and the ghost ship fight
-    - win: reaching your goal requirement wins the game
+    - zauz: giving metals to Zauz sends the goal. Sets Zauz's required metals to you goal metal count.
+    Lore wise he makes the sword with your metals and defeats Bellum by himself.
     """
     display_name = "Bellum Access"
     option_spawn_phantoms_on_b13 = 0
     option_unlock_staircase = 1
     option_warp_to_bellum = 2
     option_spawn_bellumbeck = 3
-    option_win = 4
+    option_zauz = 4
     default = 2
 
 

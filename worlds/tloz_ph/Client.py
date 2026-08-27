@@ -1040,7 +1040,7 @@ class PhantomHourglassClient(DSZeldaClient):
         game_clear = False
         if ctx.slot_data["bellum_access"] == 4:
             game_clear = self.metal_count >= ctx.slot_data["required_metals"]
-            if game_clear and not self.sent_goal:
+            if game_clear and not self.sent_goal and LOCATIONS_DATA["Zauz's House Phantom Blade"]["id"] in ctx.checked_locations:
                 printl(f"Bellum access: {ctx.slot_data['bellum_access']} metal count {self.metal_count} >= {ctx.slot_data['required_metals']}")
                 await self.store_visited_entrances(ctx, ENTRANCES["GOAL"], ENTRANCES["GOAL"].vanilla_reciprocal)
                 self.sent_goal = True

@@ -209,9 +209,12 @@ bellum_access_wreck = [OptionFilter(PhantomHourglassBellumAccess, 3)]
 def charted_sea_monster(quadrant):
     return can_pass_sea_monster & require_sea_chart(quadrant)
 
-has_metals = HasGroup("Metals", FromWorldAttr("required_metals"))
+has_go_mode = is_ut & Has("_required_dungeon",  # Show go mode early in UT
+                                FromOption(PhantomHourglassDungeonsRequired),
+                                options=[OptionFilter(PhantomHourglassGoal, 1)])
 
-win_on_metals = Filtered(has_metals, options=[OptionFilter(PhantomHourglassBellumAccess, PhantomHourglassBellumAccess.option_win)])
+has_metals = HasGroup("Metals", FromWorldAttr("required_metals")) | has_go_mode
+win_on_metals = Filtered(has_metals, options=[OptionFilter(PhantomHourglassBellumAccess, PhantomHourglassBellumAccess.option_zauz)])
 
 # Specific locations, move to logic file?
 ember_grapple_chest = has_grapple | sword_glitch
@@ -390,11 +393,18 @@ toi_door_1 = toi_key_doors(3, 1) | (
     is_ut & Or(
         savescum_keys(toi, 1),
         smart_keys & Or(
+            toi_all_doors_ut,
             And(
-                toi_3f_boomerang & not_glitched_logic,
-                vanilla_keys | (keys_own_dungeon & has_explosives)
+                toi_3f_boomerang & not_glitched_logic,  # switch key
+                vanilla_keys | (
+                    keys_own_dungeon & (
+                        (
+                            (has_explosives | has_boomerang) & hard_logic
+                        ) | has_bombs  # final chest in normal logic
+                    )
+                )
             ),
-            toi_all_doors_ut
+
         )
     )
 )
