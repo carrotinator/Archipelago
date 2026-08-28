@@ -8,7 +8,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .__init__ import PhantomHourglassWorld
 
-def make_overworld_logic():
+def make_overworld_logic(world: "PhantomHourglassWorld"):
+    required_rupees = world.required_rupees
     overworld_logic = [
 
         # Randomized start
@@ -181,10 +182,10 @@ def make_overworld_logic():
 
         # ============ Shops ====================
 
-        ["Island Shop", "Island Shop Power Gem", False, island_shop_gem],
-        ["Island Shop", "Island Shop Quiver", False, island_shop_quiver],
-        ["Island Shop", "Island Shop Bombchu Bag", False, island_shop_chu_bag],
-        ["Island Shop", "Island Shop Heart Container", False, island_shop_hc],
+        ["Island Shop", "Island Shop Power Gem", False, has_rupees(required_rupees)],
+        ["Island Shop", "Island Shop Quiver", False, has_rupees(required_rupees) & has_bow],
+        ["Island Shop", "Island Shop Bombchu Bag", False, has_rupees(required_rupees) & has_bow & has_chus],
+        ["Island Shop", "Island Shop Heart Container", False, has_rupees(required_rupees) & has_bow & has_chus],
 
         ["SW Ocean East", "Beedle", False, None],
         ["SW Ocean West", "Beedle", False, None],
@@ -192,10 +193,10 @@ def make_overworld_logic():
         ["SE Ocean", "Beedle", False, None],
         ["NE Ocean", "Beedle", False, None],
 
-        ["Beedle", "Beedle Gem", False, BeedleShop(500)],
-        ["Beedle", "Beedle Bomb Bag", False, has_bombs & BeedleShop(500)],
-        ["Beedle", "Masked Ship Gem", False, BeedleShop(500)],
-        ["Beedle", "Masked Ship HC", False, BeedleShop(500)],
+        ["Beedle", "Beedle Gem", False, has_rupees(required_rupees)],
+        ["Beedle", "Beedle Bomb Bag", False, has_bombs & has_rupees(required_rupees)],
+        ["Beedle", "Masked Ship Gem", False, has_rupees(required_rupees)],
+        ["Beedle", "Masked Ship HC", False, has_rupees(required_rupees)],
 
         ["Beedle", "Beedle Bronze Membership", False, beedle_bronze],
         ["Beedle", "Beedle Silver Membership", False, HasBeedlePoints(20)],
@@ -925,7 +926,7 @@ def create_connections(world: "PhantomHourglassWorld", player: int, origin_name:
 
     world.set_completion_rule(Has("_beaten_game"))
     all_logic = [
-        make_overworld_logic()
+        make_overworld_logic(world)
     ]
     # UT creates alias regions
     if world.is_ut:

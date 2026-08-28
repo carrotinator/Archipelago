@@ -32,6 +32,8 @@ vanilla_bosses = [OptionFilter(PhantomHourglassShuffleBosses, 0)]
 randomize_minigames = [OptionFilter(PhantomHourglassRandomizeMinigames, 0, "gt")]
 
 
+
+
 # Basic Items
 has_sword = Has("Sword (Progressive)") | Has("Oshus' Sword")
 has_phantom_sword = Has("Sword (Progressive)", 2) | (has_sword & Has("Phantom Sword"))
@@ -183,11 +185,6 @@ def has_rupees(count):
             | (HasFromList("Rupees", "Treasure", count=count) & Has("_has_treasure_teller")))
 
 beedle_bronze = HasBeedlePoints(1) | has_rupees(80)
-island_shop_gem = IslandShop(500)
-island_shop_quiver = has_bow & IslandShop(1500)
-island_shop_chu_bag = has_bow & has_chus & IslandShop(2500)
-island_shop_hc = has_bow & has_chus & IslandShop(4500)
-beedle_bomb_bag = has_bombs & BeedleShop(500)  # lol the func is weird
 
 
 # More Options

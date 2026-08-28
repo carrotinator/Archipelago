@@ -139,7 +139,7 @@ def add_pedestal_items(place, option, excluded_dungeons):
 
     return res
 
-class PhantomHourglassWorld(World):
+class PhantomHourglassWorld(CachedRuleBuilderWorld):
     """
     The Legend of Zelda: Phantom Hourglass is the sea bound handheld sequel to the Wind Waker.
     """
@@ -213,6 +213,7 @@ class PhantomHourglassWorld(World):
         self.ut_map_page_hidden_entrances = {}
         self.ut_map_page_hidden_events = {}
         self.required_metals = 0
+        self.required_rupees: int = 0
 
         self.is_ut = getattr(self.multiworld, "generation_is_fake", False)
 
@@ -294,6 +295,7 @@ class PhantomHourglassWorld(World):
 
         self.restrict_non_local_items()
         self.create_item_mappings()
+        self.count_required_rupees()
         if self.options.goal_requirements == "metal_hunt":
             self.required_metals = self.options.metal_hunt_required.value
         elif self.options.goal_requirements == "defeat_bosses":
@@ -480,6 +482,13 @@ class PhantomHourglassWorld(World):
             metal_items = vanillas + metal_items
 
         return metal_items[:count]
+
+    def count_required_rupees(self):
+        multiplier = 0.7 if self.options.shop_hints.value else 1
+        rupees = 4500+1500*multiplier  # island shop + beedle
+        if self.options.randomize_masked_beedle.value:
+            rupees += 1500*multiplier
+        self.required_rupees = int(rupees)
 
     def create_events(self):
         if self.is_ut:
@@ -1261,13 +1270,13 @@ class PhantomHourglassWorld(World):
                 forced_item = self.create_item("Small Key (Mountain Passage)")
                 self.multiworld.get_location(loc_name, self.player).place_locked_item(forced_item)
 
-        print(f"Key Items: {res}")
+        # print(f"Key Items: {res}")
         return res, filler_change
 
     def create_items(self):
         item_pool_dict = self.build_item_pool_dict()
         self.get_extra_filler_items(item_pool_dict)
-        # print(f"Extra Filler Items {self.extra_filler_items}")
+        print(f"Extra Filler Items {self.extra_filler_items}")
         items = []
         for item_name, quantity in item_pool_dict.items():
             for _ in range(quantity):
@@ -1296,21 +1305,21 @@ class PhantomHourglassWorld(World):
         excluded_locations = self.locations_to_exclude | self.options.exclude_locations.value
         extra_item_count = len(excluded_locations) - filler_count + 20
         # print(f"Excluded locs: {excluded_locations}")
-        # print(f"Filler items basic: {len(excluded_locations)} | have: {filler_count} | "
-        #       f"available: {len(extra_items_list)} | total: {extra_item_count}")
+        print(f"Filler items basic: {len(excluded_locations)} | have: {filler_count} | "
+              f"available: {len(extra_items_list)} | creating: {extra_item_count}")
 
         # since item pool is created before items are filtered to dungeon pool,
         # remove the worst case scenario for excluded key items to lighten the pool
         ed = len(self.excluded_dungeons)
-        extra_item_count -= ([0] + list(range(8)))[ed] if self.options.randomize_boss_keys.value != 2 else 0  # boss keys iod
-        extra_item_count -= [0, 0, 0, 1, 3, 6, 9, 12][ed] if self.options.keysanity.value in [0, 1] else 0  # keys iod
-        extra_item_count -= [0, 0, 0, 0, 0, 0, 1, 3][ed] if (self.options.randomize_pedestal_items.value in [0, 1, 2]
-                                                             and self.options.pedestal_item_options in [0, 1]) else 0
-        extra_item_count -= ed if not self.options.require_specific_bosses else 0  # boss rewards on rsb
+        # extra_item_count -= ([0] + list(range(8)))[ed] if self.options.randomize_boss_keys.value != 2 else 0  # boss keys iod
+        # extra_item_count -= [0, 0, 0, 1, 3, 6, 9, 12][ed] if self.options.keysanity.value in [0, 1] else 0  # keys iod
+        # extra_item_count -= [0, 0, 0, 0, 0, 0, 1, 3][ed] if (self.options.randomize_pedestal_items.value in [0, 1, 2]
+        #                                                      and self.options.pedestal_item_options in [0, 1]) else 0
+        # extra_item_count -= ed if not self.options.require_specific_bosses else 0  # boss rewards on rsb
         if self.options.shuffle_bosses == 1 and not self.options.decouple_entrances:  # boss exclusion happens later
             extra_item_count += [0, 5, 10, 14, 18, 21, 24, 27][ed]  # worst case boss room + post dungeon locs
 
-        # print(f"Filler items advanced: {extra_item_count}")
+        print(f"Filler items advanced: {extra_item_count}")
         if extra_item_count > 0:
             self.random.shuffle(extra_items_list)
             self.extra_filler_items = extra_items_list[:extra_item_count]
@@ -1382,7 +1391,7 @@ class PhantomHourglassWorld(World):
             global_pedestal_helper("Square", "Temple of Courage")
             global_pedestal_helper("Round", "Ghost Ship")
             global_pedestal_helper("Triangle", "Ghost Ship")
-        print(f"global crystal dungeons: {global_crystal_dungeons}")
+        # print(f"global crystal dungeons: {global_crystal_dungeons}")
 
         # If keysanity is off, dungeon items can only be put inside local dungeon locations, and there are not so many
         # of those which makes them pretty crowded.
@@ -1390,7 +1399,7 @@ class PhantomHourglassWorld(World):
         # To circumvent this, we perform a restricted pre-fill here, placing only those dungeon items
         # before anything else.
         for dung_name in DUNGEON_NAMES:
-            print(f"pre-filling {dung_name}")
+            # print(f"pre-filling {dung_name}")
             # Build a list of locations in this dungeon
             dungeon_location_names = [name for name, loc in LOCATIONS_DATA.items()
                                       if "dungeon" in loc and loc["dungeon"] == dung_name
@@ -1422,10 +1431,10 @@ class PhantomHourglassWorld(World):
                 self.pre_fill_items.remove(item)
             collection_state = self.multiworld.get_all_state()
             # Perform a prefill to place confined items inside locations of this dungeon
-            print(f"Pre fill locs: {dungeon_locations}")
+            # print(f"Pre fill locs: {dungeon_locations}")
             self.random.shuffle(dungeon_locations)
 
-            print(f"items {confined_dungeon_items}")
+            # print(f"items {confined_dungeon_items}")
             fill_restrictive(self.multiworld, collection_state, dungeon_locations, confined_dungeon_items,
                              single_player_placement=True, lock=True, allow_excluded=True)
 
@@ -1549,7 +1558,7 @@ class PhantomHourglassWorld(World):
             # Beedle randomization
             "randomize_masked_beedle", "randomize_beedle_membership",
             # World Settings
-            "map_warp_options",
+            "map_warp_options", "open_post_dungeons",
             "fog_settings", "skip_ocean_fights",
             "dungeon_shortcuts", "totok_checkpoints",
             "color_switch_behaviour", "pedestal_item_options",

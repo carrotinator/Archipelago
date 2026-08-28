@@ -857,6 +857,15 @@ class PhantomHourglassGlobalSpiritUpgrades(Toggle):
     display_name = "Global Spirit Upgrades"
     default = 0
 
+class PhantomHourglassOpenPostDungeonLocations(Toggle):
+    """
+    Some locations only unlock after clearing dungeons in the vanilla game.
+    Toggling this to true unlocks them before clearing their dungeons.
+    Examples include Mercay Shipyard, Molida Archery, Dee Ess Goron Minigame, Zauz Triforce Chart and Pirate Ambush
+    """
+    display_name = "Open Post-Dungeon Locations"
+    default = 0
+
 @dataclass
 class PhantomHourglassOptions(PerGameCommonOptions):
     # Accessibility
@@ -918,6 +927,7 @@ class PhantomHourglassOptions(PerGameCommonOptions):
     fog_settings: PhantomHourglassFogSettings
     skip_ocean_fights: PhantomHourglassSkipOceanFights
     zauz_required_metals: PhantomHourglassZauzRequiredMetals
+    open_post_dungeons: PhantomHourglassOpenPostDungeonLocations
     dungeon_shortcuts: PhantomHourglassDungeonShortcuts
     totok_checkpoints: PhantomHourglassTotOKCheckpoints
 
@@ -1022,6 +1032,7 @@ ph_option_groups = [
         PhantomHourglassFogSettings,
         PhantomHourglassSkipOceanFights,
         PhantomHourglassZauzRequiredMetals,
+        PhantomHourglassOpenPostDungeonLocations,
         PhantomHourglassDungeonShortcuts,
         PhantomHourglassTotOKCheckpoints,
         PhantomHourglassSwitchBehaviour,

@@ -20,26 +20,10 @@ def beedle_eval(state: CollectionState, player, options: PhantomHourglassOptions
     """
     Evaluate if you have enough rupees for beedle
     """
-    if state.has("_UT_Glitched_Logic", player):
+    if state.has("_UT_Glitched_Logic", player) or _can_farm_rupees(state, player):
         return True
-    if _can_farm_rupees(state, player):
-        return True
-    # Multiplier only applies to non-linear items
-    multiplier = 0.7 if options.shop_hints else 1
-    other_costs = 500 * multiplier + 50
     discount = beedle_discount(state, player)  # Discount from points
-    # Island shop items
-    if state.has("Bow (Progressive)", player):
-        other_costs += 1000
-        if state.has("Bombchus (Progressive)", player):
-            other_costs += 3000
-    if state.has("Bombs (Progressive)", player):
-        other_costs += 1000 * discount * multiplier  # Bomb bag is affected by discount
-    if options.randomize_masked_beedle:
-        other_costs += 1500 * multiplier
-    if state.has("Freebie Card", player):
-        other_costs -= 500 * discount  # Freebie card assumed to be used for the 500r wisdom gem.
-    return count_rupees(state, player) >= price * discount + other_costs
+    return count_rupees(state, player) >= price - 1500*(1-discount)
 
 def _can_farm_rupees(state, player):
     return any([
@@ -81,8 +65,6 @@ def buy_beedle_points_eval(state, player, options: PhantomHourglassOptions, poin
         cost = points_res * 100
     else:
         return True
-    if state.has("Bombs (Progressive)", player):
-        cost -= 1000 * beedle_discount(state, player)
     return beedle_eval(state, player, options, cost)
 
 tloz_ph = PhantomHourglassWorld.game
@@ -204,7 +186,7 @@ class HasTime(Rule[PhantomHourglassWorld], game=tloz_ph):
                 return True
             if time_option > 2:
                 room_lookup = {3: 0, 4: 3}
-                print(f"Room = {self.room}")
+                # print(f"Room = {self.room}")
                 if isinstance(self.room, str) or self.room > room_lookup[time_option]:
                     return state.has("Phantom Hourglass", self.player)
                 return True
