@@ -1735,6 +1735,21 @@
       }
     ]
   },
+    {
+    "name": "Zauz's Island Events",
+    "sections": [
+      {
+        "name": "GOAL: Zauz"
+      }
+    ],
+    "map_locations": [
+      {
+        "map": "Check Overview",
+        "x": 258,
+        "y": 28
+      }
+    ]
+  },
   {
     "name": "Events - Goron Island",
     "sections": [
@@ -1821,9 +1836,6 @@
     "sections": [
       {
         "name": "GOAL: Bellumbeck"
-      },
-      {
-        "name": "GOAL"
       }
     ],
     "map_locations": [

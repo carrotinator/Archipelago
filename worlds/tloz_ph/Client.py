@@ -411,7 +411,7 @@ class PhantomHourglassClient(DSZeldaClient):
                             "opens the staircase to Bellum at the bottom of TotOK.",
                             "opens the blue warp to Bellum in TotOK.",
                             "spawns the ruins of the Ghost Ship in the SW Quadrant.",
-                            "wins the game."]
+                            "and giving them to Zauz wins the game."]
             logger.info(f"You have {self.metal_count} out of {required} rare metals. There are {total} metals in total.\n"
                         f"Finding the metals {bellum_texts[ctx.slot_data['bellum_access']]}")
         elif scene == 0x160A:
@@ -945,7 +945,6 @@ class PhantomHourglassClient(DSZeldaClient):
         if item_name in ITEM_GROUPS["Metals"]:
             printl(f"Old thingy metal count: {self.metal_count+1}")
             self.update_metal_count(ctx)
-            printl(f"Updated metal count: {self.metal_count}")
         if "Boss Key" in item_name:
             await self.open_boss_door(ctx)
 
@@ -1039,11 +1038,12 @@ class PhantomHourglassClient(DSZeldaClient):
     async def process_game_completion(self, ctx: "BizHawkClientContext"):
         game_clear = False
         if ctx.slot_data["bellum_access"] == 4:
-            game_clear = self.metal_count >= ctx.slot_data["required_metals"]
-            if game_clear and not self.sent_goal and LOCATIONS_DATA["Zauz's House Phantom Blade"]["id"] in ctx.checked_locations:
+            has_metals = self.metal_count >= ctx.slot_data["required_metals"]
+            if has_metals and not self.sent_goal and self.current_scene == 0x160a and LOCATIONS_DATA["Zauz's House Phantom Blade"]["id"] in ctx.checked_locations:
                 printl(f"Bellum access: {ctx.slot_data['bellum_access']} metal count {self.metal_count} >= {ctx.slot_data['required_metals']}")
                 await self.store_visited_entrances(ctx, ENTRANCES["GOAL"], ENTRANCES["GOAL"].vanilla_reciprocal)
                 self.sent_goal = True
+                game_clear = True
         else:
             if self.current_scene != self.goal_room:
                 return game_clear

@@ -2092,7 +2092,7 @@ EVENT_DATA = {
         "direction": EntranceGroups.NONE,
         "island": EntranceGroups.NONE,
     },
-    "GOAL": {
+    "GOAL: Zauz": {
         "two_way": False,
         "entrance_region": "Goal",
         "exit_region": "Goal Event",

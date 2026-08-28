@@ -331,6 +331,11 @@ def get_hidden_entrances(world: "PhantomHourglassWorld"):
         entr_hidden.setdefault("Check Overview", []).append("EVENT: Open Eddo's Door")
     if ENTRANCES["Cannon Workshop East"].id in active_entrances:
         entr_hidden.setdefault("Cannon Island", []).append("EVENT: Open Eddo's Door")
+    if ENTRANCES["Zauz' House"].id in active_entrances:
+        entr_hidden.setdefault("Zauz's Island", []).append("GOAL: Zauz")
+        entr_hidden.setdefault("Check Overview", []).append("GOAL: Zauz")
+    if ENTRANCES["Ocean NW Zauz"].id in active_entrances:
+        entr_hidden.setdefault("Check Overview", []).append("GOAL: Zauz")
     # Bosses
     if ENTRANCES["ToF Enter Boss"].id in active_entrances:
         locs_hidden.setdefault("Isle of Ember", []).extend([99, 100])

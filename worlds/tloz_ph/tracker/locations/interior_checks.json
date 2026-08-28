@@ -282,6 +282,7 @@
   { "name": "Descending Cave Grapple Chest", "sections": [{ "name": "Descending Cave Grapple Chest" }], "map_locations": [{ "map": "Descending Cave", "x": 154, "y": 122}] },
   { "name": "Zauz's Island Cucco Chest", "sections": [{ "name": "Zauz's Island Cucco Chest" }], "map_locations": [{ "map": "Zauz's Island", "x": 176, "y": 68}] },
   { "name": "Zauz's House Phantom Blade", "sections": [{ "name": "Zauz's House Phantom Blade" }], "map_locations": [{ "map": "Zauz's House", "x": 120, "y": 98}] },
+  { "name": "Zauz's House Goal", "sections": [{ "name": "GOAL: Zauz" }], "map_locations": [{ "map": "Zauz's House", "x": 120, "y": 90}] },
   { "name": "Zauz's Island Secret Dig", "sections": [{ "name": "Zauz's Island Secret Dig" }], "map_locations": [{ "map": "Zauz's Island", "x": 126, "y": 142}] },
   { "name": "Zauz's House Triforce Crest", "sections": [{ "name": "Zauz's House Triforce Crest" }], "map_locations": [{ "map": "Zauz's House", "x": 130, "y": 84}] },
 

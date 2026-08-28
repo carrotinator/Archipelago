@@ -246,7 +246,7 @@ class PhantomHourglassWorld(World):
                     if "GOAL" in event.name:
                         if self.options.goal_requirements != "triforce_door" and event.name in ["GOAL: Triforce Door"]:
                             continue
-                        if self.options.bellum_access != "zauz" and event.name in ["GOAL"]:
+                        if self.options.bellum_access != "zauz" and event.name in ["GOAL: Zauz"]:
                             continue
                         if ((self.options.goal_requirements == "triforce_door" or self.options.bellum_access == "zauz")
                               and event.name in ["GOAL: Bellumbeck"]):
@@ -299,7 +299,7 @@ class PhantomHourglassWorld(World):
         elif self.options.goal_requirements == "defeat_bosses":
             self.required_metals = self.options.dungeons_required.value
 
-        if self.options.bellum_access == "zauz":
+        if self.options.bellum_access.value == 4:
             self.options.zauz_required_metals.value = self.required_metals
             self.locations_to_exclude.add("Zauz's House Phantom Blade")
 
@@ -564,8 +564,8 @@ class PhantomHourglassWorld(World):
                     if not self.options.shuffle_houses and dungeon == "Temple of Fire":
                         locations_to_exclude.add("Shipyard Chest")
 
-        self.locations_to_exclude = locations_to_exclude
-        for name in locations_to_exclude:
+        self.locations_to_exclude.update(locations_to_exclude)
+        for name in self.locations_to_exclude:
             self.multiworld.get_location(name, self.player).progress_type = LocationProgressType.EXCLUDED
 
     def create_er_target_groups(self, type_option_lookup):
