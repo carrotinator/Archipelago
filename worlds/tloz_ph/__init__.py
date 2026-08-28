@@ -310,7 +310,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             i: ("Rupees", ITEMS[i].value) for i in ITEM_GROUPS["Rupee Items"] } | {
             i: ("Treasure", prices[self.treasure_price_index]) for i, prices in TREASURE_PRICES.items() } | {
             i: ("Beedle Points", ITEMS[i].value) for i in ITEM_GROUPS["Beedle Point Items"] } | {
-            f"{spirit} Gem Pack": (f"{spirit} Gem", self.options.spirit_gem_packs.value) for spirit in ["Power", "Wisdom", "Courage"] } | {
+            f"{spirit} Gem Pack": (f"{spirit} Gem", self.options.spirit_gem_packs.value) for spirit in SPIRITS } | {
             "Phantom Hourglass": ("Sand", self.options.ph_starting_time),
             "Sand of Hours": ("Sand", self.options.ph_time_increment),
             "Sand of Hours (Boss)": ("Sand", 120),
@@ -339,7 +339,8 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
 
         # Used for excluding room sets
         add_to_name_group("dungeon", self.dungeon_name_groups)
-        add_to_name_group("post_dungeon", self.post_dungeon_name_groups)
+        if not self.options.open_post_dungeons.value:
+            add_to_name_group("post_dungeon", self.post_dungeon_name_groups)
         add_to_name_group("boss_room", self.boss_room_name_groups)
 
         if local:
@@ -1276,7 +1277,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
     def create_items(self):
         item_pool_dict = self.build_item_pool_dict()
         self.get_extra_filler_items(item_pool_dict)
-        print(f"Extra Filler Items {self.extra_filler_items}")
+        # print(f"Extra Filler Items {self.extra_filler_items}")
         items = []
         for item_name, quantity in item_pool_dict.items():
             for _ in range(quantity):
@@ -1303,10 +1304,10 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
 
 
         excluded_locations = self.locations_to_exclude | self.options.exclude_locations.value
-        extra_item_count = len(excluded_locations) - filler_count + 20
+        extra_item_count = len(excluded_locations) - filler_count + 25
         # print(f"Excluded locs: {excluded_locations}")
-        print(f"Filler items basic: {len(excluded_locations)} | have: {filler_count} | "
-              f"available: {len(extra_items_list)} | creating: {extra_item_count}")
+        # print(f"Filler items basic: {len(excluded_locations)} | have: {filler_count} | "
+        #       f"available: {len(extra_items_list)} | creating: {extra_item_count}")
 
         # since item pool is created before items are filtered to dungeon pool,
         # remove the worst case scenario for excluded key items to lighten the pool
@@ -1319,7 +1320,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         if self.options.shuffle_bosses == 1 and not self.options.decouple_entrances:  # boss exclusion happens later
             extra_item_count += [0, 5, 10, 14, 18, 21, 24, 27][ed]  # worst case boss room + post dungeon locs
 
-        print(f"Filler items advanced: {extra_item_count}")
+        # print(f"Filler items advanced: {extra_item_count}")
         if extra_item_count > 0:
             self.random.shuffle(extra_items_list)
             self.extra_filler_items = extra_items_list[:extra_item_count]

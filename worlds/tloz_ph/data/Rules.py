@@ -25,6 +25,7 @@ pedestals_own_dungeon = [OptionFilter(PhantomHourglassRandomizePedestalItems, 2)
 pedestals_anywhere = [OptionFilter(PhantomHourglassRandomizePedestalItems, 3)]
 pedestals_not_vanilla = [OptionFilter(PhantomHourglassRandomizePedestalItems, 0, "gt")]
 
+
 vanilla_caves = [OptionFilter(PhantomHourglassShuffleCaves, 0)]
 vanilla_dungeons = [OptionFilter(PhantomHourglassShuffleDungeonEntrances, 0)]
 vanilla_bosses = [OptionFilter(PhantomHourglassShuffleBosses, 0)]
@@ -165,6 +166,8 @@ boss_keys_vanilla = [OptionFilter(PhantomHourglassRandomizeBossKeys, [0, 3], "in
 boss_keys_own_dungeon = [OptionFilter(PhantomHourglassRandomizeBossKeys, 2, "ne")]
 ut_boss_keys_own_dungeon = boss_keys_own_dungeon & smart_keys
 
+open_post_dungeon = [OptionFilter(PhantomHourglassOpenPostDungeonLocations, 1)]
+
 # Rupees
 can_farm_rupees = Or(
     And(
@@ -243,12 +246,14 @@ def simple_boss_key(dung):
               smart_keys & boss_keys_vanilla)
 
 # Pirate Ambush
+unlock_ambush = Has("_beat_ghost_ship") | open_post_dungeon
+
 pirate_ambush_nw = Has("_beat_cubus_sisters") & Has("_beat_ghost_ship") & vanilla_dungeons & vanilla_bosses & (
     has_sea_chart("SW") | (
     has_frog_n & (has_frog_square | has_frog_se)
     )
 )
-pirate_ambush_ne = Has("_beat_ghost_ship") & (
+pirate_ambush_ne = unlock_ambush & (
     has_sea_chart("SE") | (
         has_frog_square & (
             has_frog_x | has_frog_phi | has_frog_n
@@ -257,7 +262,7 @@ pirate_ambush_ne = Has("_beat_ghost_ship") & (
         hard_logic & has_sea_chart("NW")
     )
 )
-pirate_ambush_se = Has("_beat_ghost_ship") & (
+pirate_ambush_se = unlock_ambush & (
     has_sea_chart("SW") | has_sea_chart("NE") | (has_frog_se & has_frog_n)
 )
 
@@ -465,7 +470,7 @@ def has_sand(time):
 
 def has_floor_time(room, time=0):
     floor_func = floor_lookup[room]
-    return HasTime(time, floor_func, room)
+    return ut_glitched | HasTime(time, floor_func, room)
 
 
 totok = "Temple of the Ocean King"
@@ -667,7 +672,7 @@ totok_b11_eyes = has_floor_time(11, 25)
 
 # B12
 def totok_b12_routes(normal=0, hammer=0):
-    return  has_floor_time("12_h", hammer) | has_floor_time(12, normal)
+    return has_floor_time("12_h", hammer) | has_floor_time(12, normal)
 totok_b12 = totok_b12_routes()
 totok_b12_nw = totok_b12_routes(12, 15)
 totok_b12_ne = totok_b12_routes(35, 15)
@@ -675,7 +680,7 @@ totok_b12_phantom = has_phantom_sword & totok_b12_routes(55, 40)
 totok_b12_abstract_pedestals = pedestals_not_vanilla & has_force_gems(12, 2)
 totok_b12_wizzrobes = Or(
     totok_b12_abstract_pedestals & totok_b12_routes(20, 20),
-    totok_b12_routes(50, 70)
+    totok_b12_routes(50, 70) & pedestals_vanilla
 )
 totok_b12_hammer = has_floor_time("12_h", 10)
 

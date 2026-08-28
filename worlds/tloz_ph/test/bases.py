@@ -166,15 +166,18 @@ options_keys = {
     "pedestal_item_options": "open_per_dungeon",
 
     "ph_time_logic": "ph_only_b4",
-    "spirit_gem_packs": 5,
+    "spirit_gem_packs": 2,
 
-    "dungeons_required": 1,
+    "dungeons_required": 0,
     "require_specific_bosses": False,
     "totok_in_dungeon_pool": True,
     "ghost_ship_in_dungeon_pool": "rescue_tetra",
     "exclude_non_required_dungeons": True,
     "additional_metal_names": "vanilla_only",
     "goal_requirements": "metal_hunt",
+
+    "randomize_minigames": "randomize_with_hints",
+    "open_post_dungeon": True,
 
 
 }

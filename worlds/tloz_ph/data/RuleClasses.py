@@ -1,6 +1,7 @@
 from BaseClasses import LocationProgressType, Location
 from rule_builder.rules import *
 from .. import PhantomHourglassWorld, PhantomHourglassOptions
+from .Items import ITEM_GROUPS
 
 cost_multiplier = 0.7
 
@@ -61,10 +62,9 @@ def buy_beedle_points_eval(state, player, options: PhantomHourglassOptions, poin
     Evaluate if you have enough rupees to buy beedle points
     """
     points_res = points - state.count("Beedle Points", player)
-    if points_res > 0:
-        cost = points_res * 100
-    else:
+    if points_res <= 0:
         return True
+    cost = points_res * 100
     return beedle_eval(state, player, options, cost)
 
 tloz_ph = PhantomHourglassWorld.game
@@ -122,6 +122,10 @@ class BeedleShop(PHShop, game=tloz_ph):
         price: int
 
         @override
+        def item_dependencies(self) -> dict[str, set[int]]:
+            return {i: {id(self)} for i in ITEM_GROUPS["Point Logic"]}
+
+        @override
         def _evaluate(self, state: CollectionState) -> bool:
             options: PhantomHourglassOptions = state.multiworld.worlds[self.player].options
             return beedle_eval(state, self.player, options, self.price)
@@ -148,8 +152,32 @@ class HasBeedlePoints(PHShop, game=tloz_ph):
                 return buy_beedle_points_eval(state, self.player, options, points)
             return False
 
-        def __str__(self):
-            return f"Has {self.price} Beedle Points"
+        @override
+        def explain_json(self, state: CollectionState | None = None) -> list[JSONMessagePart]:
+            can_buy_points = buy_beedle_points_eval(state, self.player, state.multiworld.worlds[self.player].options, self.price)
+            point_count = state.count("Beedle Points", self.player)
+            points_res = self.price - point_count
+            if points_res <= 0:
+                points_res = 0
+            cost = points_res * 100 * beedle_discount(state, self.player)
+            has_points = state.has("Beedle Points", self.player, self.price)
+            rupee_count = count_rupees(state, self.player)
+            has_rupees = rupee_count >= cost
+            can_farm = _can_farm_rupees(state, self.player) and (state.multiworld.worlds[self.player].options.randomize_beedle_membership == "randomize_with_grinding" or self.price <= 20)
+
+            return [
+                {"type": "text", "text": "Has "},
+                {"type": "color", "color": "green" if has_points else "salmon", "text": f"{point_count}/{str(self.price)}"},
+                {"type": "text", "text": " Beedle Points"},
+                {"type": "color", "color": "blue", "text": " OR "},
+                {"type": "text", "text": "Has "},
+                {"type": "color", "color": "green" if has_rupees else "salmon", "text": f"{rupee_count}/{str(cost)}"},
+                {"type": "text", "text": " Rupees"},
+                {"type": "color", "color": "blue", "text": " OR "},
+                {"type": "color", "color": "green" if can_farm else "salmon", "text": "can_farm_rupees"},
+                {"type": "color", "color": "blue", "text": " OR "},
+                {"type": "color", "color": "salmon", "text": "out_of_logic"},
+            ]
 
 class HasTime(Rule[PhantomHourglassWorld], game=tloz_ph):
     """
@@ -171,7 +199,7 @@ class HasTime(Rule[PhantomHourglassWorld], game=tloz_ph):
             self.room,
             self.floor_func,
             player=world.player,
-            caching_enabled=False)
+            caching_enabled=True)
 
     class Resolved(Rule.Resolved):
         time: int
@@ -179,11 +207,14 @@ class HasTime(Rule[PhantomHourglassWorld], game=tloz_ph):
         floor_func: "Callable"
 
         @override
+        def item_dependencies(self) -> dict[str, set[int]]:
+            # print(f"Time cache: {ITEM_GROUPS['Time Logic']}")
+            return {i: {id(self)} for i in ITEM_GROUPS["Time Logic"]}
+
+        @override
         def _evaluate(self, state: CollectionState):
             options: PhantomHourglassOptions = state.multiworld.worlds[self.player].options
             time_option = options.ph_time_logic.value
-            if state.has("_UT_Glitched_Logic", self.player) or time_option == 5:
-                return True
             if time_option > 2:
                 room_lookup = {3: 0, 4: 3}
                 # print(f"Room = {self.room}")
@@ -203,6 +234,43 @@ class HasTime(Rule[PhantomHourglassWorld], game=tloz_ph):
 
         def __str__(self):
             return f"Has enough Sand to reach floor {self.room} + {self.time}/time_logic_difficulty"
+
+        @override
+        def explain_json(self, state: CollectionState | None = None) -> list[JSONMessagePart]:
+            options: PhantomHourglassOptions = state.multiworld.worlds[self.player].options
+            time_option = options.ph_time_logic.value
+            has_ph_message: list[JSONMessagePart] = [
+                        {"type": "text", "text": "Has "},
+                        {"type": "color", "color": "green" if state.has("Phantom Hourglass", self.player) else "salmon",
+                         "text": "Phantom Hourglass"}
+                    ]
+
+            if time_option > 2:
+                room_lookup = {3: 0, 4: 3}
+                if isinstance(self.room, str) or self.room > room_lookup[time_option]:
+                    return has_ph_message
+                return []
+
+            total_sand = state.count("Sand", self.player)
+            time_lookup = {0: 1, 1: 2, 2: 4, -1: 0.5}
+            multiplier = time_lookup.get(time_option, 1)
+
+            floor_time = self.floor_func(state, self.player) + self.time
+            if floor_time >= 6000:
+                res: list[JSONMessagePart] = [
+                    {"type": "color", "color": "salmon", "text": "TimeLogicMissingItems"},
+                ]
+            else:
+                # print(f"Floor Time {floor_time} from {self.floor_func} + {self.time}")
+                has_sand = total_sand >= floor_time // multiplier
+                res: list[JSONMessagePart] = [
+                    {"type": "text", "text": "Has "},
+                    {"type": "color", "color": "green" if has_sand else "salmon", "text": f"{total_sand}/{floor_time // multiplier}"},
+                    {"type": "text", "text": " Sand of Hours"},
+                ]
+            if options.ph_required:
+                res += [{"type": "color", "color": "blue", "text": " AND "}] + has_ph_message
+            return res
 
 class TotOKSmallKeys(Rule[PhantomHourglassWorld], game=tloz_ph):
     """

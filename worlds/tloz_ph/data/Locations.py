@@ -1149,7 +1149,7 @@ LOCATIONS_DATA = {
         "hint_entrance": ["Cannon Bomb Garden Cave", "Cannon Workshop East"]
     },
     "Eddo's Cannon": {
-        "region_id": "Eddo's Workshop",
+        "region_id": "Eddo's Cannon",
         "vanilla_item": "Nothing!",
         "item_override": "Cannon",
         "stage_id": 0x13,

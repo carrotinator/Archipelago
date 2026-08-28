@@ -590,6 +590,12 @@ DYNAMIC_FLAGS = {
     "mercay Safety Shipyard": {
         "on_scenes": [0xB03],
         "has_locations": ["Blaaz Boss Reward"],
+        "has_slot_data": [("open_post_dungeons", 0)],
+        "set_if_true": [(PHAddr.adv_flags_3, 0x20)]
+    },
+    "mercay shipyard post dungeon": {
+        "on_scenes": [0xB03],
+        "has_slot_data": [("open_post_dungeons", 1)],
         "set_if_true": [(PHAddr.adv_flags_3, 0x20)]
     },
     # Fog
@@ -798,6 +804,15 @@ DYNAMIC_FLAGS = {
         "on_scenes": [0x100A],
         "not_has_locations": ["Goron Chief Post Dungeon Item"],
         "has_locations": ["Dongorongo Boss Reward", "Goron Chief Goron Quiz"],
+        "has_slot_data": [("open_post_dungeon", 0)],
+        "set_if_true": [(PHAddr.flags_metals, 0x40), (PHAddr.adv_flags_18, 0x8)],
+        "reset_flags": ["RESET remove Crimzonine", "RESET goron chief gongoron"]
+    },
+    "Beat goron temple goron chief open posts": {
+        "on_scenes": [0x100A],
+        "not_has_locations": ["Goron Chief Post Dungeon Item"],
+        "has_locations": ["Goron Chief Goron Quiz"],
+        "has_slot_data": [("open_post_dungeon", 1)],
         "set_if_true": [(PHAddr.flags_metals, 0x40), (PHAddr.adv_flags_18, 0x8)],
         "reset_flags": ["RESET remove Crimzonine", "RESET goron chief gongoron"]
     },
@@ -827,6 +842,12 @@ DYNAMIC_FLAGS = {
     "Play goron game on dee ess after temple": {
         "on_scenes": [0x1B00],
         "has_locations": ["Dongorongo Boss Reward"],
+        "has_slot_data": [("open_post_dungeon", 0)],
+        "set_if_true": [(PHAddr.adv_flags_27, 0x20)]
+    },
+    "Play goron game on dee ess open post dungeons": {
+        "on_scenes": [0x1B00],
+        "has_slot_data": [("open_post_dungeon", 1)],
         "set_if_true": [(PHAddr.adv_flags_27, 0x20)]
     },
 
@@ -933,13 +954,20 @@ DYNAMIC_FLAGS = {
         "on_scenes": [0x2, 0x3],
         "not_has_locations": ["Ocean Miniblin Pirate Ambush Item"],
         "has_locations": ["Ghost Ship Rescue Tetra"],
+        "has_slot_data": [("open_post_dungeons", 0)],
+        "set_if_true": [(PHAddr.flags_fog_spirits, 0x10), (PHAddr.flags_clear_fog, 0x80), (PHAddr.flags_fog_done, 0x10)]
+    },
+    "spawn big pirate ship open posts": {
+        "on_scenes": [0x2, 0x3],
+        "not_has_locations": ["Ocean Miniblin Pirate Ambush Item"],
+        "has_slot_data": [("open_post_dungeons", 1)],
         "set_if_true": [(PHAddr.flags_fog_spirits, 0x10), (PHAddr.flags_clear_fog, 0x80), (PHAddr.flags_fog_done, 0x10)]
     },
     "despawn big pirate ship": {
         "on_scenes": [0x2, 0x3],
         "not_has_locations": ["Ghost Ship Rescue Tetra"],
+        "has_slot_data": [("open_post_dungeons", 0)],
         "unset_if_true": [(PHAddr.flags_fog_spirits, 0x10), (PHAddr.flags_clear_fog, 0x80), (PHAddr.flags_fog_done, 0x10)]
-
     },
 
     # Zauz
@@ -960,11 +988,18 @@ DYNAMIC_FLAGS = {
     "Zauz remove triforce crest": {
         "on_scenes": [0x160A],
         "not_has_locations": ["Ghost Ship Rescue Tetra"],
+        "has_slot_data": [("open_post_dungeon", 0)],
         "unset_if_true": [(PHAddr.flags_fog_done, 0x10), (PHAddr.adv_flags_4, 2), (PHAddr.flags_clear_fog, 0x80)]
     },
     "Zauz add triforce crest": {
         "on_scenes": [0x160A],
         "has_locations": ["Ghost Ship Rescue Tetra"],
+        "has_slot_data": [("open_post_dungeon", 0)],
+        "set_if_true": [(PHAddr.flags_fog_done, 0x10), (PHAddr.adv_flags_4, 2), (PHAddr.flags_clear_fog, 0x80)],
+    },
+    "Zauz add triforce crest open post dungeon": {
+        "on_scenes": [0x160A],
+        "has_slot_data": [("open_post_dungeon", 1)],
         "set_if_true": [(PHAddr.flags_fog_done, 0x10), (PHAddr.adv_flags_4, 2), (PHAddr.flags_clear_fog, 0x80)],
     },
     "RESET Zauz remove triforce crest": {
@@ -1473,11 +1508,18 @@ DYNAMIC_FLAGS = {
     "Astrid after fire temple": {
         "on_scenes": [0xD0A],
         "has_locations": ["Blaaz Boss Reward"],
+        "has_slot_data": [("open_post_dungeons", 0)],
+        "set_if_true": [(PHAddr.flags_bosses_0, 0x20)]
+    },
+    "Astrid open post dungeon": {
+        "on_scenes": [0xD0A],
+        "has_slot_data": [("open_post_dungeons", 1)],
         "set_if_true": [(PHAddr.flags_bosses_0, 0x20)]
     },
     "Astrid before fire temple": {
         "on_scenes": [0xD0A],
         "not_has_locations": ["Blaaz Boss Reward"],
+        "has_slot_data": [("open_post_dungeons", 0)],
         "unset_if_true": [(PHAddr.flags_bosses_0, 0x20)]
     },
     "Ember respawn blaaz": {

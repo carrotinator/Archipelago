@@ -396,7 +396,7 @@ ITEMS_DATA = {
         "size": 2,
         "id": 16,
         "model": 0xa,
-        "item_groups": ["Upgrades", "HC", "Hearts"],
+        "item_groups": ["Upgrades", "HC", "Hearts", "Time Logic", "Sand Items"],
     },
     "Phantom Hourglass": {
         "classification": ItemClassification.progression,
@@ -408,7 +408,7 @@ ITEMS_DATA = {
         "model": 0x78,
         "ghost_model": True,
         "model_reset": "Sand of Hours (Small)",
-        "item_groups": ["Upgrades", "PH", "Hourglass", "Sand", "Time", "Sand Items"],
+        "item_groups": ["Upgrades", "PH", "Hourglass", "Time", "Sand Items"],
     },
     "Sand of Hours (Boss)": {
         "classification": DEPRIORITIZED_SKIP_BALANCING_FALLBACK,
@@ -419,7 +419,7 @@ ITEMS_DATA = {
         "id": 18,
         "model": 0x78,
         "ghost_model": True,
-        "item_groups": ["Upgrades", "Sand", "Time", "Technical Items", "Sand Items"],
+        "item_groups": ["Upgrades", "Time", "Technical Items", "Sand Items"],
     },
     "Sand of Hours (Small)": {
         "classification": DEPRIORITIZED_SKIP_BALANCING_FALLBACK,
@@ -430,7 +430,7 @@ ITEMS_DATA = {
         "id": 19,
         "model": 0x78,
         "ghost_model": True,
-        "item_groups": ["Upgrades", "Sand", "Time", "Technical Items", "Sand Items"],
+        "item_groups": ["Upgrades", "Time", "Technical Items", "Sand Items"],
     },
     "Sand of Hours": {
         "classification": DEPRIORITIZED_FALLBACK,
@@ -442,7 +442,7 @@ ITEMS_DATA = {
         "model": 0x78,
         "ghost_model": True,
         "model_reset": "Sand of Hours (Small)",
-        "item_groups": ["Upgrades", "Sand", "Time", "Sand Items"],
+        "item_groups": ["Upgrades", "Time", "Sand Items"],
     },
     "Swordsman's Scroll": {
         "classification": ItemClassification.useful,
@@ -1225,7 +1225,7 @@ ITEMS_DATA = {
         "model_reset": True,
         "vanilla_model": 0x1,
         "ghost_model": True,
-        "item_groups": ["Small Keys", "TotOK Keys", "Small Key TotOK"],
+        "item_groups": ["Small Keys", "TotOK Keys", "Small Key TotOK", "Time Logic"],
     },
     "Small Key (Temple of Fire)": {
         "classification": ItemClassification.progression,
@@ -2428,7 +2428,7 @@ ITEMS_DATA = {
         "dungeon": 0x25,
         "model_reset": True,
         "item_groups": ["Keyrings", "TotOK Keys", "Small Key TotOK",
-                        "TotOK Keyring"],
+                        "TotOK Keyring", "Time Logic"],
     },
     "Keyring (Temple of Fire)": {
         "classification": ItemClassification.progression,
@@ -2514,11 +2514,16 @@ ITEM_GROUPS["Global Pedestal Items"] |= ITEM_GROUPS["Global Crystal Items"]
 ITEM_GROUPS["Regular Pedestal Items"] = ITEM_GROUPS["Regular Crystal Items"] | ITEM_GROUPS["Unique Force Gems"]
 ITEM_GROUPS["Shape Crystals"] = ITEM_GROUPS["Unique Crystal Items"] | ITEM_GROUPS["Regular Crystal Items"] | ITEM_GROUPS["Global Crystal Items"]
 ITEM_GROUPS["Pedestal Items"] = ITEM_GROUPS["Shape Crystals"] | ITEM_GROUPS["Force Gem Items"]
+ITEM_GROUPS["TotOK Pedestals"] = {i for g in ["totok_round_8", "totok_round_9", "totok_tri_8", "totok_tri_9", "totok_sq_w", "totok_sq_e", "Force Gem Items"]
+                                  for i in ITEM_GROUPS[g]}
 
 ITEM_GROUPS["Throwable Keys"] = ITEM_GROUPS["Boss Keys"] | ITEM_GROUPS["Pedestal Items"]
 ITEM_GROUPS["Keys"] = ITEM_GROUPS["Collection Screen Keys"] | ITEM_GROUPS["Small Keys"] | ITEM_GROUPS["Throwable Keys"] | ITEM_GROUPS["Crests"] | ITEM_GROUPS["Keyrings"]
 
 ITEM_GROUPS["Treasure Maps"] |= set(TREASURE_MAPS)
+
+ITEM_GROUPS["Time Logic"] |= ITEM_GROUPS["Equipment"] | ITEM_GROUPS["Sand Items"] | ITEM_GROUPS["TotOK Pedestals"] | ITEM_GROUPS["Spirits"]
+ITEM_GROUPS["Point Logic"] = ITEM_GROUPS["Beedle Point Items"] | ITEM_GROUPS["Rupee Items"] | ITEM_GROUPS["Treasure Items"]
 
 ITEMS: dict[str, "PHItem"] = dict()
 item_id_to_name_dict: dict[int, str] = dict()

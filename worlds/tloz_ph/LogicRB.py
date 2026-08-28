@@ -32,8 +32,8 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
         ["Mercay SE", "Milk Bar", True, None],
         ["Mercay SE", "Mercay Shop", True, None],
         ["Mercay Shop", "Island Shop", False, None],
-        ["Mercay SE", "Mercay SE Shipyard", False, Has("_beat_tof")],
-            ["Mercay SE Shipyard", "Shipyard", False, Has("_beat_tof")],
+        ["Mercay SE", "Mercay SE Shipyard", False, Has("_beat_tof")  | open_post_dungeon],
+            ["Mercay SE Shipyard", "Shipyard", False, Has("_beat_tof") | open_post_dungeon],
             ["Shipyard", "Mercay SE Shipyard", False, None],
             ["Mercay SE Shipyard", "Mercay SE", False, None],
         ["Mercay SE", "Mercay SE Treasure Teller", False, has_courage_crest],
@@ -252,7 +252,8 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
         ["Cannon Outside Eddo", "Cannon Island", False, glitched_logic],
         ["Cannon Outside Eddo", "Eddo's Workshop", True, None],
         ["Fuzo's Workshop", "Eddo's Workshop", True, Has("_eddo_door")],
-        ["Eddo's Workshop", "Eddo Salvage Arm", False, has_courage_crest],
+        ["Eddo's Workshop", "Eddo's Cannon", False, has_rupees(50)],
+        ["Eddo's Cannon", "Eddo Salvage Arm", False, has_courage_crest & has_rupees(250)],
         ["Eddo's Workshop", "Eddo Event", False, None],
         ["Cannon Bomb Garden", "Cannon Bomb Garden Dig", False, has_shovel],
 
@@ -264,7 +265,7 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
         ["Astrid's Basement", "Astrid's Basement Dig", False, has_shovel],
         ["Ember Port", "Kayo's House", True, None],
         ["Ember Port", "Abandoned House", True, None],
-        ["Astrid's House", "Astrid Post ToF", False, Has("_beat_tof")],
+        ["Astrid's House", "Astrid Post ToF", False, Has("_beat_tof") | open_post_dungeon],
 
         ["Ember Port", "Ember Grapple", False, ember_grapple_chest],
         ["Ember Grapple", "Ember Port", False, has_grapple],
@@ -320,7 +321,7 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
         ["Molida South", "Molida Shop", True, None],
         ["Molida Shop", "Island Shop", False, None],
         ["Molida South", "Romanos' House", True, None],
-        ["Romanos' House", "Archery Game", False, Has("_beat_toc")],
+        ["Romanos' House", "Archery Game", False, Has("_beat_toc") | (open_post_dungeon & has_bow)],
         ["Molida South", "Sun Lake Cave", True, None],
         ["Molida South", "Sun Lake Cave Upper", False, has_shovel],
 
@@ -487,7 +488,7 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
         ["Zauz's Island", "Zauz Dig", False, has_shovel],
         ["Zauz's Island", "Zauz's House", True, None],
         ["Zauz's House", "Zauz's Blade", False, HasGroup("Metals", FromOption(PhantomHourglassZauzRequiredMetals))],
-        ["Zauz's House", "Zauz's Crest", False, Has("_beat_ghost_ship")],
+        ["Zauz's House", "Zauz's Crest", False, Has("_beat_ghost_ship") | open_post_dungeon],
 
         # ================= Uncharted Island ====================
 
@@ -561,7 +562,7 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
         ["Goron SE", "Goron SE NW", False, None],
         ["Goron SE NW", "Goron SE", False, Has("_goron_bridge")],
         ["Goron Chief House", "Goron Quiz", False, Has("_goron_bridge") & Has("_goron_chus")],
-        ["Goron Quiz", "Goron Chief Post Dungeon", False, Has("_beat_gt")],
+        ["Goron Quiz", "Goron Chief Post Dungeon", False, Has("_beat_gt") | open_post_dungeon],
         ["Goron SE", "Goron NE", True, None],
 
         ["Goron NE", "Goron NE South", False, None],
@@ -608,7 +609,7 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
 
         ["Dee Ess Island", "Dee Ess Dig", False, has_shovel],
         ["Dee Ess Island", "Dee Ess Eye Brutes", False, can_kill_eye_brute],
-        ["Dee Ess Island", "Dee Ess Goron Race", False, Has("_beat_gt")],
+        ["Dee Ess Island", "Dee Ess Goron Race", False, Has("_beat_gt") | open_post_dungeon],
 
         # ================= Isle of Frost ====================
 

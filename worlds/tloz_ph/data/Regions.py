@@ -196,6 +196,7 @@ REGIONS = [
     "Eddo Event",
     "Bomb Flower Cave South",
     "Bomb Flower Cave North",
+    "Eddo's Cannon",
     "Eddo Salvage Arm",
     "Cannon Island Dig",
     "Cannon Bomb Garden Dig",
@@ -689,21 +690,7 @@ REGIONS = [
 
 
 if __name__ == "__main__":
-    action = "print_regions"
-    if action == "print_regions":
-        for r in REGIONS:
-            print(r)
-
-    elif action == "compare_logic":
-        for reg1, reg2, two_way, *args in overworld_logic:
-            if reg1 not in REGIONS:
-                print(reg1)
-                raise IndexError(f"Missing \"{reg1}\"")
-            if reg2 not in REGIONS:
-                print(reg2)
-                raise IndexError(f"Missing \"{reg2}\"")
-
-        # print(f"\t\t[\"{reg1}\", \"{reg2}\", {two_way}, {arg_fix(args)}],")
+    pass
 
 
 
