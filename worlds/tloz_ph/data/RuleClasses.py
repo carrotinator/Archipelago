@@ -2,6 +2,7 @@ from BaseClasses import LocationProgressType, Location
 from rule_builder.rules import *
 from .. import PhantomHourglassWorld, PhantomHourglassOptions
 from .Items import ITEM_GROUPS
+from math import ceil
 
 cost_multiplier = 0.7
 
@@ -222,15 +223,15 @@ class HasTime(Rule[PhantomHourglassWorld], game=tloz_ph):
                     return state.has("Phantom Hourglass", self.player)
                 return True
             if options.ph_required and not state.has("Phantom Hourglass", self.player):
-                return False
-
-            total_sand = state.count("Sand", self.player)
+                total_sand = (state.count("Heart Container", self.player) + 2) * options.ph_heart_time.value
+            else:
+                total_sand = state.count("Sand", self.player) + options.ph_heart_time.value * 2
             time_lookup = {0: 1, 1: 2, 2: 4, -1: 0.5}
             multiplier = time_lookup.get(time_option, 1)
 
             floor_time = self.floor_func(state, self.player) + self.time
             # print(f"Floor Time {floor_time} from {self.floor_func} + {self.time}")
-            return total_sand >= floor_time // multiplier
+            return total_sand >= ceil(floor_time / multiplier)
 
         def __str__(self):
             return f"Has enough Sand to reach floor {self.room} + {self.time}/time_logic_difficulty"
@@ -251,7 +252,11 @@ class HasTime(Rule[PhantomHourglassWorld], game=tloz_ph):
                     return has_ph_message
                 return []
 
-            total_sand = state.count("Sand", self.player)
+            if options.ph_required and not state.has("Phantom Hourglass", self.player):
+                total_sand = (state.count("Heart Container", self.player) + 2) * options.ph_heart_time.value
+            else:
+                total_sand = state.count("Sand", self.player) + options.ph_heart_time.value * 2
+
             time_lookup = {0: 1, 1: 2, 2: 4, -1: 0.5}
             multiplier = time_lookup.get(time_option, 1)
 
@@ -262,14 +267,12 @@ class HasTime(Rule[PhantomHourglassWorld], game=tloz_ph):
                 ]
             else:
                 # print(f"Floor Time {floor_time} from {self.floor_func} + {self.time}")
-                has_sand = total_sand >= floor_time // multiplier
+                has_sand = total_sand >= ceil(floor_time / multiplier)
                 res: list[JSONMessagePart] = [
                     {"type": "text", "text": "Has "},
-                    {"type": "color", "color": "green" if has_sand else "salmon", "text": f"{total_sand}/{floor_time // multiplier}"},
+                    {"type": "color", "color": "green" if has_sand else "salmon", "text": f"{total_sand}/{ceil(floor_time / multiplier)}"},
                     {"type": "text", "text": " Sand of Hours"},
                 ]
-            if options.ph_required:
-                res += [{"type": "color", "color": "blue", "text": " AND "}] + has_ph_message
             return res
 
 class TotOKSmallKeys(Rule[PhantomHourglassWorld], game=tloz_ph):
