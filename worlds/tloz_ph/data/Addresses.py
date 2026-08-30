@@ -72,8 +72,9 @@ class PHAddr:
     started_save_file = Address(0x1B7FB8)  # Used to trigger precision stuff from menu
 
     link_held_item_goron = Address(0x1CD770, size=2)
-    link_held_item_2 = Address(0x1CDAE0, size=2)
-    link_held_item = Address(0x1CD510, size=2)
+    link_held_item_2 = Address(0x1CDAE0, size=2)  # totok
+    link_held_item = Address(0x1CD510, size=2)  # elsewhere
+    link_held_item_offset_totok = Address(0x1CDAE4, size=2)
 
     actor_table_pointer = Address(0x1BA8C4, size=3)
 

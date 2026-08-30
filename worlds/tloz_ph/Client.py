@@ -218,6 +218,8 @@ class PhantomHourglassClient(DSZeldaClient):
         self.stage_flags = STAGE_FLAGS
         self.was_in_cutscene: bool = False
 
+        self.last_held_offset: int = 0xffff
+
 
     async def check_game_version(self, ctx: "BizHawkClientContext") -> bool:
         rom_name_bytes = (await PHAddr.game_identifier.read_bytes(ctx))[0]
@@ -337,6 +339,8 @@ class PhantomHourglassClient(DSZeldaClient):
                 if in_game:
                     death_link_pointer = (PHAddr.gPlayer, 0xa)
                 self.at_sea = False
+                if stage == 0x25:
+                    read_keys.append(PHAddr.link_held_item_offset_totok)
 
             if death_link_pointer:
                 addr, offset = death_link_pointer
@@ -1815,10 +1819,10 @@ class PhantomHourglassClient(DSZeldaClient):
                         write_list.append(Address.from_pointer(addr + 42 * 4 + 2, size=2).get_inner_write_list(0))
                 elif self.current_scene == 0x250C:
                     if x == -51200:
-                        if not ctx.slot_data["randomize_pedestal_items"]:
-                            add_action("b9_flames", addr + 8)
-                        elif has_west:
+                        if has_west:
                             lower_spikes(addr)
+                        else:
+                            add_action("b9_flames", addr + 8)
                     else:
                         write_list.pop()  # Phantom Flames actually use the cutscene flag
                         write_list.append(Address.from_pointer(addr + 42 * 4+2, size=2).get_inner_write_list(0))
@@ -1932,7 +1936,7 @@ class PhantomHourglassClient(DSZeldaClient):
                         add_detection("gs_tri", addr + 8, comp=1, always_active=True)
                     else:
                         add_detection("gs_round", addr + 8, comp=1, always_active=True)
-                if self.current_scene == 0x250C and not ctx.slot_data["randomize_pedestal_items"]:
+                if self.current_scene == 0x250C:
                     if x == -63488:
                         add_detection("b9_flames", addr + 8, comp=1, always_active=True)
 
@@ -2005,6 +2009,19 @@ class PhantomHourglassClient(DSZeldaClient):
             printl(f"Not In Cutscene!")
             self.was_in_cutscene = False
             await self.update_main_read_list(ctx, self.current_stage)
+
+        # Detect picking up phantom items
+        if self.current_scene in held_trigger_scenes and read_result[PHAddr.link_held_item_offset_totok] != self.last_held_offset:
+            self.last_held_offset = read_result[PHAddr.link_held_item_offset_totok]
+            if self.last_held_offset != 0xffff:
+                actor_table = await PHAddr.actor_table_pointer.read(ctx)
+                held_actor = await Address.from_pointer(actor_table+4*self.last_held_offset, size=3).read(ctx)
+                actor_id = await Address.from_pointer(held_actor, size=3).read(ctx)
+                if held_actor_ids.get(actor_id, "") == "Square Crystal" and self.current_scene == 0x250c:
+                    await self._process_checked_locations(ctx, "TotOK B9 Square Crystal")
+                if held_actor_ids.get(actor_id, "") == "Force Gem" and self.current_scene == 0x2510:
+                    await self._process_checked_locations(ctx, "TotOK B12 Warp Phantom Force Gem")
+
         await super().process_in_game(ctx, read_result)
 
     async def force_spawn_swordfish(self, ctx):

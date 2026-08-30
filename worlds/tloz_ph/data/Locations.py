@@ -4063,6 +4063,18 @@ LOCATIONS_DATA = {
         "vanilla_item": "Gold Rupee (300)",
         "item_override": "Treasure Map #31 (Dead S)",
     },
+    "TotOK B9 Square Crystal": {
+        "region_id": "TotOK B9 Crystal",
+        "conditional": True,
+        "id": 333,
+        "vanilla_item": "Square Crystal (Temple of the Ocean King)"
+    },
+    "TotOK B12 Warp Phantom Force Gem": {
+        "region_id": "TotOK B12 Gem",
+        "conditional": True,
+        "id": 334,
+        "vanilla_item": "Force Gem (B12)"
+    }
 }
 
 for i in LOCATIONS_DATA:

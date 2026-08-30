@@ -129,6 +129,7 @@ REGIONS = [
 
     "TotOK B9",
     "TotOK B9 Phantom",
+    "TotOK B9 Crystal",
     "TotOK B9 Wizzrobes",
     "TotOK B9 Corner Chest",
     "TotOK B9.5",
@@ -147,6 +148,7 @@ REGIONS = [
     "TotOK B12 NW Chest",
     "TotOK B12 NE Chest",
     "TotOK B12 Phantom",
+    "TotOK B12 Gem",
     "TotOK B12 Ghost",
     "TotOK B12 Hammer",
 

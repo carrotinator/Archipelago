@@ -148,6 +148,7 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
         ["TotOK B8", "TotOK B7 Phantom", False, totok_b7_phantom],
         ["TotOK B8", "TotOK B9 Corner Chest", False, totok_b9_corner_chest],
 
+        ["TotOK B9", "TotOK B9 Crystal", False, totok_b9_crystal],
         ["TotOK B9", "TotOK B9 Phantom", False, totok_b9_phantom],
         ["TotOK B9", "TotOK B9 Wizzrobes", False, totok_b9_wizzrobes],
 
@@ -167,6 +168,7 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
         ["TotOK B12", "TotOK B12 NW Chest", False, totok_b12_nw],
         ["TotOK B12", "TotOK B12 NE Chest", False, totok_b12_ne],
         ["TotOK B12", "TotOK B12 Phantom", False, totok_b12_phantom],
+        ["TotOK B12", "TotOK B12 Gem", False, totok_b12_gem],
         ["TotOK B12", "TotOK B12 Ghost", False, totok_b12_wizzrobes],
         ["TotOK B12", "TotOK B12 Hammer", False, totok_b12_hammer],
         ["TotOK B12", "TotOK B13", False, totok_b13],

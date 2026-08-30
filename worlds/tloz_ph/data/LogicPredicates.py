@@ -2228,8 +2228,8 @@ def ph_time_b13(state, player):
     return min(
         ph_time_b12(state, player) + 60,
         ph_time_b12_h(state, player) + 50,
-        ph_time_b12(state, player) + 20 if ph_totok_b12_abstract_pedestals(state, player, 2) else 6000,
-        ph_time_b12_h(state, player) + 10 if ph_totok_b12_abstract_pedestals(state, player, 2) else 6000,
+        ph_time_b12(state, player) + 20 if ph_totok_b12_abstract_pedestals(state, player, 3) else 6000,
+        ph_time_b12_h(state, player) + 10 if ph_totok_b12_abstract_pedestals(state, player, 3) else 6000,
     )
 
 
@@ -2676,7 +2676,7 @@ def ph_ut_pedestals_vanilla(state, player):
 def ph_totok_b9_square_crystal(state, player, diff):
     return any([
         ph_has_shape_crystal(state, player, "Temple of the Ocean King", "Square", diff),
-        ph_totok_phantom_steal_object(state, player)
+        ph_totok_phantom_steal_object(state, player) & ph_option_pedestals_vanilla(state, player)
     ])
 
 def ph_totok_b9_corner_chest(state, player):
@@ -2694,7 +2694,10 @@ def ph_totok_b9_corner_chest(state, player):
                 ph_totok_has_floor_time(state, player, 9, 25),
                 ph_totok_has_floor_time(state, player, '9_2c'),
             ]),
-            ph_totok_b9_square_crystal(state, player, "West")
+            any([
+                ph_totok_b9_square_crystal(state, player, "West"),
+                ph_has_grapple(state, player)
+            ])
         ])
     ])
 
@@ -2816,18 +2819,18 @@ def ph_totok_b12_phantom(state, player):
         ])
     ])
 
-def ph_totok_b12_abstract_pedestals(state, player, count=2):
+def ph_totok_b12_abstract_pedestals(state, player, count=3):
     return all([
         not ph_option_pedestals_vanilla(state, player),
         any([
-            ph_has_force_gems(state, player, 12, 2),
+            ph_has_force_gems(state, player, 12, count),
         ])
     ])
 
 def ph_totok_b12_ghost(state, player):
     return any([
-        ph_totok_has_floor_time(state, player, '12_h', 20) if ph_totok_b12_abstract_pedestals(state, player) else False,
-        ph_totok_has_floor_time(state, player, 12, 20) if ph_totok_b12_abstract_pedestals(state, player) else False,
+        ph_totok_has_floor_time(state, player, '12_h', 20) if ph_totok_b12_abstract_pedestals(state, player, 2) else False,
+        ph_totok_has_floor_time(state, player, 12, 20) if ph_totok_b12_abstract_pedestals(state, player, 2) else False,
         ph_totok_has_floor_time(state, player, '12_h', 50),
         ph_totok_has_floor_time(state, player, 12, 70),
     ])

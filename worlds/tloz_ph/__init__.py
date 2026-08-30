@@ -391,6 +391,8 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                 return self.options.randomize_fishing
             if location_name in LOCATION_GROUPS["Salvage Locations"]:
                 return self.options.randomize_salvage
+            if location_name in LOCATION_GROUPS["Free Standing Locations"]:
+                return self.options.randomize_pedestal_items.value
             if "Beedle Membership" in location_name:
                 return self.options.randomize_beedle_membership.value > 1
             if "Harrow Island" in location_name:

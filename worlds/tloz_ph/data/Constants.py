@@ -958,6 +958,10 @@ CATEGORY_LOCATION_GROUPS = {
         "TotOK B3 SW Chest",
         "TotOK B3 SE Chest",
     ],
+    "Free Standing Locations": [
+        "TotOK B9 Square Crystal",
+        "TotOK B12 Warp Phantom Force Gem"
+    ],
 }
 
 LOCATION_GROUPS = CATEGORY_LOCATION_GROUPS | STAGE_LOCATION_GROUPS
@@ -2044,6 +2048,13 @@ idents_0: dict[int, str] = {
     0x16ccd4: "Grass",
     0x16c9dc: "Pit Trap",
     0x16cc74: "Hammer Catapult"
+}
+
+held_trigger_scenes = [0x250c, 0x2510]
+
+held_actor_ids: dict[int, str] = {
+    0x16BEE4: "Square Crystal",
+    0x16BDCC: "Force Gem"
 }
 
 map_object_idents: dict[int, str] = {

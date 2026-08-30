@@ -627,12 +627,13 @@ totok_b9_phantom = Or(
     (bombchu_switches | totok_b9_abstract_triangle) & totok_b9_routes(9),
     totok_b9_routes("9_1c"),
 )
+totok_b9_crystal = can_steal_from_phantom & has_floor_time(9, 10)
 totok_b9_wizzrobes = has_floor_time("9_1c", 30) | (bombchu_switches & has_floor_time(9, 30))
 def totok_b9_square_crystal(diff):
-    return can_steal_from_phantom | totok_shape_crystals("Square", diff)
+    return (can_steal_from_phantom & pedestals_vanilla) | totok_shape_crystals("Square", diff)
 totok_b9_corner_chest = Or(
     (has_hammer | ut_pedestals_vanilla | totok_shape_crystals("Round", "B8") & has_floor_time("8_2c")),
-    totok_b9_square_crystal("West") & (has_floor_time(9, 25) | has_floor_time("9_2c"))
+    (totok_b9_square_crystal("West") | has_grapple) & (has_floor_time(9, 25) | has_floor_time("9_2c"))
 )
 totok_b9_all_crystals = And(
     totok_b9_square_crystal("Center"),
@@ -677,9 +678,9 @@ totok_b12 = totok_b12_routes()
 totok_b12_nw = totok_b12_routes(12, 15)
 totok_b12_ne = totok_b12_routes(35, 15)
 totok_b12_phantom = has_phantom_sword & totok_b12_routes(55, 40)
-totok_b12_abstract_pedestals = pedestals_not_vanilla & has_force_gems(12, 2)
+totok_b12_gem = can_steal_from_phantom & totok_b12_routes(15, 5)
 totok_b12_wizzrobes = Or(
-    totok_b12_abstract_pedestals & totok_b12_routes(20, 20),
+    pedestals_not_vanilla & has_force_gems(12, 2) & totok_b12_routes(20, 20),
     totok_b12_routes(50, 70) & pedestals_vanilla
 )
 totok_b12_hammer = has_floor_time("12_h", 10)
@@ -687,14 +688,8 @@ totok_b12_hammer = has_floor_time("12_h", 10)
 # B13
 totok_b13 = And(
     Or(
-        And(
-            has_force_gems(12, 2),
-            Or(
-                can_steal_from_phantom,
-                has_force_gems(12, 3)
-            )
-        ),
-        ut_pedestals_vanilla
+        can_steal_from_phantom & pedestals_vanilla,
+        has_force_gems(12, 3)
     ),
     has_floor_time(13)
 )
