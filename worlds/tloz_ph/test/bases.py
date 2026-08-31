@@ -166,7 +166,6 @@ options_keys = {
     "pedestal_item_options": "open_per_dungeon",
 
     "ph_time_logic": "medium",
-    "spirit_gem_packs": 5,
 
     "dungeons_required": 5,
     "require_specific_bosses": True,
@@ -175,13 +174,15 @@ options_keys = {
     "shuffle_bosses": "shuffle",
 
     "additional_metal_names": "vanilla_only",
-    "goal_requirements": "metal_hunt",
+    "goal_requirements": "defeat_bosses",
 
     "randomize_minigames": "randomize_with_hints",
     "open_post_dungeon": True,
     "exclude_non_required_dungeons": "remove",
 
-
+    "spirit_gem_packs": 5,
+    "boss_reward_pool": "spirits_and_metals",
+    "spirit_type": "single_spirits"
 
 }
 

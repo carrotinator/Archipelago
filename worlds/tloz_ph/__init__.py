@@ -190,7 +190,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
 
         self.pre_fill_items: List[PhantomHourglassItem] = []
         self.required_dungeons = []
-        self.boss_reward_items_pool = []
+        self.boss_reward_items_pool: list[str] = []
         self.boss_reward_location_names = []
 
         self.dungeon_name_groups = {}
@@ -283,6 +283,9 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                 self.ut_map_page_hidden_locations, self.ut_map_page_hidden_entrances = get_hidden_entrances(self)
 
         else:
+            if self.options.spirit_type == 0:
+                self.options.boss_reward_pool.value = 0
+
             self.pick_required_dungeons()
             if self.options.shuffle_dungeon_entrances:
                 self.options.dungeon_shortcuts.value = 0
@@ -311,7 +314,13 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         if self.options.goal_requirements == "metal_hunt":
             self.required_metals = self.options.metal_hunt_required.value
         elif self.options.goal_requirements == "defeat_bosses":
-            self.required_metals = self.options.dungeons_required.value
+            if self.options.boss_reward_pool.value == 1:
+                if self.options.dungeons_required.value <= 3:
+                    self.required_metals = 0
+                else:
+                    self.required_metals = self.options.dungeons_required.value - 3
+            else:
+                self.required_metals = self.options.dungeons_required.value
 
         if self.options.bellum_access.value == 4:
             self.options.zauz_required_metals.value = self.required_metals
@@ -329,7 +338,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             "Sand of Hours (Small)": ("Sand", 60),
             "Heart Container": ("Sand", self.options.ph_heart_time.value)
         }
-        print(f"Mappings: {self.item_mapping_collect}")
+        # print(f"Mappings: {self.item_mapping_collect}")
 
     def restrict_non_local_items(self):
         # Restrict non_local_items option in cases where it's incompatible with other options that enforce items
@@ -453,6 +462,11 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         if self.options.goal_requirements == "defeat_bosses":
             if self.options.zauz_required_metals > dungeons_required:
                 self.options.zauz_required_metals.value = dungeons_required
+            if self.options.boss_reward_pool.value == 1:
+                if dungeons_required <= 3:
+                    self.options.zauz_required_metals.value = 0
+                else:
+                    self.options.zauz_required_metals.value = min(self.options.zauz_required_metals.value, dungeons_required-3)
         elif self.options.goal_requirements == "metal_hunt":
             if self.options.zauz_required_metals > self.options.metal_hunt_total:
                 self.options.zauz_required_metals.value = self.options.metal_hunt_total.value
@@ -512,9 +526,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                     continue
                 if dungeon == "Ghost Ship" and self.options.ghost_ship_in_dungeon_pool == "rescue_tetra":
                     self.required_bosses.append("Ghost Ship Rescue Tetra")
-                    print(f"\tAdding boss Ghost Ship Rescue Tetra")
                 else:
-                    print(f"\tAdding boss {boss}")
                     self.required_bosses.append(boss)
             if "Temple of the Ocean King" in self.required_dungeons:
                 self.required_bosses.append("TotOK B13 Sea Chart Chest")
@@ -530,13 +542,29 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         # Extend mcguffin list
         if self.options.goal_requirements == "defeat_bosses":
             reward_count = self.options.dungeons_required
-            self.boss_reward_items_pool = self.pick_metals(reward_count)
+            if self.options.boss_reward_pool.value == 1:
+                spirit_rewards = []
+                if self.options.spirit_type.value == 0:
+                    spirit_rewards = [f"Spirit of {s} (Progressive)" for s in SPIRITS]
+                elif self.options.spirit_type.value == 1:
+                    spirit_rewards = [f"Spirit of {s}" for s in SPIRITS]
+                elif self.options.spirit_type.value == 2:
+                    spirit_rewards = [f"Spirit (Progressive)" for _ in range(3)]
+                if reward_count <=3:
+                    self.random.shuffle(spirit_rewards)
+                    self.boss_reward_items_pool = spirit_rewards[:reward_count]
+                    reward_count = 0
+                else:
+                    self.boss_reward_items_pool = spirit_rewards[:reward_count]
+                    reward_count -= 3
+            if reward_count:
+                self.boss_reward_items_pool += self.pick_metals(reward_count)
 
         # Add dungeon hints to start
         if self.options.dungeon_hint_location.value == 0 and self.options.dungeon_hint_type == "hint_boss":
             self.options.start_location_hints.value.update(self.required_bosses)
 
-        print(f"Picked Required Dungeons: {self.required_dungeons} bosses {self.required_bosses} \npairs {self.dungeon_boss_pairs}")
+        # print(f"Picked Required Dungeons: {self.required_dungeons} bosses {self.required_bosses} \npairs {self.dungeon_boss_pairs}")
 
 
     def pick_metals(self, count):
@@ -579,7 +607,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             self.create_event("Menu", "_is_not_ut")
 
         # Create events for required dungeons
-        print(f"Event bosses: {self.required_bosses}")
+        # print(f"Event bosses: {self.required_bosses}")
         if self.options.goal_requirements == "defeat_bosses":
             if "Blaaz Boss Reward" in self.required_bosses:
                 self.create_event("Post Blaaz", "_required_dungeon")
@@ -659,14 +687,14 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
 
         # Filter out boss/post dungeon locations for exclusion/removal
         if self.options.exclude_non_required_dungeons.value:
-            print(f"Excluded dungeons")
+            # print(f"Excluded dungeons")
             for dungeon in self.excluded_dungeons:
                 locations_to_exclude.update(self.dungeon_name_groups[dungeon])
                 if self.options.shuffle_bosses != 1 or self.options.decouple_entrances:
                     post_dungeon = dungeon
                 else:  # shuffled bosses
                     post_dungeon = BOSS_LOCATION_TO_DUNGEON[self.dungeon_boss_pairs[dungeon]]
-                print(f"\tPost dungeon: {dungeon} -> {post_dungeon}")
+                # print(f"\tPost dungeon: {dungeon} -> {post_dungeon}")
                 locations_to_exclude.update(self.boss_room_name_groups.get(post_dungeon, []))
                 locations_to_exclude.update(self.post_dungeon_name_groups.get(post_dungeon, []))
                 if not self.options.shuffle_houses and not self.options.open_post_dungeons.value and post_dungeon == "Temple of Fire":
@@ -1109,7 +1137,6 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         removed_item_quantities = self.options.remove_items_from_pool.value.copy()
         item_pool_dict = {}
         filler_item_count = 0
-        boss_reward_item_count = len(self.boss_reward_items_pool)
         for loc_name, loc_data in LOCATIONS_DATA.items():
             if not self.location_is_active(loc_name, loc_data):
                 # print(f"{loc_name} is not active")
@@ -1152,15 +1179,6 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                     forced_item = self.create_item(item_name)
                     self.multiworld.get_location(loc_name, self.player).place_locked_item(forced_item)
                     continue
-            if item_name == "Rare Metal":  # Change rare metals to filler items for unrequired dungeons
-                if boss_reward_item_count <= 0 or self.options.goal_requirements != "defeat_bosses":
-                    filler_item_count += 1
-                    continue
-                item_name = self.boss_reward_items_pool[boss_reward_item_count - 1]
-                boss_reward_item_count -= 1
-            if item_name == "Triforce Crest" and not self.options.randomize_triforce_crest:
-                filler_item_count += 1
-                continue
             # Goal locations are for UT, and should not have actual items
             if "GOAL" in item_name:
                 forced_item = self.create_item(item_name)
@@ -1176,7 +1194,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                     ITEM_GROUPS["Potions"] |
                     ITEM_GROUPS["Single Spirit Gems"] |
                     ITEM_GROUPS["Regular Pedestal Items"] |  # These get locked in the dungeon category if vanilla
-                    {"Heart Container", "Triforce Crest"}):
+                    {"Heart Container", "Triforce Crest", "Rare Metal"}):
                 filler_item_count += 1
                 continue
 
@@ -1197,6 +1215,11 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                 metal_pool.setdefault(i, 0)
                 metal_pool[i] += 1
             add_items |= metal_pool.items()
+        elif self.options.goal_requirements == "defeat_bosses":
+            for i in self.boss_reward_items_pool:
+                if i in ITEM_GROUPS["Metals"]:
+                    add_items.setdefault(i, 0)
+                    add_items[i] += 1
         add_items |= add_spirit_gems(self.options.spirit_gem_packs, self.options.additional_spirit_gems)
         add_items |= {"Triforce Crest": 1} if self.options.randomize_triforce_crest.value else {}
         # Add pedestal items
@@ -1242,8 +1265,9 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                 for i in range(count):
                     random_filler_item = self.get_filler_item_name()
                     item_pool_dict[random_filler_item] = item_pool_dict.get(random_filler_item, 0) + 1
-
-        # print(item_pool_dict)
+        for i in item_pool_dict.items():
+            if i[0] in ["Phantom Blade", "Phantom Hourglass", "Courage Gem Pack"]:
+                print(i)
         return item_pool_dict
 
     def choose_progressive_items(self) -> dict[str, int]:
@@ -1415,7 +1439,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         if self.options.goal_requirements == "defeat_bosses":
             boss_reward_locations = [loc for loc in self.multiworld.get_locations(self.player)
                                      if loc.name in self.required_bosses]
-            boss_reward_items = [item for item in self.pre_fill_items if item.name in self.boss_reward_items_pool]
+            boss_reward_items = [self.create_item(item) for item in self.boss_reward_items_pool]
 
             # Remove from the all_state the items we're about to place
             for item in boss_reward_items:
@@ -1559,7 +1583,8 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
 
         mapping = self.item_mapping_collect.get(item.name, None)
         if mapping is not None and (item.classification & ItemClassification.progression):
-            #print(f"Mapping {mapping} {state.prog_items[self.player][mapping[0]]} for item {item.name}")
+            # if item.name.endswith("Pack"):
+            #     print(f"Mapping {mapping} {state.prog_items[self.player][mapping[0]]+5} for item {item.name}")
             state.prog_items[self.player][mapping[0]] += mapping[1]
 
         return True
@@ -1600,7 +1625,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
     def fill_slot_data(self) -> dict:
         options = [
             # Goal
-            "goal_requirements", "bellum_access",
+            "goal_requirements", "bellum_access", "boss_reward_pool",
             # Dungeons
             "dungeons_required", "require_specific_bosses", "exclude_non_required_dungeons",
             "ghost_ship_in_dungeon_pool", "totok_in_dungeon_pool",
@@ -1645,9 +1670,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         # Used to make excluded dungeons consistent for UT
         slot_data["required_dungeons"] = self.required_dungeons
         # Used to determine if reached goal in client
-        slot_data["required_metals"] = self.options.metal_hunt_required.value \
-            if self.options.goal_requirements == "metal_hunt" \
-            else len(self.required_dungeons)
+        slot_data["required_metals"] = self.required_metals
         # Used for dungeon hints in client
         slot_data["required_dungeon_locations"] = self.required_bosses  # for dungeon hints
         slot_data["boss_reward_items_pool"] = self.boss_reward_items_pool

@@ -872,6 +872,17 @@ class PhantomHourglassOpenPostDungeonLocations(Toggle):
     display_name = "Open Post-Dungeon Locations"
     default = 0
 
+class PhantomHourglassBossRewardPool(Choice):
+    """
+    What items are in the boss reward pool?
+    - metals: boss rewards are metals
+    - spirits_and_metals: the reward pool starts with a spirit of each type, then fills remaining rewards with metals.
+    Does not work with progressive_single_spirits.
+    """
+    display_name = "Boss Reward Pool"
+    option_metals = 0
+    option_spirits_and_metals = 1
+
 @dataclass
 class PhantomHourglassOptions(PerGameCommonOptions):
     # Accessibility
@@ -886,6 +897,7 @@ class PhantomHourglassOptions(PerGameCommonOptions):
     exclude_non_required_dungeons: PhantomHourglassExcludeNonRequiredDungeons
     ghost_ship_in_dungeon_pool: PhantomHourglassGhostShipInDungeonPool
     totok_in_dungeon_pool: PhantomHourglassTotokInDungeonPool
+    boss_reward_pool: PhantomHourglassBossRewardPool
 
     # Metal Hunt
     metal_hunt_required: PhantomHourglassMetalHuntRequiredMetals
@@ -991,7 +1003,8 @@ ph_option_groups = [
         PhantomHourglassRequireSpecificBosses,
         PhantomHourglassExcludeNonRequiredDungeons,
         PhantomHourglassGhostShipInDungeonPool,
-        PhantomHourglassTotokInDungeonPool
+        PhantomHourglassTotokInDungeonPool,
+        PhantomHourglassBossRewardPool
     ]),
     OptionGroup("Metal Hunt Options", [
         PhantomHourglassMetalHuntRequiredMetals,

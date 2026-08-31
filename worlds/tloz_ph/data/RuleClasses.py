@@ -353,3 +353,40 @@ class LocationNotExcluded(Rule[PhantomHourglassWorld], game=tloz_ph):
 
         def __str__(self):
             return f"Location {self.location} is not Excluded"
+
+
+class HasRequiredSpirits(Rule[PhantomHourglassWorld], game=tloz_ph):
+
+    def _instantiate(self, world: PhantomHourglassWorld) -> Rule.Resolved:
+        return self.Resolved(
+            player=world.player,
+            caching_enabled=False)
+
+    class Resolved(Rule.Resolved):
+
+        @override
+        def _evaluate(self, state: CollectionState):
+            world: "PhantomHourglassWorld" = state.multiworld.worlds[self.player]
+            required_items = world.boss_reward_items_pool
+            spirit_items = [i for i in required_items if i in ITEM_GROUPS["Spirits"]]
+            if "Spirit (Progressive)" in spirit_items:
+                return state.has("Spirit (Progressive)", self.player, len(spirit_items))
+            return state.has_all(spirit_items, self.player)
+
+        @override
+        def explain_json(self, state: CollectionState | None = None) -> list[JSONMessagePart]:
+            world: "PhantomHourglassWorld" = state.multiworld.worlds[self.player]
+            required_items = world.boss_reward_items_pool
+            spirit_items = [i for i in required_items if i in ITEM_GROUPS["Spirits"]]
+            if "Spirit (Progressive)" in spirit_items:
+                return [
+                        {"type": "text", "text": "Has "},
+                        {"type": "color", "color": "green" if state.has("Spirit (Progressive)", self.player, len(spirit_items)) else "salmon",
+                         "text": f"{state.count('Spirit (Progressive)', self.player)}/{len(spirit_items)} Spirit (Progressive)"}
+                    ]
+            return [
+                        {"type": "text", "text": "Has All: [ "},
+                        *[{"type": "color", "color": "green" if state.has(i, self.player) else "salmon",
+                         "text": f"{len(spirit_items)} Spirit (Progressive) "} for i in spirit_items],
+                        {"type": "text", "text": "]"},
+                    ]

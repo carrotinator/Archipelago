@@ -746,7 +746,7 @@ ITEMS_DATA = {
     "Potion": {
         "classification": ItemClassification.filler,
         "id": 49,
-        "item_groups": ["Technical Items", "Potions"],
+        "item_groups": ["Technical Items"],
     },
     "Red Potion": {
         "classification": ItemClassification.filler,

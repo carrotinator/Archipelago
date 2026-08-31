@@ -51,12 +51,22 @@ def has_spirit(spirit: Literal["Power", "Wisdom", "Courage"], count=1):
     spirit_index = SPIRITS.index(spirit)+1
     if count > 1:
         return Or(Has(f"Spirit of {spirit} (Progressive)", count),
-                  (Has(f"Spirit of {spirit}") | Has(f"Spirit (Progressive)", spirit_index)) & (Has(f"Spirit Upgrade", count-1) | Has(f"{spirit} Upgrade", count-1)))
+                  (
+                      Has(f"Spirit of {spirit}") | Has(f"Spirit (Progressive)", spirit_index)
+                  ) & (
+                      Has(f"Spirit Upgrade", count-1) | Has(f"{spirit} Upgrade", count-1)
+                  ))
+    # print(f"Spirit of {spirit}, Spirit of {spirit} (Progressive), Spirit (Progressive) {spirit_index}")
     return Has(f"Spirit of {spirit}") | Has(f"Spirit of {spirit} (Progressive)") | Has(f"Spirit (Progressive)", spirit_index)
 
 def has_spirit_gems(spirit: Literal["Power", "Wisdom", "Courage"], count):
-    spirit_index = SPIRITS.index(spirit)
-    return Has(f"{spirit} Gem", count) & Or(*(has_spirit(s) for s in SPIRITS[spirit_index:]))
+    return has_spirit(spirit) & Has(f"{spirit} Gem", count)
+
+    if spirit == "Power":
+        return Has(f"{spirit} Gem", count) & (has_spirit(spirit) | has_spirit("Wisdom") | has_spirit("Courage"))
+    if spirit == "Wisdom":
+        return Has(f"{spirit} Gem", count) & (has_spirit(spirit) | has_spirit("Courage"))
+    return Has(f"{spirit} Gem", count) & has_spirit(spirit)
 
 has_ph = Has("Phantom Hourglass")
 has_phantom_blade = Has("Phantom Blade")
@@ -213,7 +223,10 @@ has_go_mode = is_ut & Has("_required_dungeon",  # Show go mode early in UT
                                 FromOption(PhantomHourglassDungeonsRequired),
                                 options=[OptionFilter(PhantomHourglassGoal, 1)])
 
-has_metals = HasGroup("Metals", FromWorldAttr("required_metals")) | has_go_mode
+def spirit_pool():
+    HasGroup("Metals", FromWorldAttr("required_metals"), options=[OptionFilter(PhantomHourglassBossRewardPool, 0)])
+
+has_metals = (HasGroup("Metals", FromWorldAttr("required_metals")) & Filtered(HasRequiredSpirits(), options=[OptionFilter(PhantomHourglassBossRewardPool, 1)], filtered_resolution=True)) | has_go_mode
 win_on_metals = Filtered(has_metals, options=[OptionFilter(PhantomHourglassBellumAccess, PhantomHourglassBellumAccess.option_zauz)])
 
 # Specific locations, move to logic file?
