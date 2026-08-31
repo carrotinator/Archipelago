@@ -263,7 +263,6 @@ ITEMS_DATA = {
         "model": 0x6,
         "model_reset": True,
         "ghost_model": True,
-        "blocked_scenes": [0x1701],
         "item_groups": ["Spirits"],
     },
     "Spirit Upgrade": {
@@ -297,7 +296,6 @@ ITEMS_DATA = {
         "model": 0x2d,
         "model_reset": True,
         "ghost_model": True,
-        "blocked_scenes": [0x1701],
         "item_groups": ["Spirit of Power", "Spirits", "SoP"],
     },
     "Power Upgrade": {
@@ -331,7 +329,6 @@ ITEMS_DATA = {
         "model": 0x2e,
         "model_reset": True,
         "ghost_model": True,
-        "blocked_scenes": [0x1701],
         "item_groups": ["Spirit of Wisdom", "Spirits", "SoW"],
     },
     "Wisdom Upgrade": {
@@ -365,7 +362,6 @@ ITEMS_DATA = {
         "model": 0x2F,
         "model_reset": True,
         "ghost_model": True,
-        "blocked_scenes": [0x1701],
         "item_groups": ["Spirit of Courage", "Spirits", "SoC"],
     },
     "Courage Upgrade": {

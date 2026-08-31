@@ -218,7 +218,7 @@ win_on_metals = Filtered(has_metals, options=[OptionFilter(PhantomHourglassBellu
 
 # Specific locations, move to logic file?
 ember_grapple_chest = has_grapple | sword_glitch
-oshus_gem = (has_phantom_blade & has_ph) | (Has("_beat_tow") & LocationNotExcluded("Crayk Boss Reward"))
+oshus_gem = (has_phantom_blade & has_ph) | Has("_beat_tow")
 can_defeat_bellum = And(has_grapple, has_phantom_sword, has_bow, has_spirit("Courage"))
 can_defeat_bellumbeck = has_phantom_sword & has_spirit("Courage")
 bannan_scroll = Has("_wayfarer_trade") & can_pass_sea_monster

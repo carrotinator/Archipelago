@@ -307,15 +307,21 @@ class PhantomHourglassExcludedDungeonHints(Toggle):
     display_name = "Excluded Dungeon Hints"
     default = 0
 
-class PhantomHourglassExcludeNonRequriedDungeons(Toggle):
+class PhantomHourglassExcludeNonRequiredDungeons(Choice):
     """
-    Non-required dungeons won't have progression or useful items.
+    How to handle locations in non-required dungeons.
     Does not apply to TotOK.
     If you don't require specific bosses, this will still exclude a number of dungeons.
     Their bosses will still count towards boss completions.
+    - include: Non-required dungeon locations are randomized as normal.
+    - exclude: Non-required dungeons won't have progression or useful items, but will still count towards hint costs.
+    - remove: Non-required dungeon locations will be removed completely.
     """
     display_name = "Exclude Non-Required Dungeons"
     default = 1
+    option_include = 0
+    option_exclude = 1
+    option_remove = 2
 
 
 class PhantomHourglassHintSpiritIsland(Choice):
@@ -877,7 +883,7 @@ class PhantomHourglassOptions(PerGameCommonOptions):
     # Dungeons
     dungeons_required: PhantomHourglassDungeonsRequired
     require_specific_bosses: PhantomHourglassRequireSpecificBosses
-    exclude_non_required_dungeons: PhantomHourglassExcludeNonRequriedDungeons
+    exclude_non_required_dungeons: PhantomHourglassExcludeNonRequiredDungeons
     ghost_ship_in_dungeon_pool: PhantomHourglassGhostShipInDungeonPool
     totok_in_dungeon_pool: PhantomHourglassTotokInDungeonPool
 
@@ -983,7 +989,7 @@ ph_option_groups = [
     OptionGroup("Dungeon Options", [
         PhantomHourglassDungeonsRequired,
         PhantomHourglassRequireSpecificBosses,
-        PhantomHourglassExcludeNonRequriedDungeons,
+        PhantomHourglassExcludeNonRequiredDungeons,
         PhantomHourglassGhostShipInDungeonPool,
         PhantomHourglassTotokInDungeonPool
     ]),

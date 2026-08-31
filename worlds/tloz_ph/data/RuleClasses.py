@@ -216,6 +216,8 @@ class HasTime(Rule[PhantomHourglassWorld], game=tloz_ph):
         def _evaluate(self, state: CollectionState):
             options: PhantomHourglassOptions = state.multiworld.worlds[self.player].options
             time_option = options.ph_time_logic.value
+            if time_option == 5:
+                return True
             if time_option > 2:
                 room_lookup = {3: 0, 4: 3}
                 # print(f"Room = {self.room}")
@@ -245,7 +247,8 @@ class HasTime(Rule[PhantomHourglassWorld], game=tloz_ph):
                         {"type": "color", "color": "green" if state.has("Phantom Hourglass", self.player) else "salmon",
                          "text": "Phantom Hourglass"}
                     ]
-
+            if time_option == 5:
+                return []
             if time_option > 2:
                 room_lookup = {3: 0, 4: 3}
                 if isinstance(self.room, str) or self.room > room_lookup[time_option]:

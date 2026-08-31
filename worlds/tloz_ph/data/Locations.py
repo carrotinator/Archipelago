@@ -2297,7 +2297,7 @@ LOCATIONS_DATA = {
         "address": PHAddr.flags_fog_done,
         "conditional": True,
         "value": 0x10,
-        "post_dungeon": "Ghost Ship",
+        # "post_dungeon": "Ghost Ship",  # post tetra is different
         "id": 176,
         "hint_entrance": "Zauz' Exit",
         "hint_entrance_secondary": "Zauz Board Ship",
@@ -2398,6 +2398,7 @@ LOCATIONS_DATA = {
         "stage_id": 0x30,
         "floor_id": 0x0,
         "vanilla_item": "Ghost Key",
+        "item_override": "Rare Metal",
         "boss_room": "Ghost Ship",
         "id": 184,
         "do_special": {"event_type": "ut_connect",
@@ -2425,7 +2426,7 @@ LOCATIONS_DATA = {
         "address": PHAddr.adv_flags_31,
         "value": 0x2,
         "vanilla_item": "Nothing!",
-        "item_override": "Rare Metal",
+        "item_override": "Ghost Key",
         "dungeon": "Ghost Ship",
         "id": 186,
         "do_special": {"event_type": "ut_connect",
@@ -2460,7 +2461,7 @@ LOCATIONS_DATA = {
         "floor_id": 0x0,
         "address": PHAddr.adv_flags_25,
         "value": 0x80,
-        "post_dungeon": "Ghost Ship",
+        # "post_dungeon": "Ghost Ship",  # post tetra is different
         "id": 189,
         "gift_addr": Address(0x215dfc),
         "delay_reset": True

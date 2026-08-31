@@ -989,6 +989,9 @@ DUNGEON_TO_BOSS_ITEM_LOCATION = {
     "Ghost Ship": "_gs",
 }
 
+DUNGEON_TO_BOSS_ITEM_LOCATION_GS = DUNGEON_TO_BOSS_ITEM_LOCATION.copy()
+DUNGEON_TO_BOSS_ITEM_LOCATION_GS["Ghost Ship"] = "Cubus Sisters Ghost Key"
+
 BOSS_LOCATION_TO_DUNGEON = {
     "TotOK B13 Sea Chart Chest": "Temple of the Ocean King",
     "Blaaz Boss Reward": "Temple of Fire",
@@ -1018,6 +1021,8 @@ BOSS_STAIRCASES = {
     "MT Enter Boss": "Mutoh's Temple",
 }
 
+DUNGEON_TO_BOSS_ENTRANCE = {d: e for e, d in BOSS_STAIRCASES.items()}
+
 BOSS_LOOKUP = {
     "Temple of Fire": "Blaaz",
     "Temple of Wind": "Cyclok",
@@ -1038,6 +1043,7 @@ BOSS_ENTRANCE_LOOKUP = {
     "Gleeok Exit": "Gleeok Boss Reward",
     "Eox Exit": "Eox Boss Reward",
 }
+BOSS_LOC_TO_EXIT = {l: e for e, l in BOSS_ENTRANCE_LOOKUP.items()}
 
 KEY_COUNTS: dict[str, int] = {
     "Mountain Passage": 3,
