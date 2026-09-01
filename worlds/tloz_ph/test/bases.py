@@ -158,31 +158,37 @@ options_excluded_crystals = {"dungeons_required": 8,
                }
 
 options_keys = {
-    "keysanity": "in_own_dungeon",
+    "keysanity": "anywhere",
     "keyrings": "no_keyrings",
     "randomize_boss_keys": "in_own_dungeon",
     "boss_keyrings": True,
-    "randomize_pedestal_items": "in_own_dungeon",
+    "randomize_pedestal_items": "vanilla",
     "pedestal_item_options": "open_per_dungeon",
 
-    "ph_time_logic": "medium",
+    "ph_time_logic": "no_logic",
+    "ph_starting_time": 20,
+    "ph_time_increment": 5,
 
-    "dungeons_required": 5,
+    "goal_requirements": "defeat_bosses",
+    "bellum_access": "spawn_phantoms_on_b13",
+
+    "dungeons_required": 1,
     "require_specific_bosses": True,
     "totok_in_dungeon_pool": True,
     "ghost_ship_in_dungeon_pool": "cubus_sisters",
-    "shuffle_bosses": "shuffle",
+    "shuffle_bosses": "no_shuffle",
 
-    "additional_metal_names": "vanilla_only",
-    "goal_requirements": "defeat_bosses",
+    "additional_metal_names": "custom",
+
 
     "randomize_minigames": "randomize_with_hints",
     "open_post_dungeon": True,
     "exclude_non_required_dungeons": "remove",
 
-    "spirit_gem_packs": 5,
+    "spirit_gem_packs": 1,
     "boss_reward_pool": "spirits_and_metals",
-    "spirit_type": "single_spirits"
+    "spirit_type": "progressive_global_spirits",
+    "progressive_items": True,
 
 }
 

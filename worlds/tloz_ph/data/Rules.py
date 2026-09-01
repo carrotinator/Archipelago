@@ -25,15 +25,11 @@ pedestals_own_dungeon = [OptionFilter(PhantomHourglassRandomizePedestalItems, 2)
 pedestals_anywhere = [OptionFilter(PhantomHourglassRandomizePedestalItems, 3)]
 pedestals_not_vanilla = [OptionFilter(PhantomHourglassRandomizePedestalItems, 0, "gt")]
 
-
 vanilla_caves = [OptionFilter(PhantomHourglassShuffleCaves, 0)]
 vanilla_dungeons = [OptionFilter(PhantomHourglassShuffleDungeonEntrances, 0)]
 vanilla_bosses = [OptionFilter(PhantomHourglassShuffleBosses, 0)]
 
 randomize_minigames = [OptionFilter(PhantomHourglassRandomizeMinigames, 0, "gt")]
-
-
-
 
 # Basic Items
 has_sword = Has("Sword (Progressive)") | Has("Oshus' Sword")
@@ -231,7 +227,9 @@ has_go_mode = is_ut & Has("_required_dungeon",  # Show go mode early in UT
 def spirit_pool():
     HasGroup("Metals", FromWorldAttr("required_metals"), options=[OptionFilter(PhantomHourglassBossRewardPool, 0)])
 
-has_metals = (HasGroup("Metals", FromWorldAttr("required_metals")) & Filtered(HasRequiredSpirits(), options=[OptionFilter(PhantomHourglassBossRewardPool, 1)], filtered_resolution=True)) | has_go_mode
+has_metals = (HasGroup("Metals", FromWorldAttr("required_metals"))
+              & Filtered(HasRequiredSpirits(), options=[OptionFilter(PhantomHourglassBossRewardPool, 1)], filtered_resolution=True)
+              ) | has_go_mode
 win_on_metals = Filtered(has_metals, options=[OptionFilter(PhantomHourglassBellumAccess, PhantomHourglassBellumAccess.option_zauz)])
 
 # Specific locations, move to logic file?

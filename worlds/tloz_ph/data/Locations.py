@@ -4068,12 +4068,14 @@ LOCATIONS_DATA = {
         "region_id": "TotOK B9 Crystal",
         "conditional": True,
         "id": 333,
+        "dungeon": "Temple of the Ocean King",
         "vanilla_item": "Square Crystal (Temple of the Ocean King)"
     },
     "TotOK B12 Warp Phantom Force Gem": {
         "region_id": "TotOK B12 Gem",
         "conditional": True,
         "id": 334,
+        "dungeon": "Temple of the Ocean King",
         "vanilla_item": "Force Gem (B12)"
     }
 }

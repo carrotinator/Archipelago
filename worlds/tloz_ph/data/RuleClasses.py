@@ -233,6 +233,8 @@ class HasTime(Rule[PhantomHourglassWorld], game=tloz_ph):
 
             floor_time = self.floor_func(state, self.player) + self.time
             # print(f"Floor Time {floor_time} from {self.floor_func} + {self.time}")
+            # if type(self.room) == int and self.room > 12:
+            #     print(f"Time floor {self.room}: {total_sand} >= {ceil(floor_time / multiplier)}")
             return total_sand >= ceil(floor_time / multiplier)
 
         def __str__(self):
@@ -360,7 +362,7 @@ class HasRequiredSpirits(Rule[PhantomHourglassWorld], game=tloz_ph):
     def _instantiate(self, world: PhantomHourglassWorld) -> Rule.Resolved:
         return self.Resolved(
             player=world.player,
-            caching_enabled=False)
+            caching_enabled=True)
 
     class Resolved(Rule.Resolved):
 
@@ -369,9 +371,28 @@ class HasRequiredSpirits(Rule[PhantomHourglassWorld], game=tloz_ph):
             world: "PhantomHourglassWorld" = state.multiworld.worlds[self.player]
             required_items = world.boss_reward_items_pool
             spirit_items = [i for i in required_items if i in ITEM_GROUPS["Spirits"]]
+            # print(f"spirit pool: {spirit_items}")
             if "Spirit (Progressive)" in spirit_items:
-                return state.has("Spirit (Progressive)", self.player, len(spirit_items))
+                if len(spirit_items) == 3:
+                    # print(f"spirits: {state.has('Spirit (Progressive)', self.player, 3)}")
+                    return state.has("Spirit (Progressive)", self.player, 3)
+                # print(f"{spirit_items} | {state.count('_required_dungeon', self.player)}")
+                # print(f"spirits: {state.has('Spirit (Progressive)', self.player, len(spirit_items))} and {state.has('_required_dungeon', self.player, len(spirit_items))}")
+                return state.has("Spirit (Progressive)", self.player, len(spirit_items)) and state.has("_required_dungeon", self.player, len(spirit_items))
+            # print(f"spirits: {state.has_all(spirit_items, self.player)}")
             return state.has_all(spirit_items, self.player)
+
+        @override
+        def item_dependencies(self) -> dict[str, set[int]]:
+            # print(f"Time cache: {ITEM_GROUPS['Time Logic']}")
+            return {i: {id(self)} for i in ITEM_GROUPS["Spirits"]}
+
+        @override
+        def region_dependencies(self) -> dict[str, set[int]]:
+            return {r: {id(self)} for r in ["Post Blaaz", "Post Cyclok", "Post Crayk",
+                                            "Ghost Ship Tetra", "Post Cubus Sisters",
+                                            "Post Dongorongo", "Post Gleeok", "Post Eox",
+                                            "TotOK B13 Chest"]}
 
         @override
         def explain_json(self, state: CollectionState | None = None) -> list[JSONMessagePart]:
@@ -379,11 +400,19 @@ class HasRequiredSpirits(Rule[PhantomHourglassWorld], game=tloz_ph):
             required_items = world.boss_reward_items_pool
             spirit_items = [i for i in required_items if i in ITEM_GROUPS["Spirits"]]
             if "Spirit (Progressive)" in spirit_items:
+                extra_bit: list[JSONMessagePart] = []
+                if len(spirit_items) < 3:
+                    extra_bit = [{"type": "text", "text": " And Has Cleared"},
+                                 {"type": "color", "color": "green" if state.has("Spirit (Progressive)", self.player,
+                                                                                 len(spirit_items)) else "salmon",
+                                  "text": f"{state.count('_required_dungeon', self.player)}/{world.options.dungeons_required.value} _required_dungeon"}
+                                 ]
                 return [
                         {"type": "text", "text": "Has "},
                         {"type": "color", "color": "green" if state.has("Spirit (Progressive)", self.player, len(spirit_items)) else "salmon",
                          "text": f"{state.count('Spirit (Progressive)', self.player)}/{len(spirit_items)} Spirit (Progressive)"}
-                    ]
+                    ] + extra_bit
+
             return [
                         {"type": "text", "text": "Has All: [ "},
                         *[{"type": "color", "color": "green" if state.has(i, self.player) else "salmon",

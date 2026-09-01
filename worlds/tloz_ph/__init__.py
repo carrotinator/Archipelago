@@ -129,6 +129,9 @@ def add_pedestal_items(place, option, excluded_dungeons, exclude_option):
     def add_from_group(g, count=1):
         return {n: count for n in ITEM_GROUPS[g]}
 
+    if place == "vanilla":
+        return res
+
     # Create items
     if option == "open_globally":
         res |= add_from_group("Global Pedestal Items")
@@ -497,7 +500,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             self.extra_entrance_plando += [PlandoConnection(DUNGEON_TO_BOSS_ENTRANCE[d], BOSS_LOC_TO_EXIT[b], "both") for d, b in self.dungeon_boss_pairs.items()]
 
         # Choose boss reward locations
-        if not self.options.require_specific_bosses:
+        if not self.options.require_specific_bosses.value:
             self.required_bosses = list(DUNGEON_TO_BOSS_ITEM_LOCATION.values())
             if self.options.ghost_ship_in_dungeon_pool.value == 2:
                 self.required_bosses.remove("_gs")
@@ -509,15 +512,16 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                 if "_gs" in self.required_bosses:
                     self.required_bosses.remove("_gs")
                     self.required_bosses += ["Ghost Ship Rescue Tetra", "Cubus Sisters Ghost Key"]
-
+                if self.options.ghost_ship_in_dungeon_pool != "rescue_tetra" and "Ghost Ship Rescue Tetra" in self.required_bosses:
+                    self.required_bosses.remove("Ghost Ship Rescue Tetra")
                 for dungeon in self.excluded_dungeons:
-                    if dungeon == "Ghost Ship" and self.options.ghost_ship_in_dungeon_pool == "rescue_tetra":
-                        if "Ghost Ship Rescue Tetra" in self.required_bosses:
-                            self.required_bosses.remove("Ghost Ship Rescue Tetra")
+                    if dungeon == "Ghost Ship" and "Ghost Ship Rescue Tetra" in self.required_bosses:
+                        self.required_bosses.remove("Ghost Ship Rescue Tetra")
                     boss = self.dungeon_boss_pairs.get(dungeon, DUNGEON_TO_BOSS_ITEM_LOCATION_GS[dungeon])
+                    # print(f"\tChecking boss: {dungeon}, {boss}")
                     if boss in self.required_bosses:
                         self.required_bosses.remove(boss)
-                print(f"Remaining bosses: {self.required_bosses}")
+                # print(f"Remaining bosses: {self.required_bosses}")
 
         elif self.options.shuffle_bosses.value == 1 and not self.options.decouple_entrances:
             self.required_bosses = []
@@ -607,7 +611,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             self.create_event("Menu", "_is_not_ut")
 
         # Create events for required dungeons
-        # print(f"Event bosses: {self.required_bosses}")
+        # print(f"Event bosses: {self.required_bosses} {self.required_dungeons}")
         if self.options.goal_requirements == "defeat_bosses":
             if "Blaaz Boss Reward" in self.required_bosses:
                 self.create_event("Post Blaaz", "_required_dungeon")
@@ -619,12 +623,14 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                 self.create_event("Ghost Ship Tetra", "_required_dungeon")
             if "Cubus Sisters Ghost Key" in self.required_bosses:
                 self.create_event("Post Cubus Sisters", "_required_dungeon")
-            if "Dongo Boss Reward" in self.required_bosses:
+            if "Dongorongo Boss Reward" in self.required_bosses:
                 self.create_event("Post Dongorongo", "_required_dungeon")
             if "Gleeok Boss Reward" in self.required_bosses:
                 self.create_event("Post Gleeok", "_required_dungeon")
             if "Eox Boss Reward" in self.required_bosses:
                 self.create_event("Post Eox", "_required_dungeon")
+            if "TotOK B13 Sea Chart Chest" in self.required_bosses:
+                self.create_event("TotOK B13 Chest", "_required_dungeon")
 
         reverse_boss_pairs = {BOSS_LOCATION_TO_DUNGEON[b]: d for d, b in self.dungeon_boss_pairs.items()}
 
@@ -1128,7 +1134,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
 
     def build_item_pool_dict(self):
         def force_vanilla():
-            print(f"\tForcing vanilla {item_name}")
+            # print(f"\tForcing vanilla {item_name}")
             item_obj = self.create_item(item_name)
             loc_obj = self.multiworld.get_location(loc_name, self.player)
             loc_obj.place_locked_item(item_obj)
@@ -1251,6 +1257,8 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         # print(f"Add items: {add_items}")
         for i, count in add_items.items():
             item_pool_dict, filler_item_count = add_items_from_filler(item_pool_dict, filler_item_count, i, count)
+            if filler_item_count <= 0:
+                break
         # Add as many filler items as required
         for _ in range(filler_item_count):
             random_filler_item = self.get_filler_item_name()
@@ -1265,9 +1273,8 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                 for i in range(count):
                     random_filler_item = self.get_filler_item_name()
                     item_pool_dict[random_filler_item] = item_pool_dict.get(random_filler_item, 0) + 1
-        for i in item_pool_dict.items():
-            if i[0] in ["Phantom Blade", "Phantom Hourglass", "Courage Gem Pack"]:
-                print(i)
+        # for i in item_pool_dict.items():
+        #     print(i)
         return item_pool_dict
 
     def choose_progressive_items(self) -> dict[str, int]:
@@ -1426,7 +1433,11 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         if self.options.randomize_pedestal_items == "in_own_dungeon":
             confined_dungeon_items.extend([item for item in items if item.name in ITEM_GROUPS["Pedestal Items"]])
         # Remove boss reward items from pool for pre filling
-        confined_dungeon_items.extend([item for item in items if item.name in self.boss_reward_items_pool])
+        boss_items = self.boss_reward_items_pool.copy()
+        for item in items:
+            if item.name in boss_items:
+                confined_dungeon_items.append(item)
+                boss_items.remove(item.name)
 
         for item in confined_dungeon_items:
             items.remove(item)
