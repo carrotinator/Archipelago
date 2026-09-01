@@ -40,6 +40,7 @@ LOCATIONS_DATA = {
         "floor_id": 0x0,
         "y": 0x1333,
         "vanilla_item": "Treasure Map #10 (Gusts SE)",
+        "item_override": "Nothing!",
         # "vanilla_item": "Big Green Rupee (100)",
         "id": 3,
     },
@@ -145,6 +146,7 @@ LOCATIONS_DATA = {
         "y": 0x4ccd,
         "x_max": 0x25000,
         "vanilla_item": "Treasure Map #12 (Dee Ess N)",
+        "item_override": "Nothing!",
         "id": 12,
         "hint_entrance": "Mercay NE Freedle Island Cave",
         "gift_addr": Address(0x21618c)
@@ -156,6 +158,7 @@ LOCATIONS_DATA = {
         "address": PHAddr.treasure_maps_0,
         "value": 0x2,
         "vanilla_item": "Treasure Map #9 (Cannon W)",
+        "item_override": "Nothing!",
         "id": 13,
         "persistent": True,
         # "gift_addr": Address(0x2165FC)  # Need a better detection method for this...
@@ -665,6 +668,7 @@ LOCATIONS_DATA = {
     "TotOK B5 Alt Path Chest": {
         "region_id": "TotOK B5 Alt Path Chest",
         "vanilla_item": "Treasure Map #23 (Frost NW)",
+        "item_override": "Nothing!",
         "stage_id": 0x25,
         "floor_id": 0x6,
         "x_max": -0x3a98,
@@ -701,6 +705,7 @@ LOCATIONS_DATA = {
     "TotOK B6 Bow Chest": {
         "region_id": "TotOK B6 Bow",
         "vanilla_item": "Treasure Map #11 (Gusts N)",
+        "item_override": "Nothing!",
         "stage_id": 0x25,
         "floor_id": 0x7,
         "z_max": -0x9c40,
@@ -840,6 +845,7 @@ LOCATIONS_DATA = {
     "TotOK B10 Hammer Switch Chest": {
         "region_id": "TotOK B10 Hammer",
         "vanilla_item": "Treasure Map #30 (Ruins S)",
+        "item_override": "Nothing!",
         "stage_id": 0x25,
         "floor_id": 0xe,
         "x_min": 0x3a98,
@@ -944,6 +950,7 @@ LOCATIONS_DATA = {
     "TotOK B12 Hammer Chest": {
         "region_id": "TotOK B12 Hammer",
         "vanilla_item": "Treasure Map #31 (Dead S)",
+        "item_override": "Nothing!",
         "stage_id": 0x25,
         "floor_id": 0x10,
         "x_min": 0xfde8,
@@ -1061,6 +1068,7 @@ LOCATIONS_DATA = {
     "Cannon Island Bee Chest": {
         "region_id": "Cannon Island",
         "vanilla_item": "Treasure Map #1 (Molida SW)",
+        "item_override": "Nothing!",
         "stage_id": 0x13,
         "floor_id": 0x0,
         "x_max": -0x7530,
@@ -1179,6 +1187,7 @@ LOCATIONS_DATA = {
     "Astrid's Basement Dig": {
         "region_id": "Astrid's Basement Dig",
         "vanilla_item": "Treasure Map #3 (Gusts SW)",
+        "item_override": "Nothing!",
         # "vanilla_item": "Big Green Rupee (100)",
         "stage_id": 0xd,
         "floor_id": 0x14,
@@ -1200,6 +1209,7 @@ LOCATIONS_DATA = {
     "Isle of Ember East Summit Dig": {
         "region_id": "Ember Outside Temple Dig",
         "vanilla_item": "Treasure Map #4 (Bannan SE)",
+        "item_override": "Nothing!",
         # "vanilla_item": "Big Green Rupee (100)",
         "stage_id": 0xd,
         "floor_id": 0x1,
@@ -1374,6 +1384,7 @@ LOCATIONS_DATA = {
     "Sun Lake Cave Wayfarer Hideaway Chest": {
         "region_id": "Sun Lake Cave Upper",
         "vanilla_item": "Treasure Map #2 (Mercay NE)",
+        "item_override": "Nothing!",
         "stage_id": 0xc,
         "floor_id": 0xa,
         "y": 0x0,
@@ -1447,6 +1458,7 @@ LOCATIONS_DATA = {
     "Molida Island South Cucco Grapple Tree Dig": {
         "region_id": "Molida Cucco Dig",
         "vanilla_item": "Treasure Map #20 (Bannan E)",
+        "item_override": "Nothing!",
         # "vanilla_item": "Big Green Rupee (100)",
         "stage_id": 0xc,
         "floor_id": 0x0,
@@ -1866,6 +1878,7 @@ LOCATIONS_DATA = {
     "Miniblin Cave North Chest": {
         "region_id": "Miniblin Cave Damage",
         "vanilla_item": "Treasure Map #7 (Gusts E)",
+        "item_override": "Nothing!",
         "stage_id": 0xe,
         "floor_id": 0xb,
         "z_max": -0x55f0,
@@ -1915,6 +1928,7 @@ LOCATIONS_DATA = {
     "Isle of Gust North Sandworm Chest": {
         "region_id": "Gust North Sandworms",
         "vanilla_item": "Treasure Map #8 (Mercay SE)",
+        "item_override": "Nothing!",
         "stage_id": 0xe,
         "floor_id": 0x1,
         "y": 0x2666,
@@ -2061,7 +2075,7 @@ LOCATIONS_DATA = {
     "Bannan Island West Wayfarer Dig": {
         "region_id": "Bannan Dig",
         "vanilla_item": "Treasure Map #21 (Molida NW)",
-        # "vanilla_item": "Big Green Rupee (100)",
+        "item_override": "Nothing!",
         "stage_id": 0x14,
         "floor_id": 0x0,
         "z_max": -0x7530,
@@ -2193,6 +2207,7 @@ LOCATIONS_DATA = {
     "Bannan Island East Grapple Dig": {
         "region_id": "Bannan East Grapple Dig",
         "vanilla_item": "Treasure Map #22 (Harrow S)",
+        "item_override": "Nothing!",
         # "vanilla_item": "Big Green Rupee (100)",
         "stage_id": 0x14,
         "floor_id": 0x0,
@@ -2237,6 +2252,7 @@ LOCATIONS_DATA = {
     "Uncharted Island Eye Dig": {
         "region_id": "Uncharted Dig",
         "vanilla_item": "Treasure Map #6 (Bannan W)",
+        "item_override": "Nothing!",
         "stage_id": 0x1a,
         "floor_id": 0x0,
         "x_min": -0x124f8,
@@ -2281,6 +2297,7 @@ LOCATIONS_DATA = {
     "Zauz's Island Secret Dig": {
         "region_id": "Zauz Dig",
         "vanilla_item": "Treasure Map #5 (Molida N)",
+        "item_override": "Nothing!",
         # "vanilla_item": "Big Green Rupee (100)",
         "stage_id": 0x16,
         "floor_id": 0x0,
@@ -2464,7 +2481,7 @@ LOCATIONS_DATA = {
         # "post_dungeon": "Ghost Ship",  # post tetra is different
         "id": 189,
         "gift_addr": Address(0x215dfc),
-        "delay_reset": True
+        # "delay_reset": True
     },
 
     # ========== Goron Island ============
@@ -2474,6 +2491,7 @@ LOCATIONS_DATA = {
         "stage_id": 0x10,
         "floor_id": 0x2,
         "vanilla_item": "Treasure Map #16 (Goron NE)",
+        "item_override": "Nothing!",
         "address": PHAddr.adv_flags_34,
         # "delay_reset": True,  # The treasure map is added by the cutscene!
         "value": 0x20,
@@ -2512,6 +2530,7 @@ LOCATIONS_DATA = {
         "stage_id": 0x10,
         "floor_id": 0x1,
         "vanilla_item": "Treasure Map #18 (Cannon S)",
+        "item_override": "Nothing!",
         "x_min": 0x1adb0,
         "z_max": -0x1adb0,
         "id": 193,
@@ -2558,6 +2577,7 @@ LOCATIONS_DATA = {
         "stage_id": 0x20,
         "floor_id": 0x0,
         "vanilla_item": "Treasure Map #17 (Frost S)",
+        "item_override": "Nothing!",
         "y": 0x2666,
         "dungeon": "Goron Temple",
         "id": 197,
@@ -2877,6 +2897,7 @@ LOCATIONS_DATA = {
         "stage_id": 0xf,
         "floor_id": 0x2,
         "vanilla_item": "Treasure Map #19 (Gusts NE)",
+        "item_override": "Nothing!",
         # "vanilla_item": "Big Green Rupee (100)",  # swap!
         "x_max": -0x2d2a8,
         "id": 223,
@@ -3146,6 +3167,7 @@ LOCATIONS_DATA = {
     "Rupoor Cave 2": {
         "region_id": "Rupoor Cave",
         "vanilla_item": "Treasure Map #28 (Ruins NW)",
+        "item_override": "Nothing!",
         "stage_id": 0x15,
         "floor_id": 0x2,
         "z_max": -0xd6d8,
@@ -3188,6 +3210,7 @@ LOCATIONS_DATA = {
     "Isle of the Dead Face Chest": {
         "region_id": "IotD Face",
         "vanilla_item": "Treasure Map #29 (Maze W)",
+        "item_override": "Nothing!",
         "stage_id": 0x15,
         "floor_id": 0x0,
         "y": 0x4ccd,
@@ -3534,6 +3557,7 @@ LOCATIONS_DATA = {
     "Maze Island Normal": {
         "region_id": "Maze Island Minigame Normal",
         "vanilla_item": "Treasure Map #27 (Maze E)",
+        "item_override": "Nothing!",
         "stage_id": 0x19,
         "floor_id": 0x0,
         "address": PHAddr.adv_flags_28,
@@ -3607,6 +3631,7 @@ LOCATIONS_DATA = {
     "Man Of Smiles' Item 2": {
         "region_id": "NE Ocean Combat",
         "vanilla_item": "Treasure Map #24 (Ruins W)",
+        "item_override": "Nothing!",
         "stage_id": 0x6,
         "floor_id": 0x0,
         "address": PHAddr.adv_flags_19,

@@ -365,7 +365,7 @@ class PhantomHourglassRandomizeMinigames(Choice):
     - Prince of Red Lions Fight
     if the hint option is on, all minigame rewards will be hinted for on entering their scene
     """
-    display_name = "Radnomize Minigames"
+    display_name = "Randomize Minigames"
     option_no_minigames = 0
     option_randomize_with_hints = 1
     option_randomize_without_hints = 2
@@ -418,14 +418,24 @@ class PhantomHourglassAdditionalSpiritGems(Range):
 
 class PhantomHourglassRandomizeSalvage(Choice):
     """
-    Randomize all 31 treasure maps and salvage locations!
-    Hint option gives you a hint for each location on receiving their map item
+    Randomize treasure maps and salvage locations.
+    Hint option gives you a hint for each location on receiving their map item.
+    You can set how many are randomized separately
     """
     display_name = "Randomize Salvage"
     option_no_salvage = 0
     option_randomize_with_hints = 1
     option_randomize_without_hints = 2
 
+class PhantomHourglassSalvageCount(Range):
+    """
+    How many treasure maps & salvage locations are included?
+    Includes the courage crest salvage, that's active even when salvage is disabled.
+    """
+    display_name = "Salvage Count"
+    range_start = 1
+    range_end = 32
+    default = 32
 
 class PhantomHourglassZauzRequiredMetals(Range):
     """
@@ -882,6 +892,8 @@ class PhantomHourglassBossRewardPool(Choice):
     display_name = "Boss Reward Pool"
     option_metals = 0
     option_spirits_and_metals = 1
+    alias_metals_and_spirits = 1
+
 
 @dataclass
 class PhantomHourglassOptions(PerGameCommonOptions):
@@ -926,6 +938,7 @@ class PhantomHourglassOptions(PerGameCommonOptions):
     randomize_frogs: PhantomHourglassFrogRandomization
     randomize_fishing: PhantomHourglassRandomizeFishing
     randomize_salvage: PhantomHourglassRandomizeSalvage
+    salvage_count: PhantomHourglassSalvageCount
     randomize_harrow: PhantomHourglassRandomizeHarrow
     randomize_digs: PhantomHourglassRandomizeDigSpots
     randomize_triforce_crest: PhantomHourglassTriforceCrestRandomization

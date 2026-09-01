@@ -11,13 +11,19 @@ HINT_DATA = {
     "Island Shop Quiver": {
         "scenes": [0xB11, 0xC0E, 0x1014],
         "slot_data": ["shop_hints"],
-        "has_items": ["Bow (Progressive)"]
+        "any_has_items": ["Bow (Progressive)", "Bow"]
     },
     "Island Shop Bombchu Bag Plus": {
         "locations": ["Island Shop Bombchu Bag", "Island Shop Heart Container"],
         "scenes": [0xB11, 0xC0E, 0x1014],
         "slot_data": ["shop_hints"],
         "has_items": ["Bow (Progressive)", "Bombchus (Progressive)"]
+    },
+    "Island Shop Bombchu Bag Plus alt": {
+        "locations": ["Island Shop Bombchu Bag", "Island Shop Heart Container"],
+        "scenes": [0xB11, 0xC0E, 0x1014],
+        "slot_data": ["shop_hints"],
+        "has_items": ["Bow", "Bombchu Bag"]
     },
 
     # Beedle
@@ -28,7 +34,7 @@ HINT_DATA = {
     "Beedle Shop Bomb Bag": {
         "scenes": [0x500],
         "slot_data": ["shop_hints"],
-        "has_items": ["Bombs (Progressive)"]
+        "any_has_items": ["Bombs (Progressive)", "Bomb Bag"]
     },
     "Masked Beedle": {
         "locations": ["Masked Beedle Heart Container", "Masked Beedle Courage Gem"],
@@ -72,7 +78,7 @@ HINT_DATA = {
     # Minigame Hints
     "Bannan Island East Cannon Game": {
         "scenes": [0x1400],
-        "has_items": ["Bombs (Progressive)"],
+        "any_has_items": ["Bombs (Progressive)", "Bomb Bag"],
         "slot_data": [("randomize_minigames", 1)],
     },
     "Archery Minigame 1700": {

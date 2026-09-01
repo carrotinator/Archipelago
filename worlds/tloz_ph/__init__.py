@@ -230,6 +230,8 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         self.dungeon_boss_pairs: dict[str, str] = {}
         self.extra_entrance_plando: list[PlandoConnection] = []
 
+        self.salvage_locations: list[str] = []
+
         self.is_ut = getattr(self.multiworld, "generation_is_fake", False)
 
     def generate_early(self):
@@ -251,6 +253,8 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             self.ut_pairings = slot_data.get("er_pairings", {})
             self.treasure_price_index = slot_data.get("treasure_price_index", 0)
             required_dungeon_locations = slot_data.get("required_dungeon_locations", [])
+            self.locations_to_remove = {self.location_id_to_name[i] for i in slot_data.get("removed_locations", [])}
+
 
             # Figure out what events are active, and add to ut_pairings
             print(F"Generating early")
@@ -310,6 +314,15 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
 
             # Treasure Prices
             self.treasure_price_index = self.random.randint(0, 9)
+
+            # Choose salvage locations
+            if self.options.randomize_salvage.value:
+                salvage_locs = LOCATION_GROUPS["Salvage Locations"].copy()
+                self.random.shuffle(salvage_locs)
+                self.salvage_locations = salvage_locs[:self.options.salvage_count.value-1]
+                # print(len(self.salvage_locations), self.options.salvage_count.value)
+                self.locations_to_remove.update(salvage_locs[self.options.salvage_count.value-1:])
+
 
         self.restrict_non_local_items()
         self.create_item_mappings()
@@ -1190,9 +1203,9 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                 forced_item = self.create_item(item_name)
                 self.multiworld.get_location(loc_name, self.player).place_locked_item(forced_item)
                 continue
-            if "Treasure Map" in item_name:
-                filler_item_count += 1
-                continue
+            # if "Treasure Map" in item_name:
+            #     filler_item_count += 1
+            #     continue
             if (item_name in ITEM_GROUPS["Equipment"] |
                     ITEM_GROUPS["Technical Items"] |
                     ITEM_GROUPS["Spirits"] |
@@ -1232,8 +1245,8 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         if self.options.randomize_pedestal_items.value > 1:
             add_items |= add_pedestal_items(self.options.randomize_pedestal_items, self.options.pedestal_item_options, self.excluded_dungeons, self.options.exclude_non_required_dungeons.value)
         # Add treasure maps
-        if self.options.randomize_salvage.value:
-            add_items |= {i: 1 for i in ITEM_GROUPS["Treasure Maps"]}
+        # if self.options.randomize_salvage.value:
+        #     add_items |= {i: 1 for i in ITEM_GROUPS["Treasure Maps"]}
         if self.options.map_warp_options.value in [1]:
             add_items |= {i: 1 for i in ITEM_GROUPS["Map Warp Unlocks"]}
         # Add beedle point items
@@ -1687,6 +1700,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         slot_data["boss_reward_items_pool"] = self.boss_reward_items_pool
         slot_data["treasure_price_index"] = self.treasure_price_index
         slot_data["location_models"] = self.get_location_models()
+        slot_data["removed_locations"] = [self.location_name_to_id[i] for i in self.locations_to_remove]
 
         # Create ER Pairings, as ids to save space
         pairings = {}

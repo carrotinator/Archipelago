@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from .Subclasses import PHTransition, PHItem
     from . import PhantomHourglassSettings
 
-default_boat_speed = 0x10A
+DEFAULT_BOAT_SPEED = 0x10A
 
 def get_client_as_command_processor(self: "BizHawkClientCommandProcessor"):
     ctx = self.ctx
@@ -82,7 +82,7 @@ def cmd_boat_speed(self: "BizHawkClientCommandProcessor",
             self.output(f"  Current boat speed: {client.boat_speed}")
             return True
         elif speed in ["default", "reset"]:
-            set_speed(default_boat_speed)
+            set_speed(DEFAULT_BOAT_SPEED)
             return True
 
     try:
@@ -196,7 +196,7 @@ class PhantomHourglassClient(DSZeldaClient):
         self.addr_received_item_index = PHAddr.received_item_index
         self.loading_stage = False
 
-        self.boat_speed = default_boat_speed
+        self.boat_speed = DEFAULT_BOAT_SPEED
         self.boat_snap_speed = True
         self.update_boat_speed = True
         self.last_gear = True
@@ -323,6 +323,7 @@ class PhantomHourglassClient(DSZeldaClient):
         return [PHAddr.link_x, PHAddr.link_y, PHAddr.link_z, PHAddr.boat_x, PHAddr.boat_z]
 
     async def update_main_read_list(self, ctx, stage, in_game=True):
+        printl(f"Updating Main Read List")
         read_keys = read_keys_always.copy()
         death_link_pointer = None
         if stage is not None:
@@ -348,7 +349,7 @@ class PhantomHourglassClient(DSZeldaClient):
                 self.health_address = Address.from_pointer(pointer_1 + offset, size=2, name="link_health")
                 self.last_health_pointer = pointer_1
                 read_keys.append(self.health_address)
-            printl(f"Health Address = {self.health_address}")
+            printl(f"\tHealth Address = {self.health_address}")
             self.main_read_list = read_keys
         else:
             self.at_sea = None
@@ -416,8 +417,10 @@ class PhantomHourglassClient(DSZeldaClient):
                             "opens the blue warp to Bellum in TotOK.",
                             "spawns the ruins of the Ghost Ship in the SW Quadrant.",
                             "and giving them to Zauz wins the game."]
-            logger.info(f"You have {self.metal_count} out of {required} rare metals. There are {total} metals in total.\n"
-                        f"Finding the metals {bellum_texts[ctx.slot_data['bellum_access']]}")
+            logger.info(f"You have {self.metal_count} out of {required} boss rewards. There are {total} boss rewards in total.\n"
+                        f"Finding the boss rewards {bellum_texts[ctx.slot_data['bellum_access']]}\n"
+                        f"Boss Rewards: {ctx.slot_data['boss_reward_items_pool']}")
+
         elif scene == 0x160A:
             zauz_required = ctx.slot_data["zauz_required_metals"]
             logger.info(f"Zauz needs {zauz_required} rare metals to give an item. You have {self.metal_count}/{total} metals.")
@@ -514,7 +517,8 @@ class PhantomHourglassClient(DSZeldaClient):
 
             if self.update_boat_speed:
                 self.update_boat_speed = False
-                await PHAddr.boat_max_speed.overwrite(ctx, self.boat_speed, silent=True)
+                if self.boat_speed != DEFAULT_BOAT_SPEED:
+                    await PHAddr.boat_max_speed.overwrite(ctx, self.boat_speed, silent=True)
                 if self.boat_snap_speed:
                     await PHAddr.boat_speed.overwrite(ctx, self.boat_speed * read_result[PHAddr.boat_gear] // 2,
                                                       silent=True)
@@ -694,7 +698,6 @@ class PhantomHourglassClient(DSZeldaClient):
                 elif gem_count == 1:
                     await PHAddr.totok_b12_state.set_bits(ctx, 0x8)
 
-
         # Find potential dig spots
         await self.load_dig_spots(ctx)
 
@@ -849,9 +852,10 @@ class PhantomHourglassClient(DSZeldaClient):
         if stage in self.stage_flags:
             flags = self.stage_flags[stage]
 
-            printl(f"\tSetting Stage flags for {STAGES[stage]}, "
-                  f"adr: {self.stage_flag_address}")
-            await self.stage_flag_address.set_bits(ctx, flags)
+            res = await self.stage_flag_address.set_bits(ctx, flags, silent=False)
+            if res is not None:
+                printl(f"\tSetting Stage flags for {STAGES[stage]}, "
+                       f"adr: {self.stage_flag_address}")
 
 
     async def open_boss_door(self, ctx):
@@ -2056,9 +2060,12 @@ class PhantomHourglassClient(DSZeldaClient):
                 await Address.from_pointer(swordfish_addr+375, size=2).overwrite(ctx, 0x10F)
 
     async def load_dig_spots(self, ctx):
-        printl(f"Loading dig spots")
+
         self.dig_spots_in_scene.clear()
         self.last_actor_scan.clear()
+        if self.current_stage == 0 or not self.locations_in_scene:
+            return
+        printl(f"Loading dig spots")
         self.actor_table_pointer = await PHAddr.actor_table_pointer.read(ctx)
         wl = []
         for loc in self.locations_in_scene:

@@ -190,6 +190,8 @@ options_keys = {
     "spirit_type": "progressive_global_spirits",
     "progressive_items": True,
 
+    "randomize_salvage": "randomize_with_hints",
+    "salvage_count": 1
 }
 
 class TestPHGeneration(WorldTestBase):

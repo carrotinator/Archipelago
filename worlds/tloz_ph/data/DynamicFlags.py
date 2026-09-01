@@ -781,18 +781,18 @@ DYNAMIC_FLAGS = {
         "on_scenes": [0x2600, 0xC00],
         "set_if_true": [(PHAddr.flags_fog_spirits, 0x10)]
     },
-    "Remove Spirit flag": {
-        "on_scenes": [0x0],
-        "has_slot_data": [["fog_settings", 0]],
-        "not_has_locations": ["Ghost Ship Rescue Tetra"],
-        "unset_if_true": [(PHAddr.flags_fog_spirits, 0x10)]
-    },
-    "Remove Spirit flag 2": {
-        "on_scenes": [0x0],
-        "has_slot_data": [["fog_settings", 1]],
-        "not_has_locations": ["Ghost Ship Rescue Tetra"],
-        "unset_if_true": [(PHAddr.flags_fog_spirits, 0x10)]
-    },
+    # "Remove Spirit flag": {
+    #     "on_scenes": [0x0],
+    #     "has_slot_data": [["fog_settings", 0]],
+    #     "not_has_locations": ["Ghost Ship Rescue Tetra"],
+    #     "unset_if_true": [(PHAddr.flags_fog_spirits, 0x10)]
+    # },
+    # "Remove Spirit flag 2": {
+    #     "on_scenes": [0x0],
+    #     "has_slot_data": [["fog_settings", 1]],
+    #     "not_has_locations": ["Ghost Ship Rescue Tetra"],
+    #     "unset_if_true": [(PHAddr.flags_fog_spirits, 0x10)]
+    # },
     # Goron Chief
     "Beat goron temple goron chief": {
         "on_scenes": [0x100A],
@@ -1044,7 +1044,8 @@ DYNAMIC_FLAGS = {
     },
     "Pirate ambush set spirit flag": {
         "on_scenes": [0x400],
-        "set_if_true": [(PHAddr.flags_fog_spirits, 0x10)]
+        "set_if_true": [(PHAddr.flags_fog_spirits, 0x10)],
+        "unset_if_true": [(PHAddr.adv_flags_48, 0x40)]
     },
     "RESET Remove Jolene": {
         # "on_scenes": [0xC00],
