@@ -860,9 +860,14 @@ class PhantomHourglassClient(DSZeldaClient):
 
     async def open_boss_door(self, ctx):
         data = BOSS_DOOR_DATA.get(self.current_scene, False)
-        if data and ctx.slot_data["randomize_boss_keys"] != 3 and (
+        if not data:
+            return
+
+        if ctx.slot_data["randomize_boss_keys"] != 3 and (
                 self.item_count(ctx, f"Boss Key ({data['name']})")
-                or (ctx.slot_data["boss_keyrings"] and self.item_count(ctx, f"Keyring ({data['name']})"))):
+                or (ctx.slot_data["boss_keyrings"] and self.item_count(ctx, f"Keyring ({data['name']})"))
+                or (ctx.slot_data["exclude_non_required_dungeons"] == 2 and STAGES[self.current_stage] not in ctx.slot_data["required_dungeons"])
+        ):
             if not self.boss_door_addr:
                 boss_door = await self.find_table_object(ctx, *data["map_obj_comp"])
                 if not boss_door:
@@ -1727,7 +1732,11 @@ class PhantomHourglassClient(DSZeldaClient):
                 write_list.append(Address.from_pointer(addr + 31*4, size=2).get_inner_write_list(0))  # closing
 
                 if identifiers.get(ident) in ["Spirit Door", "Key Door"]:
-                    self.key_door_watches[Address.from_pointer(addr + 8, 1)] = "key"
+                    if ctx.slot_data["exclude_non_required_dungeons"] == 2 and STAGES[self.current_stage] not in ctx.slot_data["required_dungeons"]:
+                        print(f"key door {addr}")
+                        write_list.append(Address.from_pointer(addr + 8, 1).get_inner_write_list(3))
+                    else:
+                        self.key_door_watches[Address.from_pointer(addr + 8, 1)] = "key"
                 if identifiers.get(ident) in ["Arena Door"]:
                     self.key_door_watches[Address.from_pointer(addr + 8, 1)] = "arena"
 

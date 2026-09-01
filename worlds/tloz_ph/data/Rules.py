@@ -136,7 +136,7 @@ has_beam_range = has_range | has_beam_sword
 has_mid_range = has_range | has_beam_sword | has_hammer
 has_short_range = has_mid_range | clever_bombs
 has_pot_range = has_short_range | clever_pots
-cucco_dig = has_shovel | has_grapple
+cucco_dig = has_shovel & has_grapple
 lazy_cuccos = has_grapple  # add option here later
 
 can_hit_switches = can_kill_bat | clever_pots
@@ -249,8 +249,9 @@ ghost_ship_access = And(
     )
 )
 goron_chus = has_shovel & (
-    has_bow | has_grapple | (has_hammer & hard_logic)
-)
+                has_bow | has_grapple | (has_hammer & hard_logic)
+            ) | (has_hammer & glitched_logic)
+
 ice_field = Has("_beat_toi") | (can_kill_dark_yook & has_bombs)
 ruins_water = Has("_ruins_lower_water")
 

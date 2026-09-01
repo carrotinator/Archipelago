@@ -399,6 +399,7 @@ class HasRequiredSpirits(Rule[PhantomHourglassWorld], game=tloz_ph):
             world: "PhantomHourglassWorld" = state.multiworld.worlds[self.player]
             required_items = world.boss_reward_items_pool
             spirit_items = [i for i in required_items if i in ITEM_GROUPS["Spirits"]]
+            print(f"Spirit items: {spirit_items}")
             if "Spirit (Progressive)" in spirit_items:
                 extra_bit: list[JSONMessagePart] = []
                 if len(spirit_items) < 3:
@@ -416,6 +417,6 @@ class HasRequiredSpirits(Rule[PhantomHourglassWorld], game=tloz_ph):
             return [
                         {"type": "text", "text": "Has All: [ "},
                         *[{"type": "color", "color": "green" if state.has(i, self.player) else "salmon",
-                         "text": f"{len(spirit_items)} Spirit (Progressive) "} for i in spirit_items],
+                         "text": f"{i}, "} for i in spirit_items],
                         {"type": "text", "text": "]"},
                     ]

@@ -1695,6 +1695,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         slot_data["required_dungeons"] = self.required_dungeons
         # Used to determine if reached goal in client
         slot_data["required_metals"] = self.required_metals
+        slot_data["removed_dungeons"] = self.excluded_dungeons if self.options.exclude_non_required_dungeons.value == 2 else []
         # Used for dungeon hints in client
         slot_data["required_dungeon_locations"] = self.required_bosses  # for dungeon hints
         slot_data["boss_reward_items_pool"] = self.boss_reward_items_pool

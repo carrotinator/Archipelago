@@ -804,7 +804,7 @@ DYNAMIC_FLAGS = {
         "on_scenes": [0x100A],
         "not_has_locations": ["Goron Chief Post Dungeon Item"],
         "has_locations": ["Dongorongo Boss Reward", "Goron Chief Goron Quiz"],
-        "has_slot_data": [("open_post_dungeon", 0)],
+        "has_slot_data": [("open_post_dungeons", 0)],
         "set_if_true": [(PHAddr.flags_metals, 0x40), (PHAddr.adv_flags_18, 0x8)],
         "reset_flags": ["RESET remove Crimzonine", "RESET goron chief gongoron"]
     },
@@ -812,7 +812,7 @@ DYNAMIC_FLAGS = {
         "on_scenes": [0x100A],
         "not_has_locations": ["Goron Chief Post Dungeon Item"],
         "has_locations": ["Goron Chief Goron Quiz"],
-        "has_slot_data": [("open_post_dungeon", 1)],
+        "has_slot_data": [("open_post_dungeons", 1)],
         "set_if_true": [(PHAddr.flags_metals, 0x40), (PHAddr.adv_flags_18, 0x8)],
         "reset_flags": ["RESET remove Crimzonine", "RESET goron chief gongoron"]
     },
@@ -842,13 +842,18 @@ DYNAMIC_FLAGS = {
     "Play goron game on dee ess after temple": {
         "on_scenes": [0x1B00],
         "has_locations": ["Dongorongo Boss Reward"],
-        "has_slot_data": [("open_post_dungeon", 0)],
+        "has_slot_data": [("open_post_dungeons", 0)],
         "set_if_true": [(PHAddr.adv_flags_27, 0x20)]
     },
     "Play goron game on dee ess open post dungeons": {
         "on_scenes": [0x1B00],
-        "has_slot_data": [("open_post_dungeon", 1)],
-        "set_if_true": [(PHAddr.adv_flags_27, 0x20)]
+        "has_slot_data": [("open_post_dungeons", 1)],
+        "set_if_true": [(PHAddr.adv_flags_27, 0x20)],
+        "reset_flags": ["RESET goron game"]
+    },
+    "RESET goron game": {
+        "not_has_locations": ["Dongorongo Boss Reward"],
+        "unset_if_true": [(PHAddr.adv_flags_27, 0x20)],
     },
 
     # Harrow Island
@@ -988,18 +993,18 @@ DYNAMIC_FLAGS = {
     "Zauz remove triforce crest": {
         "on_scenes": [0x160A],
         "not_has_locations": ["Ghost Ship Rescue Tetra"],
-        "has_slot_data": [("open_post_dungeon", 0)],
+        "has_slot_data": [("open_post_dungeons", 0)],
         "unset_if_true": [(PHAddr.flags_fog_done, 0x10), (PHAddr.adv_flags_4, 2), (PHAddr.flags_clear_fog, 0x80)]
     },
     "Zauz add triforce crest": {
         "on_scenes": [0x160A],
         "has_locations": ["Ghost Ship Rescue Tetra"],
-        "has_slot_data": [("open_post_dungeon", 0)],
+        "has_slot_data": [("open_post_dungeons", 0)],
         "set_if_true": [(PHAddr.flags_fog_done, 0x10), (PHAddr.adv_flags_4, 2), (PHAddr.flags_clear_fog, 0x80)],
     },
     "Zauz add triforce crest open post dungeon": {
         "on_scenes": [0x160A],
-        "has_slot_data": [("open_post_dungeon", 1)],
+        "has_slot_data": [("open_post_dungeons", 1)],
         "set_if_true": [(PHAddr.flags_fog_done, 0x10), (PHAddr.adv_flags_4, 2), (PHAddr.flags_clear_fog, 0x80)],
     },
     "RESET Zauz remove triforce crest": {
@@ -1534,6 +1539,12 @@ DYNAMIC_FLAGS = {
         "not_has_locations": ["Crayk Boss Reward"],
         "on_entrance": [0],
         "unset_if_true": [(PHAddr.flags_bosses_0, 0x80)],
+    },
+    "Molida respawn archery post dungeon": {
+        "on_scenes": [0xC0B],
+        "has_slot_data": [("open_post_dungeons", 1)],
+        "any_has_items": [("Bow", 1), ("Bow (Progressive)", 1)],
+        "set_if_true": [(PHAddr.flags_bosses_0, 0x80)],
     },
     # Regal necklace backup removal
     "Regal necklace backup removal dummy": {

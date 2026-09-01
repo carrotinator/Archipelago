@@ -182,7 +182,7 @@ options_keys = {
 
 
     "randomize_minigames": "randomize_with_hints",
-    "open_post_dungeon": True,
+    "open_post_dungeons": True,
     "exclude_non_required_dungeons": "remove",
 
     "spirit_gem_packs": 1,
