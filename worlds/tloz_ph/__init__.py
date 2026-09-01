@@ -180,9 +180,9 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         i: "Rupees" for i in ITEM_GROUPS["Rupee Items"] } | {
         i: "Treasure" for i in ITEM_GROUPS["Treasure Items"] } | {
         i: "Beedle Points" for i in ITEM_GROUPS["Beedle Point Items"] } | {
-        "Power Gem": "Power Gem Pack",
-        "Wisdom Gem": "Wisdom Gem Pack",
-        "Courage Gem": "Courage Gem Pack" } | {
+        "Power Gem Pack": "Power Gem",
+        "Wisdom Gem Pack": "Wisdom Gem",
+        "Courage Gem Pack": "Courage Gem"} | {
         i: "Sand" for i in ITEM_GROUPS["Sand Items"] }
 
     def __init__(self, multiworld, player):
