@@ -191,7 +191,10 @@ options_keys = {
     "progressive_items": True,
 
     "randomize_salvage": "randomize_with_hints",
-    "salvage_count": 1
+    "salvage_count": 1,
+
+    "ship_items": "whole_mismatched",
+    "starting_ship": "mismatched"
 }
 
 class TestPHGeneration(WorldTestBase):

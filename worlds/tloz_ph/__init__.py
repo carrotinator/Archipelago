@@ -231,6 +231,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         self.extra_entrance_plando: list[PlandoConnection] = []
 
         self.salvage_locations: list[str] = []
+        self.ship_part_order: list[list[int]] = []
 
         self.is_ut = getattr(self.multiworld, "generation_is_fake", False)
 
@@ -1261,11 +1262,9 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         # Add sand items to pool
         add_items |= add_sand(self.options.ph_starting_time, self.options.ph_time_increment,
                               self.options.ph_time_logic)
-        # Add ships last cause they can be overwritten
+        # Add useful items last cause they can risk being overwritten
         add_items |= {"Heart Container": 13}
-        for i in ITEM_GROUPS["Ships"]:
-            add_items.setdefault(i, 0)
-            add_items[i] += 1
+        add_items |= self.choose_ship_items()
         # add items to item pool
         # print(f"Add items: {add_items}")
         for i, count in add_items.items():
@@ -1376,6 +1375,38 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
 
         # print(f"Key Items: {res}")
         return res, filler_change
+
+    def choose_ship_items(self) -> dict[str, int]:
+        if self.options.starting_ship.value == -1:
+            self.options.starting_ship.value = self.random.randint(0, 8)
+        starting_ship = self.options.starting_ship.value
+
+        if not self.options.ship_items.value:
+            return {}
+        if self.options.ship_items.value == 1:
+            whole_ship_pool = list(ITEM_GROUPS["Whole Ships"].copy())
+            whole_ship_pool.sort(key=lambda s: ITEMS[s].ship)
+            if starting_ship >= 0:
+                whole_ship_pool.pop(self.options.starting_ship.value)
+            return {i: 1 for i in whole_ship_pool}
+        if self.options.ship_items.value == 2:
+            included_ships = list(range(9))
+            if starting_ship >= 0:
+                included_ships.remove(starting_ship)
+            part_positions: list[list[int]] = [included_ships.copy() for _ in range(8)]
+            [self.random.shuffle(i) for i in part_positions]
+            print(f"ship part positions: {part_positions}")
+
+            ship_part_order: list[list[int]] = [[] for _ in included_ships]
+            print(f"pre order {ship_part_order}")
+            for part in part_positions:
+                for i, ship_model in enumerate(part):
+                    ship_part_order[i].append(ship_model)
+            print(f"ship part order: {ship_part_order}")
+            self.ship_part_order = ship_part_order
+
+            return {"Ship: Mismatched": 8}
+        return {}
 
     def create_items(self):
         item_pool_dict = self.build_item_pool_dict()
@@ -1677,6 +1708,8 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             "shop_hints", "spirit_island_hints",
             # PH settings
             "ph_time_logic", "ph_starting_time", "ph_time_increment", "ph_heart_time", "ph_required",
+            # ships
+            "starting_ship", "ship_items", "equip_ship",
             # Cosmetic
             "additional_metal_names", "chest_cutscene_skips",
             # ER
@@ -1702,6 +1735,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         slot_data["treasure_price_index"] = self.treasure_price_index
         slot_data["location_models"] = self.get_location_models()
         slot_data["removed_locations"] = [self.location_name_to_id[i] for i in self.locations_to_remove]
+        slot_data["ship_part_order"] = self.ship_part_order
 
         # Create ER Pairings, as ids to save space
         pairings = {}

@@ -2078,10 +2078,11 @@ ITEMS_DATA = {
     "Ship: SS Linebeck": {
         "classification": ItemClassification.filler,
         "id": 174,
+        "ship": 0x0,
         "model": 0x25,
         "ghost_model": True,
         "model_reset": True,
-        # "item_groups": ["Ships"],
+        "item_groups": ["Ships", "Whole Ships"],
     },
     "Ship: Bright Ship": {
         "classification": ItemClassification.useful,
@@ -2091,7 +2092,7 @@ ITEMS_DATA = {
         "model": 0x25,
         "ghost_model": True,
         "model_reset": True,
-        "item_groups": ["Ships"],
+        "item_groups": ["Ships", "Whole Ships"],
     },
     "Ship: Iron Ship": {
         "classification": ItemClassification.useful,
@@ -2101,7 +2102,7 @@ ITEMS_DATA = {
         "model": 0x25,
         "ghost_model": True,
         "model_reset": True,
-        "item_groups": ["Ships"],
+        "item_groups": ["Ships", "Whole Ships"],
     },
     "Ship: Stone Ship": {
         "classification": ItemClassification.useful,
@@ -2111,7 +2112,7 @@ ITEMS_DATA = {
         "model": 0x25,
         "ghost_model": True,
         "model_reset": True,
-        "item_groups": ["Ships"],
+        "item_groups": ["Ships", "Whole Ships"],
     },
     "Ship: Vintage Ship": {
         "classification": ItemClassification.useful,
@@ -2121,7 +2122,7 @@ ITEMS_DATA = {
         "model": 0x25,
         "ghost_model": True,
         "model_reset": True,
-        "item_groups": ["Ships"],
+        "item_groups": ["Ships", "Whole Ships"],
     },
     "Ship: Demon Ship": {
         "classification": ItemClassification.useful,
@@ -2131,7 +2132,7 @@ ITEMS_DATA = {
         "model": 0x25,
         "ghost_model": True,
         "model_reset": True,
-        "item_groups": ["Ships"],
+        "item_groups": ["Ships", "Whole Ships"],
     },
     "Ship: Tropical Ship": {
         "classification": ItemClassification.useful,
@@ -2141,7 +2142,7 @@ ITEMS_DATA = {
         "model": 0x25,
         "ghost_model": True,
         "model_reset": True,
-        "item_groups": ["Ships"],
+        "item_groups": ["Ships", "Whole Ships"],
     },
     "Ship: Dignified Ship": {
         "classification": ItemClassification.useful,
@@ -2151,7 +2152,7 @@ ITEMS_DATA = {
         "model": 0x25,
         "ghost_model": True,
         "model_reset": True,
-        "item_groups": ["Ships"],
+        "item_groups": ["Ships", "Whole Ships"],
     },
     "Ship: Golden Ship": {
         "classification": ItemClassification.useful,
@@ -2160,6 +2161,17 @@ ITEMS_DATA = {
         "id": 182,
         "model": 0x7B,
         "ghost_model": True,
+        "item_groups": ["Ships", "Whole Ships"],
+    },
+    "Ship: Mismatched": {
+        "classification": ItemClassification.useful,
+        "tags": ["backup_filler"],
+        "ship": "mismatched",
+        "id": 246,
+        "value": 8,
+        "model": 0x25,
+        "ghost_model": True,
+        "model_reset": True,
         "item_groups": ["Ships"],
     },
 

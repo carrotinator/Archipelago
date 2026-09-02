@@ -894,6 +894,48 @@ class PhantomHourglassBossRewardPool(Choice):
     option_spirits_and_metals = 1
     alias_metals_and_spirits = 1
 
+class PhantomHourglassStartingShip(Choice):
+    """
+    What ship you start with.
+    Has the following special options:
+    - random_whole: start with a random completed ship
+    - mismatched: start with a random set of parts
+    """
+    display_name = "Starting Ship"
+    option_ss_linebeck = 0
+    option_bright = 1
+    option_iron = 2
+    option_stone = 3
+    option_vintage = 4
+    option_demon = 5
+    option_tropical = 6
+    option_dignified = 7
+    option_golden = 8
+    option_mismatched = -2
+    option_random_whole = -1
+    default = 0
+
+class PhantomHourglassShipItems(Choice):
+    """
+    What ship items do you find?
+    Ship parts cannot be sold for rupees, but once a part is unlocked you can use it to customize your ship in the shipyard on Mercay Island.
+    - option_no_ships: no ship items
+    - option_whole_ships: you find whole ships
+    - option_whole_mismatched: you find 8 random parts at a time
+    """
+    display_name = "Ship Items"
+    option_no_ships = 0
+    option_whole_ships = 1
+    option_whole_mismatched = 2
+    default = 1
+
+class PhantomHourglassShipAutoEquip(Toggle):
+    """
+    Auto-equip found ships?
+    Can be toggled in game with the client command /boat equip.
+    """
+    display_name = "Auto-Equip Ships"
+    default = 1
 
 @dataclass
 class PhantomHourglassOptions(PerGameCommonOptions):
@@ -988,6 +1030,11 @@ class PhantomHourglassOptions(PerGameCommonOptions):
     shuffle_between_islands: PhantomHourglassShuffleBetweenIslands
     decouple_entrances: PhantomHourglassDecoupleEntrances
     plando_transitions: PhantomHourglassEntrancePlando
+
+    # Ship options
+    starting_ship: PhantomHourglassStartingShip
+    ship_items: PhantomHourglassShipItems
+    equip_ship: PhantomHourglassShipAutoEquip
 
     # Cosmetic
     additional_metal_names: PhantomHourglassAdditionalMetalNames
@@ -1098,6 +1145,12 @@ ph_option_groups = [
         PhantomHourglassUTSmartKeys,
         PhantomHourglassUTEvents
     ]),
+    OptionGroup("Ship Options", [
+        PhantomHourglassStartingShip,
+        PhantomHourglassShipItems,
+        PhantomHourglassShipAutoEquip
+    ]),
+
     OptionGroup("Cosmetic Options", [
         PhantomHourglassAdditionalMetalNames,
         PhantomHourglassSkipChestCutscenes
