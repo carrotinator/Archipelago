@@ -5,7 +5,7 @@ from enum import IntEnum
 from .DSZeldaClient.subclasses import DSTransition, split_bits, Address
 from .DSZeldaClient.ItemClass import DSItem, remove_vanilla_normal
 from .data.SwitchLogic import *
-from .data.Constants import EQUIPPED_SHIP_PARTS_ADDR, BOSS_DOOR_DATA
+from .data.Constants import BOSS_DOOR_DATA
 from .data.Addresses import PHAddr
 
 if TYPE_CHECKING:
@@ -16,8 +16,19 @@ if TYPE_CHECKING:
 async def receive_ship(client: "PhantomHourglassClient", ctx: "BizHawkClientContext", item: "PHItem", _):
     res = []
     if not (await PHAddr.custom_storage.read(ctx) & 2):
-        for addr in EQUIPPED_SHIP_PARTS_ADDR:
-            res += addr.get_write_list(item.ship)
+        current_parts = []
+        if item.name == "Ship: Mismatched":
+            part_count = item.get_count(ctx) + (1 if ctx.slot_data["starting_ship"] == -2 else 0)
+            part_order = ctx.slot_data["ship_part_order"]
+            part_count = min(part_count, len(part_order))
+            current_parts = part_order[part_count-1]
+
+        for _i, addr in enumerate(PHAddr.all_equipped_ship_parts):
+            if current_parts:
+                res += addr.get_write_list(current_parts[_i])
+            else:
+                res += addr.get_write_list(item.ship)
+
     return res
 
 async def receive_boss_key(client: "PhantomHourglassClient", ctx: "BizHawkClientContext", item: "PHItem", _):

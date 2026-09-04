@@ -27,7 +27,7 @@ def get_client_as_command_processor(self: "BizHawkClientCommandProcessor"):
     return client
 
 def cmd_boat_option(self: "BizHawkClientCommandProcessor",
-                     option: Literal["snap_speed", "speed", "options"] = "options",
+                     option: Literal["snap_speed", "speed", "options", "equip", "auto_equip"] = "options",
                      *args: str):
     """
     Change various train options. Currently implemented:
@@ -36,7 +36,7 @@ def cmd_boat_option(self: "BizHawkClientCommandProcessor",
       - options: lists current option values
     """
     # Thanks to Silvris's mm2 implementation for help with bizhawk command processing
-    valid_options = ["snap_speed", "speed", "options"]
+    valid_options = ["snap_speed", "speed", "options",  "equip", "auto_equip"]
     option = option.lower()
     if option not in valid_options:
         self.output(f"  \"{option}\" is not a valid option! {valid_options}")
@@ -57,7 +57,11 @@ def cmd_boat_option(self: "BizHawkClientCommandProcessor",
         self.output(f"  Current boat options:")
         self.output(f"    speed: {client.boat_speed}")
         self.output(f"    snap_speed: {client.boat_snap_speed}")
+        self.output(f"    auto_equip: {client.boat_equip}")
         return True
+
+    if option in ["equip", "auto_equip"]:
+        option = "equip"
 
     setattr(client, f"boat_{option}", value_bool)
     host_settings: PhantomHourglassSettings = get_settings().get('tloz_ph_options')
@@ -199,6 +203,7 @@ class PhantomHourglassClient(DSZeldaClient):
         self.boat_speed = DEFAULT_BOAT_SPEED
         self.boat_snap_speed = True
         self.update_boat_speed = True
+        self.boat_equip = True
         self.last_gear = True
 
         self.print_map_objs = False
@@ -281,7 +286,17 @@ class PhantomHourglassClient(DSZeldaClient):
         if ctx.slot_data["map_warp_options"]:
             write_list += PHAddr.inventory_5.get_write_list(0x1F)
 
-        printl(f"ssf write list: {write_list}")
+        if not ctx.slot_data["equip_ship"]:
+            write_list += PHAddr.custom_storage.get_write_list(2)
+            self.boat_equip = False
+
+        starting_ship = ctx.slot_data["starting_ship"]
+        if starting_ship >= 0:
+            write_list += [addr.get_inner_write_list(starting_ship) for addr in PHAddr.all_equipped_ship_parts]
+        elif starting_ship == -2:
+            write_list += [addr.get_inner_write_list(part) for addr, part in zip(PHAddr.all_equipped_ship_parts, ctx.slot_data["ship_part_order"][0])]
+
+        printl(f"ssf write list: {hex_f(write_list)}")
         return write_list
 
     async def get_coords(self, ctx, multi=False):
@@ -637,6 +652,8 @@ class PhantomHourglassClient(DSZeldaClient):
         if ctx.slot_data["shuffle_overworld_transitions"]:
             self.starting_entrance = (11, 0, 0)
 
+        # Update boat equip
+        self.boat_equip = not (await PHAddr.custom_storage.read(ctx) & 2)
 
     async def watched_intro_cs(self, ctx):
         watched_intro = await PHAddr.watched_intro.read(ctx, silent=True) & 2
@@ -701,6 +718,13 @@ class PhantomHourglassClient(DSZeldaClient):
         # Find potential dig spots
         await self.load_dig_spots(ctx)
 
+        # Update boat equip from client command
+        if bool(await PHAddr.custom_storage.read(ctx) & 2) == self.boat_equip:
+            if self.boat_equip:
+                await PHAddr.custom_storage.unset_bits(ctx, 0x2)
+            else:
+                await PHAddr.custom_storage.set_bits(ctx, 0x2)
+
     async def write_totok_midway_keys(self, ctx):
         data = DUNGEON_KEY_DATA[372]
         keys = await self.key_address.read(ctx)
@@ -746,21 +770,33 @@ class PhantomHourglassClient(DSZeldaClient):
 
     @staticmethod
     async def remove_ship_parts(ctx):
-        ship_write_list = ([1] + [0] * 8) * 8
+        ship_write_list = ([0] * 9) * 8
         await PHAddr.ship_part_counts.overwrite(ctx, ship_write_list)
 
     async def edit_ship(self, ctx):
         # Figure out what ships player has
-        ships = [1] + [0]*8
+        starting_ship = ctx.slot_data["starting_ship"]
+        ships = [0]*9
+        if starting_ship >= 0:
+            ships[starting_ship] = 1
         for i in ctx.items_received:
             item_id = i.item
             item_name = self.item_id_to_name[item_id]
-            if "Ship:" in item_name:
+            if "Ship:" in item_name and not item_name == "Ship: Mismatched":
                 item_data = self.item_data[item_name]
                 ships[item_data.ship] = 1
-        # Give ship parts
+
         ship_write_list = [] + ships * 8
-        printl(ships, ship_write_list)
+        printl(f"whole ship writes: {ship_write_list}")
+        ship_order = ctx.slot_data["ship_part_order"]
+        ship_count = min(self.item_count(ctx, "Ship: Mismatched"), len(ship_order))
+        if starting_ship == -2:  # ship_part_order 0 is the starting ship
+            ship_count += 1
+        for part in ship_order[:ship_count]:
+            for i, ship in enumerate(part):
+                ship_write_list[9*i+ship] = 1
+        # Give ship parts
+        printl(f"all ship writes: {ship_write_list}")
         await bizhawk.write(ctx.bizhawk_ctx, [(PHAddr.ship_part_counts.addr, ship_write_list, "Main RAM")])
         await PHAddr.custom_storage.set_bits(ctx, 2)
 
@@ -1659,7 +1695,7 @@ class PhantomHourglassClient(DSZeldaClient):
         table_size = await PHAddr.map_obj_table_size.read(ctx)
         obj_idents = await self.get_table_data(ctx, PHAddr.map_obj_table, 0,
                                                  size=3, table_label=False, table_size=table_size)
-        printl(f"map objects ({table_size}): {hex_f(obj_idents)}")
+        printl(f"map objects ({table_size})")  #: {hex_f(obj_idents)}")
 
         identifiers = idents_0
 

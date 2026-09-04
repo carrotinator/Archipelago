@@ -376,7 +376,7 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
         ["ToC 2F Spike Corridor", "ToC 2F Moving Platform Room", False, has_explosives & has_bow],
         ["ToC 1F Hammer Clips", "ToC 2F Spike Corridor", False, None],
         ["ToC South 1F", "ToC 2F Moving Platform Room", False, has_bow],
-        ["ToC 2F Spike Corridor", "ToC B1 Torches Platforms", False, has_boomerang],
+        ["ToC 2F Spike Corridor", "ToC B1 Torches Platforms", False, has_boomerang | (has_grapple & has_bow & ((hard_logic & Has("_toc_b1_maze")) |(ut_glitched & has_beam_sword)))],
         ["ToC B1 Torches Platforms", "ToC B1 Torches Chest", False, has_bow],
         ["ToC B1 Torches Platforms", "ToC 1F Pols NW", False, has_bow | toc_key_doors(2, 1)],
         ["ToC 1F Pols NW", "ToC 2F Scribble Platform Room", False, toc_door_3],

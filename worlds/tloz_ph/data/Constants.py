@@ -1424,17 +1424,6 @@ BOSS_WARP_SCENE_LOOKUP = {
     0x3000: "Cubus Sisters Blue Warp"
 }
 
-EQUIPPED_SHIP_PARTS_ADDR = [
-    PHAddr.equipped_ship_parts_0,
-    PHAddr.equipped_ship_parts_1,
-    PHAddr.equipped_ship_parts_2,
-    PHAddr.equipped_ship_parts_3,
-    PHAddr.equipped_ship_parts_4,
-    PHAddr.equipped_ship_parts_5,
-    PHAddr.equipped_ship_parts_6,
-    PHAddr.equipped_ship_parts_7,
-]
-
 TREASURE_READ_LIST = {i: (PHAddr.pink_coral_count + i * 4, 4, "Main RAM") for i in range(8)}
 
 TREASURE_PRICES = {

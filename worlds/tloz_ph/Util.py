@@ -41,7 +41,7 @@ def build_scene_to_dynamic_flag(ctx) -> Dict[int, list[dict]]:
     def check_slot_data(d):
         for option, value, *args in d.get("has_slot_data", []):
             value = value if isinstance(value, list) else [value]
-            print(f"\t{d['name']}: {option} {value}")
+            # print(f"\t{d['name']}: {option} {value}")
             if ctx.slot_data.get(option) not in value:
                 return False
         return True

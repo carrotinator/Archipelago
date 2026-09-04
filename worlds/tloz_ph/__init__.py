@@ -582,7 +582,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         if self.options.dungeon_hint_location.value == 0 and self.options.dungeon_hint_type == "hint_boss":
             self.options.start_location_hints.value.update(self.required_bosses)
 
-        # print(f"Picked Required Dungeons: {self.required_dungeons} bosses {self.required_bosses} \npairs {self.dungeon_boss_pairs}")
+        print(f"Picked Required Dungeons: {self.required_dungeons} bosses {self.required_bosses} \npairs {self.dungeon_boss_pairs}")
 
 
     def pick_metals(self, count):
@@ -686,6 +686,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         # Shop stuff
         self.create_event("Treasure Teller", "_has_treasure_teller")
         # Switch states etc
+        dungeon_event("Temple of Courage", "ToC B1 Invisible Maze", "_toc_b1_maze")
         self.create_event("Bremeur's Temple Event", "_ruins_lower_water")
         self.create_event("Gust North Event", "_windmills")
         self.create_event("Goron Chus Event", "_goron_chus")
@@ -1245,9 +1246,6 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         # Add pedestal items
         if self.options.randomize_pedestal_items.value > 1:
             add_items |= add_pedestal_items(self.options.randomize_pedestal_items, self.options.pedestal_item_options, self.excluded_dungeons, self.options.exclude_non_required_dungeons.value)
-        # Add treasure maps
-        # if self.options.randomize_salvage.value:
-        #     add_items |= {i: 1 for i in ITEM_GROUPS["Treasure Maps"]}
         if self.options.map_warp_options.value in [1]:
             add_items |= {i: 1 for i in ITEM_GROUPS["Map Warp Unlocks"]}
         # Add beedle point items
@@ -1503,7 +1501,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             collection_state = self.multiworld.get_all_state()
             # Perform a prefill to place confined items inside locations of this dungeon
             self.random.shuffle(boss_reward_locations)
-            # print(f"Pre-Filling boss rewards: {boss_reward_locations} \n {boss_reward_items}")
+            print(f"Pre-Filling boss rewards: {boss_reward_locations} \n {boss_reward_items}")
             fill_restrictive(self.multiworld, collection_state, boss_reward_locations, boss_reward_items,
                              single_player_placement=True, lock=True, allow_excluded=True)
 

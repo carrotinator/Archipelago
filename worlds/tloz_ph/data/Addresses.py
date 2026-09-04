@@ -267,7 +267,17 @@ class PHAddr:
     equipped_ship_parts_5 = Address(0x1ba558, size=4)
     equipped_ship_parts_6 = Address(0x1ba55c, size=4)
     equipped_ship_parts_7 = Address(0x1ba560, size=4)
-    
+
+    all_equipped_ship_parts = [
+        equipped_ship_parts_0,
+        equipped_ship_parts_1,
+        equipped_ship_parts_2,
+        equipped_ship_parts_3,
+        equipped_ship_parts_4,
+        equipped_ship_parts_5,
+        equipped_ship_parts_6,
+        equipped_ship_parts_7,
+]
     # island_visible_ = Address()
     # island_visible_ = Address()
     # island_visible_ = Address()

@@ -172,10 +172,10 @@ options_keys = {
     "goal_requirements": "defeat_bosses",
     "bellum_access": "spawn_phantoms_on_b13",
 
-    "dungeons_required": 1,
+    "dungeons_required": 8,
     "require_specific_bosses": True,
-    "totok_in_dungeon_pool": True,
-    "ghost_ship_in_dungeon_pool": "cubus_sisters",
+    "totok_in_dungeon_pool": False,
+    "ghost_ship_in_dungeon_pool": "rescue_tetra",
     "shuffle_bosses": "no_shuffle",
 
     "additional_metal_names": "custom",
@@ -187,7 +187,7 @@ options_keys = {
 
     "spirit_gem_packs": 1,
     "boss_reward_pool": "spirits_and_metals",
-    "spirit_type": "progressive_global_spirits",
+    "spirit_type": "single_spirits",
     "progressive_items": True,
 
     "randomize_salvage": "randomize_with_hints",
