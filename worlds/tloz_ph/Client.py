@@ -294,6 +294,7 @@ class PhantomHourglassClient(DSZeldaClient):
         if starting_ship >= 0:
             write_list += [addr.get_inner_write_list(starting_ship) for addr in PHAddr.all_equipped_ship_parts]
         elif starting_ship == -2:
+            print(f"all parts: {ctx.slot_data['ship_part_order']}")
             write_list += [addr.get_inner_write_list(part) for addr, part in zip(PHAddr.all_equipped_ship_parts, ctx.slot_data["ship_part_order"][0])]
 
         printl(f"ssf write list: {hex_f(write_list)}")

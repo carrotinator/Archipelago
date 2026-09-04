@@ -1375,36 +1375,35 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         return res, filler_change
 
     def choose_ship_items(self) -> dict[str, int]:
+        res: dict[str, int] = {}
         if self.options.starting_ship.value == -1:
             self.options.starting_ship.value = self.random.randint(0, 8)
         starting_ship = self.options.starting_ship.value
 
-        if not self.options.ship_items.value:
-            return {}
         if self.options.ship_items.value == 1:
             whole_ship_pool = list(ITEM_GROUPS["Whole Ships"].copy())
             whole_ship_pool.sort(key=lambda s: ITEMS[s].ship)
             if starting_ship >= 0:
                 whole_ship_pool.pop(self.options.starting_ship.value)
-            return {i: 1 for i in whole_ship_pool}
-        if self.options.ship_items.value == 2:
+            res = {i: 1 for i in whole_ship_pool}
+        if self.options.ship_items.value == 2 or self.options.starting_ship.value == -2:
             included_ships = list(range(9))
             if starting_ship >= 0:
                 included_ships.remove(starting_ship)
             part_positions: list[list[int]] = [included_ships.copy() for _ in range(8)]
             [self.random.shuffle(i) for i in part_positions]
-            print(f"ship part positions: {part_positions}")
+            # print(f"ship part positions: {part_positions}")
 
             ship_part_order: list[list[int]] = [[] for _ in included_ships]
-            print(f"pre order {ship_part_order}")
+            # print(f"pre order {ship_part_order}")
             for part in part_positions:
                 for i, ship_model in enumerate(part):
                     ship_part_order[i].append(ship_model)
-            print(f"ship part order: {ship_part_order}")
+            # print(f"ship part order: {ship_part_order}")
             self.ship_part_order = ship_part_order
-
-            return {"Ship: Mismatched": 8}
-        return {}
+            if self.options.ship_items.value == 2:
+                res = {"Ship: Mismatched": 8}
+        return res
 
     def create_items(self):
         item_pool_dict = self.build_item_pool_dict()
