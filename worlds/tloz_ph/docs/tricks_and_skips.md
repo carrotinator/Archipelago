@@ -55,7 +55,9 @@ calculating logic at all! Good luck!
 - B1 Invisible maze early
   - With grapple (all settings)
   - [With boomerang](https://www.youtube.com/watch?v=2DAUMNNQNhw) (Glitched Logic)
-- B1 [Boomerang Skip with Spirit of Courage](https://youtu.be/6_twN751nE8) (Not Implemented, possible extreme logic)
+- B1 Boomerang Skip
+  - [with bow shot from the invisible maze](https://www.twitch.tv/aetias_/clip/AbnegateImpartialClipsdadKappaRoss-Z5HEcIemPAZLBL4s) (Hard Logic)
+  - [with Spirit of Courage](https://youtu.be/6_twN751nE8) (Not Implemented, possible extreme logic)
 
 ## Nyave's Ship
 - Kill miniblins with barrels (Hard Logic)
