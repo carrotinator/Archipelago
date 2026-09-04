@@ -2046,6 +2046,41 @@ idents_0: dict[int, str] = {
     0x16cc74: "Hammer Catapult"
 }
 
+ACTOR_IDENTS: dict[int, str] = {
+    0x26cc40: "Fairy",
+
+# NPCs
+0x183ae0: "Mai",
+
+# Shop Items
+0x182e38: "Shop: Bomb Refill",
+0x18299c: "Shop: Treasure",
+0x1826d8: "Shop: Red Potion",
+0x1828b0: "Shop: Progressive",
+0x1827c4: "Shop: Shield",
+
+    # Interface?
+    0x182550: "Quit Button"
+
+}
+
+SHOP_LOCATIONS = {
+    0xb11: {
+        "Treasure": "Mercay Shop Buy Treasure",
+        "Red Potion": "Mercay Shop Buy Potion",
+        "Shield": "Mercay Shop Buy Shield",
+        # "Bomb Refill": "Mercay Shop Buy Bomb Refill"
+    }
+}
+
+SHOP_AMMO_LOCATIONS = {
+    0xb11: {
+        "bomb": "Mercay Shop Buy Bomb Refill"
+    }
+}
+
+AMMO_TYPE_LOOKUP = ["bomb", "arrow", "chu"]
+
 held_trigger_scenes = [0x250c, 0x2510]
 
 held_actor_ids: dict[int, str] = {

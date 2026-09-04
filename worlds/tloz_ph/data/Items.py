@@ -103,6 +103,7 @@ ITEMS_DATA = {
         "vanilla_model": [0x29, 0x7],
         "ghost_model": True,
         "model_reset": True,
+        "block_ammo": [0xb11],
         "item_groups": ["Equipment", "Tools", "Bombs", "Items With Ammo", "Bomb Bag", "Upgrades"]
     },
     "Bomb Bag": {
@@ -111,6 +112,7 @@ ITEMS_DATA = {
         "value": 0x10,
         "give_ammo": [10],
         "inventory_id": 4,
+        "block_ammo": [0xb11],
         "ammo_address": PHAddr.bomb_count,
         'item_groups': ["Equipment", "Tools", "Bombs", "Items With Ammo", "Bomb Bag"],
         "variant_prog": ["Bombs (Progressive)", "Bomb Bag", "Bomb Bag Upgrade"],  # prog, base, upgrade
@@ -124,6 +126,7 @@ ITEMS_DATA = {
         'classification': ItemClassification.progression,
         "progressive": [(PHAddr.bomb_upgrades, 0x1), (PHAddr.bomb_upgrades, 0x2)],
         "give_ammo": [20, 30],
+        "block_ammo": [0xb11],
         "ammo_address": PHAddr.bomb_count,
         "tags": ["progressive_overwrite"],
         'item_groups': ["Equipment", "Tools", "Bombs", "Items With Ammo", "Bomb Bag", "Upgrades"],
@@ -785,10 +788,12 @@ ITEMS_DATA = {
         "classification": ItemClassification.filler,
         "give_ammo": [0xa, 0x14, 0x1e],
         "address": PHAddr.bomb_count,
+        "value": 10,
         "refill": "Bombs (Progressive)",
         "id": 54,
         "model": 0x7,
         "model_reset": True,
+        "block_ammo": [0xb11],
         "item_groups": ["Ammo Refills"],
     },
     "Refill: Arrows": {

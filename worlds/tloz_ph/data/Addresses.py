@@ -77,6 +77,7 @@ class PHAddr:
     link_held_item_offset_totok = Address(0x1CDAE4, size=2)
 
     actor_table_pointer = Address(0x1BA8C4, size=3)
+    actor_table_size = Address(0x1BA8B4, size=2)
 
     # Pointers
     gItemManager = DTCM(0x0fb4)
@@ -220,6 +221,8 @@ class PHAddr:
     grapple_bit = Address(0x1BA6C4)
     chu_count = Address(0x1BA6C6, size=2)
     hammer_bit = Address(0x1BA6C8)
+
+    ammo_counts = [bomb_count, arrow_count, chu_count]
     
     bomb_upgrades = Address(0x1ba5d2)
     quiver_upgrades = Address(0x1ba5d0)

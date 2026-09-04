@@ -24,7 +24,7 @@ def build_location_room_to_watches() -> Dict[int, dict[str, dict]]:
     for loc_name, location in LOCATIONS_DATA.items():
         if location.get("stage_id", -1) < 0:
             continue
-        room_id = location["stage_id"] * 0x100 + location["floor_id"]
+        room_id = location["stage_id"] * 0x100 + location.get("room_id", 0)
         location_room_to_watches.setdefault(room_id, {})
         location_room_to_watches[room_id][loc_name] = location
 

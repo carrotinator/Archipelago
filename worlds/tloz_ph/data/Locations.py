@@ -818,6 +818,13 @@ LOCATIONS_DATA = {
         "hint_entrance": "TotOK Lobby Exit",
         "chest_offset": 34,
     },
+    "TotOK B9 Square Crystal": {
+        "region_id": "TotOK B9 Crystal",
+        "conditional": True,
+        "id": 333,
+        "dungeon": "Temple of the Ocean King",
+        "vanilla_item": "Square Crystal (Temple of the Ocean King)"
+    },
     "TotOK B9 Phantom Chest": {
         "region_id": "TotOK B9 Phantom",
         "vanilla_item": "Ship Part",
@@ -946,6 +953,13 @@ LOCATIONS_DATA = {
         "id": 69,
         "hint_entrance": "TotOK Lobby Exit",
         "chest_offset": 8,
+    },
+    "TotOK B12 Warp Phantom Force Gem": {
+        "region_id": "TotOK B12 Gem",
+        "conditional": True,
+        "id": 334,
+        "dungeon": "Temple of the Ocean King",
+        "vanilla_item": "Force Gem (B12)"
     },
     "TotOK B12 Hammer Chest": {
         "region_id": "TotOK B12 Hammer",
@@ -4089,20 +4103,44 @@ LOCATIONS_DATA = {
         "vanilla_item": "Gold Rupee (300)",
         "item_override": "Treasure Map #31 (Dead S)",
     },
-    "TotOK B9 Square Crystal": {
-        "region_id": "TotOK B9 Crystal",
-        "conditional": True,
-        "id": 333,
-        "dungeon": "Temple of the Ocean King",
-        "vanilla_item": "Square Crystal (Temple of the Ocean King)"
+
+    # New Shop Locations
+    "Mercay Shop Buy Bomb Refill": {
+        "stage_id": 0xB,
+        "room_id": 0x11,
+        "vanilla_item": "Refill: Bombs",
+        "address": PHAddr.bomb_count,
+        "value": 10,
+        "id": 335,
+        "region_id": "Mercay Shop Bombs",
+        "hint_entrance": "Mercay Shop Exit",
     },
-    "TotOK B12 Warp Phantom Force Gem": {
-        "region_id": "TotOK B12 Gem",
-        "conditional": True,
-        "id": 334,
-        "dungeon": "Temple of the Ocean King",
-        "vanilla_item": "Force Gem (B12)"
-    }
+    "Mercay Shop Buy Potion": {
+        "id": 336,
+        "vanilla_item": "Red Potion",
+        "region_id": "Mercay Shop",
+        "value": 1,
+        "exact_read": True,
+        "hint_entrance": "Mercay Shop Exit",
+    },
+    "Mercay Shop Buy Treasure": {
+        "id": 337,
+        "vanilla_item": "Treasure",
+        "region_id": "Mercay Shop",
+        "value": 1,
+        "exact_read": True,
+        "hint_entrance": "Mercay Shop Exit",
+    },
+    "Mercay Shop Buy Shield": {
+        "id": 338,
+        "vanilla_item": "Shield",
+        "region_id": "Mercay Shop",
+        "value": 1,
+        "exact_read": True,
+        "hint_entrance": "Mercay Shop Exit",
+        # "slot_data": [("shopsanity", ["Shields"])]
+    },
+
 }
 
 for i in LOCATIONS_DATA:
