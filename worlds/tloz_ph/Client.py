@@ -227,6 +227,7 @@ class PhantomHourglassClient(DSZeldaClient):
         self.last_held_offset: int = 0xffff
         self.last_ammo_count: list[int] = [-1, -1, -1]  # ammo to reset
         self.ammo_addresses: list[Address] = PHAddr.ammo_counts
+        self.masked_beedle: bool = False  # last seen beedle variant
 
 
     async def check_game_version(self, ctx: "BizHawkClientContext") -> bool:
@@ -1606,16 +1607,19 @@ class PhantomHourglassClient(DSZeldaClient):
         await self.process_shop_ammo(ctx)
 
     async def process_shop_ammo(self, ctx):
-        if self.current_scene in SHOP_AMMO_LOCATIONS and "Ammo" in ctx.slot_data.get("shopsanity", ["Ammo"]):
+        if self.current_scene in SHOP_AMMO_LOCATIONS and "ammo" in ctx.slot_data.get("shopsanity", []):
+            printl(f"Processing shop ammo")
             for ammo_type, location in SHOP_AMMO_LOCATIONS[self.current_scene].items():
                 if LOCATIONS_DATA[location]["id"] not in ctx.checked_locations:
                     type_index = AMMO_TYPE_LOOKUP.index(ammo_type)
-                    self.last_ammo_count[type_index] = await PHAddr.ammo_counts[type_index].read(ctx)
-                    await PHAddr.bomb_count.overwrite(ctx, 0)
+                    ammo_addr = PHAddr.ammo_counts[type_index]
+                    self.last_ammo_count[type_index] = await ammo_addr.read(ctx)
+                    await ammo_addr.overwrite(ctx, 0)
         else:
             for i, pack in enumerate(zip(self.last_ammo_count, PHAddr.ammo_counts)):
                 count, addr = pack
-                if i >= 0:
+                if count >= 0:
+                    printl(f"\tResetting ammo {AMMO_TYPE_LOOKUP[i]} {count}")
                     await addr.overwrite(ctx, count)
                     self.last_ammo_count[i] = -1
 
@@ -1689,6 +1693,7 @@ class PhantomHourglassClient(DSZeldaClient):
                     continue
 
                 gift_addr: list[Address] = gift_addr if isinstance(gift_addr, list) else [gift_addr]
+                # TODO: Filter shop uniques from other stacked items
                 for addr in gift_addr:
                     printl(f"\tSetting read item model: {loc} {hex(model)}")
                     write_list.append(addr.get_inner_write_list(model))
@@ -2074,7 +2079,7 @@ class PhantomHourglassClient(DSZeldaClient):
         return Address.from_pointer(chest_object+4)
 
     async def process_actors(self, ctx):
-        if self.current_scene not in [0xb11]:
+        if self.current_scene not in [0xb11, 0x500, 0x1014, 0xC0E]:
             return
 
         table_size = await PHAddr.actor_table_size.read(ctx)
@@ -2082,21 +2087,32 @@ class PhantomHourglassClient(DSZeldaClient):
         actor_idents = await self.get_table_data(ctx, actor_table_start, 0,
                                                  size=3, table_label=False, table_size=table_size)
         printl(f"actor objects ({table_size}): {hex_f(actor_idents)}")
+        shop_slot = 0
 
         for addr, ident in actor_idents.items():
+            print(f"\t{addr} -> {hex_f(ident)}: {ACTOR_IDENTS.get(ident, 'UNK')}")
             ident = ACTOR_IDENTS.get(ident, "")
             if not ident:
                 continue
 
             if ident.startswith("Shop:"):
+                shop_slot += 1
                 k = ident.split(":")[1][1:]
-                location = SHOP_LOCATIONS.get(self.current_scene, {}).get(k, "")
+                shop_scene = self.current_scene
+                if self.current_stage == 5:
+                    shop_scene = 0x501 if self.masked_beedle else 0x500
+                shop_scene = SHOP_LOCATIONS.get(shop_scene, {})
+                location = shop_scene.get(k, shop_scene.get(k+str(shop_slot), ""))
                 if not location:
                     continue
                 data = LOCATIONS_DATA[location]
                 if data["id"] not in ctx.checked_locations and compare_slot_data(ctx, data):
                     print(f"Creating watch for {location} {addr}")
                     self.watches[location] = Address.from_pointer(addr+0x56*4, size=1)
+
+            if ident == "Beedle":
+                self.masked_beedle = (await Address.from_pointer(addr+284+3).read(ctx)) == 0x16
+                printl(f"Masked Beedle? {self.masked_beedle}")
 
     async def _set_vanilla_item(self, ctx, location, vanilla_item: str | None = None):
         printl(f"Setting vanilla item for {location.get('name')}")

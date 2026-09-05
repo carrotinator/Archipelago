@@ -3,7 +3,7 @@ from datetime import datetime
 from .data.Entrances import ENTRANCES
 
 from Options import Choice, DeathLink, DefaultOnToggle, PerGameCommonOptions, Range, Toggle, StartInventoryPool, \
-    ItemDict, ItemsAccessibility, ItemSet, Visibility, OptionGroup, PlandoConnections
+    ItemDict, ItemsAccessibility, ItemSet, Visibility, OptionGroup, PlandoConnections, OptionSet
 from worlds.tloz_ph.data.Items import ITEMS_DATA
 
 
@@ -937,6 +937,21 @@ class PhantomHourglassShipAutoEquip(Toggle):
     display_name = "Auto-Equip Ships"
     default = 1
 
+class PhantomHourglassShopsanity(OptionSet):
+    """
+    Randomize shop items.
+    Shops sell the vanilla after buying the randomized items.
+    - uniques: unique items, including the chain in island shops. 6(8) locations, 6000(7500) rupees
+    - shields: 3 locations, 240 rupees
+    - ammo: refills of bombs and arrows etc. 4 locations, 170 rupees
+    - treasure: treasure and ship parts. 3(5) locations, variable rupees
+    - potions: 4(5) locations,
+    - all: all of the above.
+    """
+    display_name = "Shopsanity"
+    valid_keys = {"uniques", "shields", "ammo", "treasure", "potions", "all"}
+    default = {"uniques"}
+
 @dataclass
 class PhantomHourglassOptions(PerGameCommonOptions):
     # Accessibility
@@ -976,6 +991,7 @@ class PhantomHourglassOptions(PerGameCommonOptions):
     global_spirit_upgrades: PhantomHourglassGlobalSpiritUpgrades
 
     # Additional Locations
+    shopsanity: PhantomHourglassShopsanity
     randomize_minigames: PhantomHourglassRandomizeMinigames
     randomize_frogs: PhantomHourglassFrogRandomization
     randomize_fishing: PhantomHourglassRandomizeFishing
@@ -1089,6 +1105,7 @@ ph_option_groups = [
         PhantomHourglassGlobalSpiritUpgrades
     ]),
     OptionGroup("Extra Location Options", [
+        PhantomHourglassShopsanity,
         PhantomHourglassRandomizeMinigames,
         PhantomHourglassFrogRandomization,
         PhantomHourglassRandomizeFishing,

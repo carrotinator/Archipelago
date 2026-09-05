@@ -277,7 +277,8 @@ LOCATIONS_DATA = {
         "delay_reset": True,
         "id": 21,
         "hint_entrance": ["Mercay Shop Exit", "Molida Shop Exit", "Goron Shop Exit"],
-        "gift_addr": "island_shop"
+        "gift_addr": "island_shop",
+        "slot_data": [("shopsanity", "uniques")],
     },
     "Island Shop Quiver": {
         "region_id": "Island Shop Quiver",
@@ -291,7 +292,8 @@ LOCATIONS_DATA = {
         "delay_reset": True,
         "id": 22,
         "hint_entrance": ["Mercay Shop Exit", "Molida Shop Exit", "Goron Shop Exit"],
-        "gift_addr": "island_shop"
+        "gift_addr": "island_shop",
+        "slot_data": [("shopsanity", "uniques")],
     },
     "Island Shop Bombchu Bag": {
         "region_id": "Island Shop Bombchu Bag",
@@ -305,7 +307,8 @@ LOCATIONS_DATA = {
         "delay_reset": True,
         "id": 23,
         "hint_entrance": ["Mercay Shop Exit", "Molida Shop Exit", "Goron Shop Exit"],
-        "gift_addr": "island_shop"
+        "gift_addr": "island_shop",
+        "slot_data": [("shopsanity", "uniques")],
     },
     "Island Shop Heart Container": {
         "region_id": "Island Shop Heart Container",
@@ -318,7 +321,8 @@ LOCATIONS_DATA = {
         "island_shop": True,
         "id": 24,
         "hint_entrance": ["Mercay Shop Exit", "Molida Shop Exit", "Goron Shop Exit"],
-        "gift_addr": "island_shop"
+        "gift_addr": "island_shop",
+        "slot_data": [("shopsanity", "uniques")],
     },
 
     # ========== Beedle ============
@@ -332,7 +336,8 @@ LOCATIONS_DATA = {
         "value": 0x4,
         "delay_reset": True,
         "id": 25,
-        "gift_addr": Address(0x266e7c)
+        "gift_addr": Address(0x266e7c),
+        "slot_data": [("shopsanity", "uniques")],
     },
     "Beedle Shop Wisdom Gem": {
         "region_id": "Beedle Gem",
@@ -343,7 +348,8 @@ LOCATIONS_DATA = {
         "value": 0x20,
         "delay_reset": True,
         "id": 26,
-        "gift_addr": Address(0x2674fc)
+        "gift_addr": Address(0x2674fc),
+        "slot_data": [("shopsanity", "uniques")],
     },
     "Masked Beedle Heart Container": {
         "region_id": "Masked Ship HC",
@@ -355,7 +361,8 @@ LOCATIONS_DATA = {
         "conditional": True,
         "delay_reset": True,
         "id": 27,
-        "gift_addr": Address(0x266e7c)
+        "gift_addr": Address(0x266e7c),
+        "slot_data": [("shopsanity", "uniques")],
     },
     "Masked Beedle Courage Gem": {
         "region_id": "Masked Ship Gem",
@@ -367,7 +374,8 @@ LOCATIONS_DATA = {
         "conditional": True,
         "delay_reset": True,
         "id": 28,
-        "gift_addr": Address(0x2674fc)
+        "gift_addr": Address(0x2674fc),
+        "slot_data": [("shopsanity", "uniques")],
     },
     "Beedle Membership Bronze": {
         "region_id": "Beedle Bronze Membership",
@@ -4114,6 +4122,7 @@ LOCATIONS_DATA = {
         "id": 335,
         "region_id": "Mercay Shop Bombs",
         "hint_entrance": "Mercay Shop Exit",
+        "slot_data": [("shopsanity", "ammo")]
     },
     "Mercay Shop Buy Potion": {
         "id": 336,
@@ -4122,6 +4131,7 @@ LOCATIONS_DATA = {
         "value": 1,
         "exact_read": True,
         "hint_entrance": "Mercay Shop Exit",
+        "slot_data": [("shopsanity", "potions")]
     },
     "Mercay Shop Buy Treasure": {
         "id": 337,
@@ -4130,6 +4140,7 @@ LOCATIONS_DATA = {
         "value": 1,
         "exact_read": True,
         "hint_entrance": "Mercay Shop Exit",
+        "slot_data": [("shopsanity", "treasure")]
     },
     "Mercay Shop Buy Shield": {
         "id": 338,
@@ -4138,7 +4149,171 @@ LOCATIONS_DATA = {
         "value": 1,
         "exact_read": True,
         "hint_entrance": "Mercay Shop Exit",
-        # "slot_data": [("shopsanity", ["Shields"])]
+        "slot_data": [("shopsanity", "shields")]
+    },
+
+    "Molida Shop Buy Bomb Refill": {
+        "stage_id": 0xC,
+        "room_id": 0xE,
+        "vanilla_item": "Refill: Bombs",
+        "address": PHAddr.bomb_count,
+        "value": 10,
+        "id": 339,
+        "region_id": "Molida Shop Bombs",
+        "hint_entrance": "Molida Shop Exit",
+        "slot_data": [("shopsanity", "ammo")]
+    },
+    "Molida Shop Buy Potion": {
+        "id": 340,
+        "vanilla_item": "Red Potion",
+        "region_id": "Molida Shop",
+        "value": 1,
+        "exact_read": True,
+        "hint_entrance": "Molida Shop Exit",
+        "slot_data": [("shopsanity", "potions")]
+    },
+    "Molida Shop Buy Shield": {
+        "id": 341,
+        "vanilla_item": "Shield",
+        "region_id": "Molida Shop",
+        "value": 1,
+        "exact_read": True,
+        "hint_entrance": "Molida Shop Exit",
+        "slot_data": [("shopsanity", "shields")]
+    },
+    "Molida Shop Buy Arrow Refill": {
+        "stage_id": 0xC,
+        "room_id": 0xE,
+        "vanilla_item": "Refill: Arrows",
+        "address": PHAddr.arrow_count,
+        "value": 10,
+        "id": 342,
+        "region_id": "Molida Shop Arrows",
+        "hint_entrance": "Molida Shop Exit",
+        "slot_data": [("shopsanity", "ammo")]
+    },
+
+    "Goron Shop Buy Arrow Refill": {
+        "stage_id": 0x10,
+        "room_id": 0x14,
+        "vanilla_item": "Refill: Arrows",
+        "address": PHAddr.bomb_count,
+        "value": 10,
+        "id": 343,
+        "region_id": "Goron Shop Arrows",
+        "hint_entrance": "Molida Shop Exit",
+        "slot_data": [("shopsanity", "ammo")]
+    },
+    "Goron Shop Buy Bombchu Refill": {
+        "stage_id": 0x10,
+        "room_id": 0x14,
+        "vanilla_item": "Refill: Bombchus",
+        "address": PHAddr.chu_count,
+        "value": 10,
+        "id": 344,
+        "region_id": "Goron Shop Chus",
+        "hint_entrance": "Goron Shop Exit",
+        "slot_data": [("shopsanity", "ammo")]
+    },
+    "Goron Shop Buy Potion": {
+        "id": 345,
+        "vanilla_item": "Yellow Potion",
+        "region_id": "Goron Shop",
+        "value": 1,
+        "exact_read": True,
+        "hint_entrance": "Goron Shop Exit",
+        "slot_data": [("shopsanity", "potions")]
+    },
+    "Goron Shop Buy Shield": {
+        "id": 346,
+        "vanilla_item": "Shield",
+        "region_id": "Goron Shop",
+        "value": 1,
+        "exact_read": True,
+        "hint_entrance": "Goron Shop Exit",
+        "slot_data": [("shopsanity", "shields")]
+    },
+
+    "Beedle Shop Buy Red Potion": {
+        "id": 347,
+        "vanilla_item": "Red Potion",
+        "region_id": "Beedle Shop",
+        "value": 1,
+        "exact_read": True,
+        "slot_data": [("shopsanity", "potions")]
+    },
+    "Beedle Shop Buy Bottom Ship Part": {
+        "id": 348,
+        "vanilla_item": "Ship Part",
+        "region_id": "Beedle Shop",
+        "value": 1,
+        "exact_read": True,
+        "slot_data": [("shopsanity", "treasure")]
+    },
+    "Beedle Shop Buy Treasure": {
+        "id": 349,
+        "vanilla_item": "Treasure",
+        "region_id": "Beedle Shop",
+        "value": 1,
+        "exact_read": True,
+        "slot_data": [("shopsanity", "treasure")]
+    },
+    "Beedle Shop Buy Top Ship Part": {
+        "id": 350,
+        "vanilla_item": "Ship Part",
+        "region_id": "Beedle Shop",
+        "value": 1,
+        "exact_read": True,
+        "slot_data": [("shopsanity", "treasure")]
+    },
+    "Beedle Shop Buy Purple Potion": {
+        "id": 351,
+        "vanilla_item": "Purple Potion",
+        "region_id": "Beedle Shop",
+        "value": 1,
+        "exact_read": True,
+        "slot_data": [("shopsanity", "potions")]
+    },
+
+    "Masked Beedle Buy Red Potion": {
+        "id": 352,
+        "vanilla_item": "Red Potion",
+        "region_id": "Beedle Shop",
+        "value": 1,
+        "exact_read": True,
+        "slot_data": [("shopsanity", "potions"), ("randomize_masked_beedle", 1)]
+    },
+    "Masked Beedle Buy Yellow Potion": {
+        "id": 353,
+        "vanilla_item": "Yellow Potion",
+        "region_id": "Beedle Shop",
+        "value": 1,
+        "exact_read": True,
+        "slot_data": [("shopsanity", "potions"), ("randomize_masked_beedle", 1)]
+    },
+    "Masked Beedle Buy Top Ship Part": {
+        "id": 354,
+        "vanilla_item": "Ship Part",
+        "region_id": "Beedle Shop",
+        "value": 1,
+        "exact_read": True,
+        "slot_data": [("shopsanity", "treasure"), ("randomize_masked_beedle", 1)]
+    },
+    "Masked Beedle Buy Bottom Ship Part": {
+        "id": 355,
+        "vanilla_item": "Ship Part",
+        "region_id": "Beedle Shop",
+        "value": 1,
+        "exact_read": True,
+        "slot_data": [("shopsanity", "treasure"), ("randomize_masked_beedle", 1)]
+    },
+    "Masked Beedle Buy Treasure": {
+        "id": 356,
+        "vanilla_item": "Ship Part",
+        "region_id": "Beedle Shop",
+        "value": 1,
+        "exact_read": True,
+        "slot_data": [("shopsanity", "treasure"), ("randomize_masked_beedle", 1)]
     },
 
 }

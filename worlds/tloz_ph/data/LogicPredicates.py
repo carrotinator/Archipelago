@@ -2831,8 +2831,8 @@ def ph_totok_b12_ghost(state, player):
     return any([
         ph_totok_has_floor_time(state, player, '12_h', 20) if ph_totok_b12_abstract_pedestals(state, player, 2) else False,
         ph_totok_has_floor_time(state, player, 12, 20) if ph_totok_b12_abstract_pedestals(state, player, 2) else False,
-        ph_totok_has_floor_time(state, player, '12_h', 50),
-        ph_totok_has_floor_time(state, player, 12, 70),
+        ph_totok_has_floor_time(state, player, '12_h', 50) and ph_option_pedestals_vanilla(state, player),
+        ph_totok_has_floor_time(state, player, 12, 70) and ph_option_pedestals_vanilla(state, player),
     ])
 
 

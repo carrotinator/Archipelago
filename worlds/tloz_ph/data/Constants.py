@@ -2049,15 +2049,22 @@ idents_0: dict[int, str] = {
 ACTOR_IDENTS: dict[int, str] = {
     0x26cc40: "Fairy",
 
-# NPCs
-0x183ae0: "Mai",
+    # NPCs
+    0x183ae0: "Mai",
+    0x183C48: "Beedle",
 
-# Shop Items
-0x182e38: "Shop: Bomb Refill",
-0x18299c: "Shop: Treasure",
-0x1826d8: "Shop: Red Potion",
-0x1828b0: "Shop: Progressive",
-0x1827c4: "Shop: Shield",
+    # Shop Items
+    0x182e38: "Shop: Bomb Refill",
+    0x183010: "Shop: Arrow Refill",
+    0x18299c: "Shop: Treasure",
+    0x1826d8: "Shop: Potion",
+    0x1828b0: "Shop: Gem",
+    0x1827c4: "Shop: Shield",
+    0x182A88: "Shop: Ship Part",
+    0x1831E8: "Shop: Sold Out",
+    0x1830FC: "Shop: Heart Container",
+    0x182f24: "Shop: Quiver",
+    0x182b74: "Bombchu Bag",
 
     # Interface?
     0x182550: "Quit Button"
@@ -2067,9 +2074,30 @@ ACTOR_IDENTS: dict[int, str] = {
 SHOP_LOCATIONS = {
     0xb11: {
         "Treasure": "Mercay Shop Buy Treasure",
-        "Red Potion": "Mercay Shop Buy Potion",
+        "Potion": "Mercay Shop Buy Potion",
         "Shield": "Mercay Shop Buy Shield",
-        # "Bomb Refill": "Mercay Shop Buy Bomb Refill"
+    },
+    0xc0e: {
+        "Potion": "Molida Shop Buy Potion",
+        "Shield": "Molida Shop Buy Shield",
+    },
+    0x1014: {
+        "Potion": "Goron Shop Buy Potion",
+        "Shield": "Goron Shop Buy Shield",
+    },
+    0x500: {
+        "Ship Part1": "Beedle Shop Buy Top Ship Part",
+        "Ship Part2": "Beedle Shop Buy Bottom Ship Part",
+        "Potion3": "Beedle Shop Buy Red Potion",
+        "Treasure": "Beedle Shop Buy Treasure",
+        "Potion5": "Beedle Shop Buy Purple Potion",
+    },
+    0x501: {  # Masked beedle variant
+        "Ship Part1": "Masked Beedle Buy Top Ship Part ",
+        "Ship Part2": "Masked Beedle Buy Bottom Ship Part",
+        "Potion3": "Masked Beedle Buy Red Potion",
+        "Treasure": "Masked Beedle Buy Treasure",
+        "Potion5": "Masked Beedle Buy Yellow Potion",
     }
 }
 

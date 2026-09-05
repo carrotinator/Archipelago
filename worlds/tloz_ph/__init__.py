@@ -613,7 +613,9 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
 
     def count_required_rupees(self):
         multiplier = 0.7 if self.options.shop_hints.value else 1
-        rupees = 4500+1500*multiplier  # island shop + beedle
+        rupees = 0
+        if "uniques" in self.options.shopsanity.value:
+            rupees += 4500+1500*multiplier  # island shop + beedle
         if self.options.randomize_masked_beedle.value:
             rupees += 1500*multiplier
         self.required_rupees = int(rupees)
@@ -1687,6 +1689,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             "logic", "phantom_combat_difficulty", "boat_requires_sea_chart",
             # Item Randomization
             "boss_keyrings",
+            "shopsanity",
             "randomize_minigames", "randomize_digs", "randomize_fishing",
             "keysanity", "randomize_boss_keys", "randomize_pedestal_items",
             "randomize_frogs", "randomize_salvage",
