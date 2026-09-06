@@ -7,7 +7,7 @@ from ..DSZeldaClient.LocationClass import DSLocation
 # TODO: Add sram data for saveslot 2
 # TODO: Add the rest of sram data in bulk
 
-new_data = [
+LOCATION_LIST: list[DSLocation] = [
     DSLocation("Sword Cave Chest",
                region="Sword Cave",
                item_override="Sword (Progressive)",
@@ -3781,7 +3781,9 @@ new_data = [
                ),
 ]
 
-LOCATIONS_DATA = {
+LOCATIONS_DATA: dict[str, DSLocation] = {l.name: l for l in LOCATION_LIST}
+
+LOCATIONS_DATA_OLD: dict[str, dict] = {
 
     # ========== Mercay Island ============
 

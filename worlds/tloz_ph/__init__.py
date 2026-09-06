@@ -406,7 +406,8 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             if not self.location_is_active(location_name, location_data):
                 continue
             is_local = "local" in location_data and location_data["local"] is True
-            self.create_location(location_data['region_id'], location_name, is_local)
+            if location_data.region:
+                self.create_location(location_data.region, location_name, is_local)
 
         # Need to create locations before they can be excluded
         for name in self.locations_to_exclude:
@@ -429,7 +430,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         if location_name in self.locations_to_remove:
             # print(f"Removing {location_name}")
             return False
-        if not location_data.get("conditional", False):
+        if not location_data.conditional:
             return True
         else:
             if location_name in LOCATION_GROUPS["Golden Frogs"]:
@@ -1165,7 +1166,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                 # print(f"{loc_name} is not active")
                 continue
             # If no defined vanilla item, fill with filler
-            if "vanilla_item" not in loc_data:
+            if not loc_data.vanilla_item:
                 # print(f"{loc_name} has no defined vanilla item")
                 filler_item_count += 1
                 continue
@@ -1187,7 +1188,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             if self.options.randomize_boss_keys.value in [0, 3] and "Boss Key" in item_name:
                 force_vanilla()
                 continue
-            if "force_vanilla" in loc_data and loc_data["force_vanilla"]:
+            if loc_data.force_vanilla:
                 force_vanilla()
                 continue
             if hasattr(ITEMS[item_name], 'dungeon'):
@@ -1618,14 +1619,14 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         dead_end_ids = [e.id for name, e in ENTRANCES.items() if name in DEAD_END_ENTRANCES]
 
         for loc, loc_data in LOCATIONS_DATA.items():
-            if "hint_entrance" in loc_data:
+            if loc_data.hint_entrance:
                 entrance_list = set()
                 create_hint_entrances("hint_entrance")
-                if not entrance_list and "hint_entrance_secondary" in loc_data:
+                if not entrance_list and loc_data.hint_entrance_secondary:
                     create_hint_entrances("hint_entrance_secondary")
 
                 if entrance_list:
-                    player_hint_data[loc_data["id"]] = ", ".join(entrance_list)
+                    player_hint_data[loc_data.id] = ", ".join(entrance_list)
 
         hint_data[self.player] = player_hint_data
 
@@ -1659,19 +1660,19 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         for loc in self.get_locations():
             item = loc.item
             if item is None: continue
-            loc_data = LOCATIONS_DATA.get(loc.name, {})
-            if not loc_data or not ('chest_offset' in loc_data or 'gift_addr' in loc_data):
+            loc_data = LOCATIONS_DATA.get(loc.name, None)
+            if not loc_data or not (loc_data.chest_offset is not None or loc_data.gift_addr):
                 continue
             if item.game in ["Phantom Hourglass"]:
                 if ITEMS[item.name].model is not None:
                     if not (item.name.startswith("Treasure Map") and loc.name in CATEGORY_LOCATION_GROUPS["Counter Shops"]):
-                        location_models[loc_data['id']] = ITEMS[item.name].model
+                        location_models[loc_data.id] = ITEMS[item.name].model
                         continue
 
             if item.classification & ItemClassification.progression or item.classification & ItemClassification.useful:
-                location_models[loc_data['id']] = 0x1E  # blue force gem
+                location_models[loc_data.id] = 0x1E  # blue force gem
             else:
-                location_models[loc_data['id']] = 0x1D  # red force gem
+                location_models[loc_data.id] = 0x1D  # red force gem
 
         return location_models
         # print(f"Location Models: {location_models}")

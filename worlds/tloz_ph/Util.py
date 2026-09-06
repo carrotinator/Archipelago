@@ -1,4 +1,6 @@
 from typing import Dict
+
+from .DSZeldaClient.LocationClass import DSLocation
 from .data import LOCATIONS_DATA, DYNAMIC_FLAGS
 from .data.Items import ITEMS
 from .data.Hints import HINT_DATA
@@ -19,20 +21,14 @@ def build_hint_scene_to_watches() -> dict[int, list[str]]:
     return hint_room_to_watches
 
 
-def build_location_room_to_watches() -> Dict[int, dict[str, dict]]:
-    location_room_to_watches: Dict[int, dict[str, dict]] = {}
+def build_location_room_to_watches() -> Dict[int, dict[str, DSLocation]]:
+    location_room_to_watches: Dict[int, dict[str, DSLocation]] = {}
     for loc_name, location in LOCATIONS_DATA.items():
-        if location.get("stage_id", -1) < 0:
-            continue
-        room_id = location["stage_id"] * 0x100 + location.get("room_id", 0)
-        location_room_to_watches.setdefault(room_id, {})
-        location_room_to_watches[room_id][loc_name] = location
+        if location.scenes:
+            for scene in location.scenes:
+                location_room_to_watches.setdefault(scene, {})
+                location_room_to_watches[scene][loc_name] = location
 
-        # Add location to multiple rooms
-        if "additional_rooms" in location:
-            for room in location["additional_rooms"]:
-                location_room_to_watches.setdefault(room, {})
-                location_room_to_watches[room][loc_name] = location
     return location_room_to_watches
 
 
