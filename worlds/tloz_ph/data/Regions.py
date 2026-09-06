@@ -64,7 +64,19 @@ REGIONS = [
     "Island Shop Quiver",
     "Island Shop Heart Container",
 
+    "Mercay Shop Buy",
+    "Goron Shop Buy",
+    "Molida Shop Buy",
+    "Molida Shop Bombs",
+    "Molida Shop Arrows",
+    "Goron Shop Arrows",
+    "Goron Shop Chus",
+    "Goron Shop Arrows",
+    "Mercay Shop Bombs",
+
     "Beedle",
+    "Beedle Shop",
+
     "Beedle Gem",
     "Beedle Bomb Bag",
     "Masked Ship HC",

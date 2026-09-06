@@ -414,7 +414,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             try:
                 self.multiworld.get_location(name, self.player).progress_type = LocationProgressType.EXCLUDED
             except KeyError:
-                pass  # Archery minigame 2000 is dependant on logic difficulty
+                pass  # Archery minigame 2000 is dependent on logic difficulty
 
         # print(f"bosses: {self.required_bosses} dungeons: {self.required_dungeons} excluded: {self.excluded_dungeons}")
         self.create_events()

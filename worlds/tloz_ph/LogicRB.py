@@ -189,6 +189,15 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
         ["Island Shop", "Island Shop Bombchu Bag", False, has_rupees(required_rupees) & has_bow & has_chus],
         ["Island Shop", "Island Shop Heart Container", False, has_rupees(required_rupees) & has_bow & has_chus],
 
+        ["Mercay Shop", "Mercay Shop Buy", False, has_rupees(required_rupees)],
+        ["Molida Shop", "Molida Shop Buy", False, has_rupees(required_rupees)],
+        ["Goron Shop", "Goron Shop Buy", False, has_rupees(required_rupees)],
+        ["Mercay Shop Buy", "Mercay Shop Bombs", False, has_bombs],
+        ["Molida Shop Buy", "Molida Shop Bombs", False, has_bombs],
+        ["Molida Shop Buy", "Molida Shop Arrows", False, has_bow],
+        ["Goron Shop Buy", "Goron Shop Arrows", False, has_bow],
+        ["Goron Shop Buy", "Goron Shop Chus", False, has_chus],
+
         ["SW Ocean East", "Beedle", False, None],
         ["SW Ocean West", "Beedle", False, None],
         ["NW Ocean", "Beedle", False, None],
@@ -199,6 +208,7 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
         ["Beedle", "Beedle Bomb Bag", False, has_bombs & has_rupees(required_rupees)],
         ["Beedle", "Masked Ship Gem", False, has_rupees(required_rupees)],
         ["Beedle", "Masked Ship HC", False, has_rupees(required_rupees)],
+        ["Beedle", "Beedle Shop", False, has_rupees(required_rupees)],
 
         ["Beedle", "Beedle Bronze Membership", False, beedle_bronze],
         ["Beedle", "Beedle Silver Membership", False, HasBeedlePoints(20)],
