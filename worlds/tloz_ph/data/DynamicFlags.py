@@ -1625,6 +1625,12 @@ DYNAMIC_FLAGS = {
         "has_slot_data": [("shopsanity", "uniques", "not")],
         "set_if_true": [(PHAddr.flags_shops, 0x25), (PHAddr.adv_flags_14, 0x2)]
     },
+    "Island Shops no restocks": {
+        "on_scenes": [0xb11, 0xc03, 0x1014],
+        "has_slot_data": [("shopsanity", "restocks", "not"), ("shopsanity", "uniques")],
+        "set_if_true": [(PHAddr.flags_shops, 0x98)]
+    },
+
     "Mercay Shop Shield 1": {
         "on_scenes": [0xB11],
         "not_has_locations": ["Mercay Shop Buy Shield"],

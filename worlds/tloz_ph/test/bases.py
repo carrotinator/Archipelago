@@ -196,7 +196,7 @@ options_keys = {
     "ship_items": "whole_mismatched",
     "starting_ship": "mismatched",
 
-    "shopsanity": {},
+    "shopsanity": {"shields", "potions", "uniques"},
     "randomize_masked_beedle": True
 }
 

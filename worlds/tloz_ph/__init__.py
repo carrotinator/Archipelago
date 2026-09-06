@@ -406,7 +406,6 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         # Create locations
         for location_name, location_data in LOCATIONS_DATA.items():
             if not self.location_is_active(location_name, location_data):
-                print(f"Location {location_name} is not active")
                 continue
             is_local = "local" in location_data and location_data["local"] is True
             if location_data.region:
@@ -445,6 +444,12 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                     _value = _value if isinstance(_value, list) else [_value]
                     if slot not in _value:
                         return False
+
+            if location_data.restock:
+                if 'restocks' not in self.options.shopsanity.value and (
+                        location_data.restock in self.options.shopsanity.value or location_data.restock == "always"):
+                    # print(f"Restock blocked: {location_name}")
+                    return False
             return True
 
 

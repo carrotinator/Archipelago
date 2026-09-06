@@ -2075,7 +2075,7 @@ class PhantomHourglassClient(DSZeldaClient):
                 if not location:
                     continue
                 data = LOCATIONS_DATA[location]
-                if data.id not in ctx.checked_locations and compare_slot_data(ctx, data):
+                if (data.id not in ctx.checked_locations and compare_slot_data(ctx, data)) or (k == "Shield" and ctx.slot_data["shield_in_pool"]):
                     print(f"Creating watch for {location} {addr}")
                     self.watches[location] = Address.from_pointer(addr+0x56*4, size=1)
                     data.gift_addr = Address.from_pointer(addr+356)
