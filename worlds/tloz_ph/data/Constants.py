@@ -2064,7 +2064,7 @@ ACTOR_IDENTS: dict[int, str] = {
     0x1831E8: "Shop: Sold Out",
     0x1830FC: "Shop: Heart Container",
     0x182f24: "Shop: Quiver",
-    0x182b74: "Bombchu Bag",
+    0x182b74: "Shop: Bombchu Bag",
 
     # Interface?
     0x182550: "Quit Button"
@@ -2074,16 +2074,36 @@ ACTOR_IDENTS: dict[int, str] = {
 SHOP_LOCATIONS = {
     0xb11: {
         "Treasure": "Mercay Shop Buy Treasure",
-        "Potion": "Mercay Shop Buy Potion",
+        "Potion3": "Mercay Shop Buy Red Potion",
+        "Potion5": "Mercay Shop Buy Purple Potion",
         "Shield": "Mercay Shop Buy Shield",
+        "Bomb Refill": "Mercay Shop Buy Bomb Refill",
+        "Gem": "Island Shop Power Gem",
+        "Quiver": "Island Shop Quiver",
+        "Bombchu Bag": "Island Shop Bombchu Bag",
+        "Heart Container": "Island Shop Heart Container"
     },
     0xc0e: {
-        "Potion": "Molida Shop Buy Potion",
+        "Potion3": "Molida Shop Buy Red Potion",
+        "Potion5": "Molida Shop Buy Purple Potion",
         "Shield": "Molida Shop Buy Shield",
+        "Bomb Refill": "Molida Shop Buy Bomb Refill",
+        "Arrow Refill": "Molida Shop Buy Arrow Refill",
+        "Gem": "Island Shop Power Gem",
+        "Quiver": "Island Shop Quiver",
+        "Bombchu Bag": "Island Shop Bombchu Bag",
+        "Heart Container": "Island Shop Heart Container"
     },
     0x1014: {
-        "Potion": "Goron Shop Buy Potion",
+        "Potion3": "Goron Shop Buy Yellow Potion",
+        "Potion5": "Goron Shop Buy Purple Potion",
         "Shield": "Goron Shop Buy Shield",
+        "Arrow Refill": "Goron Shop Buy Arrow Refill",
+        "Chu Refill": "Goron Shop Buy Bombchu Refill",
+        "Gem": "Island Shop Power Gem",
+        "Quiver": "Island Shop Quiver",
+        "Bombchu Bag": "Island Shop Bombchu Bag",
+        "Heart Container": "Island Shop Heart Container"
     },
     0x500: {
         "Ship Part1": "Beedle Shop Buy Top Ship Part",
@@ -2091,6 +2111,8 @@ SHOP_LOCATIONS = {
         "Potion3": "Beedle Shop Buy Red Potion",
         "Treasure": "Beedle Shop Buy Treasure",
         "Potion5": "Beedle Shop Buy Purple Potion",
+        "Bomb Bag": "Beedle Shop Bomb Bag",
+        "Gem": "Beedle Shop Wisdom Gem",
     },
     0x501: {  # Masked beedle variant
         "Ship Part1": "Masked Beedle Buy Top Ship Part ",
@@ -2098,14 +2120,11 @@ SHOP_LOCATIONS = {
         "Potion3": "Masked Beedle Buy Red Potion",
         "Treasure": "Masked Beedle Buy Treasure",
         "Potion5": "Masked Beedle Buy Yellow Potion",
+        "Heart Container": "Masked Beedle Heart Container",
+        "Gem": "Masked Beedle Courage Gem",
     }
 }
 
-SHOP_AMMO_LOCATIONS = {
-    0xb11: {
-        "bomb": "Mercay Shop Buy Bomb Refill"
-    }
-}
 
 AMMO_TYPE_LOOKUP = ["bomb", "arrow", "chu"]
 

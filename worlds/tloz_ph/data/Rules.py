@@ -91,8 +91,10 @@ def require_sea_chart(quadrant: Literal["NW", "NE", "SW", "SE"]):
 def has_fish(fish):
     return Has(f"Fish: {fish}")
 
+
 has_rsf = has_fish("Rusty Swordfish")
 has_neptoona = has_fish("Legendary Neptoona")
+has_stowfish = has_fish("Stowfish") & HasGroup("Normal Fish")
 has_cyclone_slate = Has("Cyclone Slate")
 
 def has_frog(glyph, quadrant):
@@ -118,6 +120,7 @@ has_super_shield = has_spirit("Wisdom", 2) # & has_shield
 has_beam_sword = has_sword & has_spirit("Courage", 2)
 has_stun_sword = has_sword & (has_boomerang | has_super_shield)
 can_cut_bamboo = has_sword | has_explosives
+shop_shield = Filtered(has_shield, options=[OptionFilter(PhantomHourglassShieldInPool, 1)], filtered_resolution=True)
 
 clever_pots = hard_logic
 clever_bombs = has_bombs | hard_logic

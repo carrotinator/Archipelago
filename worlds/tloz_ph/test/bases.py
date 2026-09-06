@@ -194,7 +194,10 @@ options_keys = {
     "salvage_count": 1,
 
     "ship_items": "whole_mismatched",
-    "starting_ship": "mismatched"
+    "starting_ship": "mismatched",
+
+    "shopsanity": {},
+    "randomize_masked_beedle": True
 }
 
 class TestPHGeneration(WorldTestBase):

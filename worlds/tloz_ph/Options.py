@@ -952,6 +952,14 @@ class PhantomHourglassShopsanity(OptionSet):
     valid_keys = {"uniques", "shields", "ammo", "treasure", "potions", "all", "restocks"}
     default = {"uniques"}
 
+class PhantomHourglassShieldInPool(Toggle):
+    """
+    Toggle if 3 shields are in the item pool or not.
+    If True, shop items locked behind buying a shield require the shield.
+    """
+    display_name = "Shields in Item Pool"
+    default = 0
+
 @dataclass
 class PhantomHourglassOptions(PerGameCommonOptions):
     # Accessibility
@@ -989,6 +997,7 @@ class PhantomHourglassOptions(PerGameCommonOptions):
     progressive_items: PhantomHourglassProgressiveItems
     spirit_type: PhantomHourglassSpiritTypes
     global_spirit_upgrades: PhantomHourglassGlobalSpiritUpgrades
+    shield_in_pool: PhantomHourglassShieldInPool
 
     # Additional Locations
     shopsanity: PhantomHourglassShopsanity
@@ -1102,7 +1111,8 @@ ph_option_groups = [
     OptionGroup("Item Options", [
         PhantomHourglassProgressiveItems,
         PhantomHourglassSpiritTypes,
-        PhantomHourglassGlobalSpiritUpgrades
+        PhantomHourglassGlobalSpiritUpgrades,
+        PhantomHourglassShieldInPool
     ]),
     OptionGroup("Extra Location Options", [
         PhantomHourglassShopsanity,

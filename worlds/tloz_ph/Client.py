@@ -584,10 +584,11 @@ class PhantomHourglassClient(DSZeldaClient):
             if trigger_reload:
                 self.chest_reload_watches.clear()
                 printl(f"Reloading chests!")
+                await self.process_actors(ctx)  # happens before chests
                 await self.set_chest_contents(ctx)
                 await self.load_dig_spots(ctx)
                 await self.process_map_objects(ctx)
-                await self.process_actors(ctx)
+
         if self.is_dead and not self.chest_reload_watches:
             self.chest_reload_watches.append((self.health_address, 0, "gt"))
             printl(f"Setting Chest reload for death: {self.chest_reload_watches}")
@@ -671,9 +672,10 @@ class PhantomHourglassClient(DSZeldaClient):
         self.event_reads = []
         self.save_spam_protection = False  # Reset save spam protection
 
+        await self.process_actors(ctx)
         await self.set_chest_contents(ctx)
         await self.process_map_objects(ctx)
-        await self.process_actors(ctx)
+
 
         # Yellow warp in TotOK saves keys
         # TODO: allow this to work with ER
@@ -1604,25 +1606,6 @@ class PhantomHourglassClient(DSZeldaClient):
         self.paired_object_watches.clear()
         self.boss_door_addr = None
 
-        await self.process_shop_ammo(ctx)
-
-    async def process_shop_ammo(self, ctx):
-        if self.current_scene in SHOP_AMMO_LOCATIONS and "ammo" in ctx.slot_data.get("shopsanity", []):
-            printl(f"Processing shop ammo")
-            for ammo_type, location in SHOP_AMMO_LOCATIONS[self.current_scene].items():
-                if LOCATIONS_DATA[location]["id"] not in ctx.checked_locations:
-                    type_index = AMMO_TYPE_LOOKUP.index(ammo_type)
-                    ammo_addr = PHAddr.ammo_counts[type_index]
-                    self.last_ammo_count[type_index] = await ammo_addr.read(ctx)
-                    await ammo_addr.overwrite(ctx, 0)
-        else:
-            for i, pack in enumerate(zip(self.last_ammo_count, PHAddr.ammo_counts)):
-                count, addr = pack
-                if count >= 0:
-                    printl(f"\tResetting ammo {AMMO_TYPE_LOOKUP[i]} {count}")
-                    await addr.overwrite(ctx, count)
-                    self.last_ammo_count[i] = -1
-
     @staticmethod
     async def find_table_object(ctx: "BizHawkClientContext", start_offset: int,
                               check_offset: int, comp_value: int | list,
@@ -1679,21 +1662,7 @@ class PhantomHourglassClient(DSZeldaClient):
 
             if gift_addr is not None:
                 # printl("gift_addr", isinstance(gift_addr, str), gift_addr, loc)
-                if isinstance(gift_addr, str) and gift_addr == "island_shop":
-                    # Shops are special
-                    if set_shop:
-                        continue
-                    shop_lookup = {0xB: 0x26e324, 0xC: 0x263964, 0x10: 0x2692d4}
-                    shop_addr = Address.from_pointer(shop_lookup[self.current_stage])
-                    vanilla_item = await shop_addr.read(ctx, silent=True)
-                    printl(f"Shop item lookup: {shop_addr} {vanilla_item} {shop_location_lookup.get(vanilla_item)}")
-                    if shop_location_lookup.get(vanilla_item) == loc:
-                        write_list.append(shop_addr.get_inner_write_list(model))
-                        set_shop = True
-                    continue
-
                 gift_addr: list[Address] = gift_addr if isinstance(gift_addr, list) else [gift_addr]
-                # TODO: Filter shop uniques from other stacked items
                 for addr in gift_addr:
                     printl(f"\tSetting read item model: {loc} {hex(model)}")
                     write_list.append(addr.get_inner_write_list(model))
@@ -2106,13 +2075,20 @@ class PhantomHourglassClient(DSZeldaClient):
                 if not location:
                     continue
                 data = LOCATIONS_DATA[location]
-                if data["id"] not in ctx.checked_locations and compare_slot_data(ctx, data):
+                if data.id not in ctx.checked_locations and compare_slot_data(ctx, data):
                     print(f"Creating watch for {location} {addr}")
                     self.watches[location] = Address.from_pointer(addr+0x56*4, size=1)
+                    data.gift_addr = Address.from_pointer(addr+356)
+                    self.locations_in_scene[data.name] = data
 
             if ident == "Beedle":
                 self.masked_beedle = (await Address.from_pointer(addr+284+3).read(ctx)) == 0x16
                 printl(f"Masked Beedle? {self.masked_beedle}")
+
+    def cancel_location_read(self, location: DSLocation):
+        if location.shop_model:
+            return True
+        return False
 
     async def _set_vanilla_item(self, ctx, location, vanilla_item: str | None = None):
         printl(f"Setting vanilla item for {location.get('name')}")

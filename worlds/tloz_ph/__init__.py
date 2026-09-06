@@ -293,6 +293,8 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         else:
             if self.options.spirit_type == 0:
                 self.options.boss_reward_pool.value = 0
+            if 'all' in self.options.shopsanity.value:
+                self.options.shopsanity.value = self.options.shopsanity.valid_keys.copy()
 
             self.pick_required_dungeons()
             if self.options.shuffle_dungeon_entrances:
@@ -404,6 +406,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         # Create locations
         for location_name, location_data in LOCATIONS_DATA.items():
             if not self.location_is_active(location_name, location_data):
+                print(f"Location {location_name} is not active")
                 continue
             is_local = "local" in location_data and location_data["local"] is True
             if location_data.region:
@@ -428,39 +431,49 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
 
     def location_is_active(self, location_name, location_data):
         if location_name in self.locations_to_remove:
-            # print(f"Removing {location_name}")
             return False
-        if not location_data.conditional:
+        if not location_data.conditional and not location_data.has_slot_data:
             return True
-        else:
-            if location_name in LOCATION_GROUPS["Golden Frogs"]:
-                return self.options.randomize_frogs != PhantomHourglassFrogRandomization.option_start_with
-            if location_name in LOCATION_GROUPS["Rupee Dig Spots"]:
-                return self.options.randomize_digs
-            if "Archery Minigame 2000" == location_name:
-                return self.options.logic in ["hard", "glitched"] and self.options.randomize_minigames
-            if location_name in LOCATION_GROUPS["Minigames"]:
-                return self.options.randomize_minigames
-            if location_name in LOCATION_GROUPS["Fishing Locations"]:
-                return self.options.randomize_fishing
-            if location_name in LOCATION_GROUPS["Salvage Locations"]:
-                return self.options.randomize_salvage
-            if location_name in LOCATION_GROUPS["Free Standing Locations"]:
-                return self.options.randomize_pedestal_items.value
-            if "Beedle Membership" in location_name:
-                return self.options.randomize_beedle_membership.value > 1
-            if "Harrow Island" in location_name:
-                return self.options.randomize_harrow
-            if "Zauz's House Triforce Crest" == location_name:
-                return self.options.randomize_triforce_crest
-            if "Masked Beedle" in location_name:
-                return self.options.randomize_masked_beedle
-            if location_name == "Man of Smiles' Prize Postcard":  # This it pretty random but whatever...
-                return self.options.randomize_beedle_membership.value > 0
-            # if "EVENT" in location_name:
-            #     print(f"Found event {location_name} {self.is_ut}")
-            #     return self.is_ut
-            return False
+
+        if location_data.has_slot_data:
+            for slot, _value, *args in location_data.has_slot_data:
+                slot = getattr(self.options, slot, None).value
+                if isinstance(slot, set):
+                    if _value not in slot:
+                        return False
+                else:
+                    _value = _value if isinstance(_value, list) else [_value]
+                    if slot not in _value:
+                        return False
+            return True
+
+
+        if location_name in LOCATION_GROUPS["Golden Frogs"]:
+            return self.options.randomize_frogs != PhantomHourglassFrogRandomization.option_start_with
+        if location_name in LOCATION_GROUPS["Rupee Dig Spots"]:
+            return self.options.randomize_digs
+        if "Archery Minigame 2000" == location_name:
+            return self.options.logic in ["hard", "glitched"] and self.options.randomize_minigames
+        if location_name in LOCATION_GROUPS["Minigames"]:
+            return self.options.randomize_minigames
+        if location_name in LOCATION_GROUPS["Fishing Locations"]:
+            return self.options.randomize_fishing
+        if location_name in LOCATION_GROUPS["Salvage Locations"]:
+            return self.options.randomize_salvage
+        if location_name in LOCATION_GROUPS["Free Standing Locations"]:
+            return self.options.randomize_pedestal_items.value
+        if "Beedle Membership" in location_name:
+            return self.options.randomize_beedle_membership.value > 1
+        if "Harrow Island" in location_name:
+            return self.options.randomize_harrow
+        if "Zauz's House Triforce Crest" == location_name:
+            return self.options.randomize_triforce_crest
+        if location_name == "Man of Smiles' Prize Postcard":  # This it pretty random but whatever...
+            return self.options.randomize_beedle_membership.value > 0
+        # if "EVENT" in location_name:
+        #     print(f"Found event {location_name} {self.is_ut}")
+        #     return self.is_ut
+        return False
 
     def pick_required_dungeons(self):
         implemented_dungeons = DUNGEON_NAMES[1:]
@@ -1218,7 +1231,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                     ITEM_GROUPS["Potions"] |
                     ITEM_GROUPS["Single Spirit Gems"] |
                     ITEM_GROUPS["Regular Pedestal Items"] |  # These get locked in the dungeon category if vanilla
-                    {"Heart Container", "Triforce Crest", "Rare Metal"}):
+                    {"Heart Container", "Triforce Crest", "Rare Metal", "Shield"}):
                 filler_item_count += 1
                 continue
 
@@ -1264,6 +1277,8 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         add_items |= add_sand(self.options.ph_starting_time, self.options.ph_time_increment,
                               self.options.ph_time_logic)
         # Add useful items last cause they can risk being overwritten
+        if self.options.shield_in_pool.value:
+            add_items |= {"Shield": 3}
         add_items |= {"Heart Container": 13}
         add_items |= self.choose_ship_items()
         # add items to item pool
@@ -1661,11 +1676,11 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             item = loc.item
             if item is None: continue
             loc_data = LOCATIONS_DATA.get(loc.name, None)
-            if not loc_data or not (loc_data.chest_offset is not None or loc_data.gift_addr):
+            if not loc_data or not (loc_data.chest_offset is not None or loc_data.gift_addr or loc_data.shop_model):
                 continue
             if item.game in ["Phantom Hourglass"]:
                 if ITEMS[item.name].model is not None:
-                    if not (item.name.startswith("Treasure Map") and loc.name in CATEGORY_LOCATION_GROUPS["Counter Shops"]):
+                    if not (item.name.startswith("Treasure Map") and loc_data.shop_model):
                         location_models[loc_data.id] = ITEMS[item.name].model
                         continue
 
@@ -1690,7 +1705,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             "logic", "phantom_combat_difficulty", "boat_requires_sea_chart",
             # Item Randomization
             "boss_keyrings",
-            "shopsanity",
+            "shopsanity", "shield_in_pool",
             "randomize_minigames", "randomize_digs", "randomize_fishing",
             "keysanity", "randomize_boss_keys", "randomize_pedestal_items",
             "randomize_frogs", "randomize_salvage",

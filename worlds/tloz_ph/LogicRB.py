@@ -192,11 +192,16 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
         ["Mercay Shop", "Mercay Shop Buy", False, has_rupees(required_rupees)],
         ["Molida Shop", "Molida Shop Buy", False, has_rupees(required_rupees)],
         ["Goron Shop", "Goron Shop Buy", False, has_rupees(required_rupees)],
+
         ["Mercay Shop Buy", "Mercay Shop Bombs", False, has_bombs],
         ["Molida Shop Buy", "Molida Shop Bombs", False, has_bombs],
         ["Molida Shop Buy", "Molida Shop Arrows", False, has_bow],
         ["Goron Shop Buy", "Goron Shop Arrows", False, has_bow],
         ["Goron Shop Buy", "Goron Shop Chus", False, has_chus],
+
+        ["Mercay Shop Buy", "Mercay Shop Shield", False, shop_shield],
+        ["Molida Shop Buy", "Molida Shop Shield", False, shop_shield],
+        ["Goron Shop Buy", "Goron Shop Shield", False, shop_shield],
 
         ["SW Ocean East", "Beedle", False, None],
         ["SW Ocean West", "Beedle", False, None],
@@ -492,7 +497,7 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
         ["Wayfarer's House", "Wayfarer Give Loovar", False, has_fish("Loovar")],
         ["Wayfarer's House", "Wayfarer Give Rusty Swordfish", False, has_rsf],
         ["Wayfarer's House", "Wayfarer Give Legendary Neptoona", False, has_neptoona],
-        ["Wayfarer's House", "Wayfarer Give Stowfish", False, has_fish("Stowfish")],
+        ["Wayfarer's House", "Wayfarer Give Stowfish", False, has_stowfish],
         ["Wayfarer's House", "Joanne Give Letter", False, Has("Jolene's Letter")],
 
         # ================= Zauz's Island ====================

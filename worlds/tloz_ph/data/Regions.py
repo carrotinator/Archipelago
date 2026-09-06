@@ -67,12 +67,17 @@ REGIONS = [
     "Mercay Shop Buy",
     "Goron Shop Buy",
     "Molida Shop Buy",
+
     "Molida Shop Bombs",
     "Molida Shop Arrows",
     "Goron Shop Arrows",
     "Goron Shop Chus",
     "Goron Shop Arrows",
     "Mercay Shop Bombs",
+
+    "Mercay Shop Shield",
+    "Goron Shop Shield",
+    "Molida Shop Shield",
 
     "Beedle",
     "Beedle Shop",

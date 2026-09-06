@@ -1624,6 +1624,98 @@ DYNAMIC_FLAGS = {
         "on_scenes": [0x500],
         "has_slot_data": [("shopsanity", "uniques", "not")],
         "set_if_true": [(PHAddr.flags_shops, 0x25), (PHAddr.adv_flags_14, 0x2)]
+    },
+    "Mercay Shop Shield 1": {
+        "on_scenes": [0xB11],
+        "not_has_locations": ["Mercay Shop Buy Shield"],
+        "has_slot_data": [("shopsanity", "shields")],
+        "unset_if_true": [(PHAddr.inventory_1, 2)]
+    },
+    "Mercay Shop Shield 2": {
+        "on_scenes": [0xB11],
+        "has_locations": ["Mercay Shop Buy Shield"],
+        "has_slot_data": [("shield_in_pool", 0), ("shopsanity", "potions")],
+        "set_if_true": [(PHAddr.inventory_1, 2)]
+    },
+    "Island Shop Shield 3": {
+        "on_scenes": [0xB11, 0xC0E, 0x1014],
+        "has_slot_data": [("shield_in_pool", 0), ("shopsanity", "potions"), ("shopsanity", "shields", "not")],
+        "set_if_true": [(PHAddr.inventory_1, 2)]
+    },
+    "Island Shop Shield 4": {
+        "on_scenes": [0xB11, 0xC0E, 0x1014],
+        "has_items": [("Shield", 0)],
+        "has_slot_data": [("shield_in_pool", 1)],
+        "unset_if_true": [(PHAddr.inventory_1, 2)]
+    },
+    "Mercay Shop Shield 5": {
+        "on_scenes": [0xB11],
+        "has_items": [("Shield", 1)],
+        "has_locations": ["Mercay Shop Buy Shield"],
+        "has_slot_data": [("shield_in_pool", 1)],
+        "set_if_true": [(PHAddr.inventory_1, 2)]
+    },
+    "Island Shop Shield 6": {
+        "on_scenes": [0xB11, 0xC0E, 0x1014],
+        "has_items": [("Shield", 1)],
+        "has_slot_data": [("shield_in_pool", 1), ("shopsanity", "shields", "not")],
+        "set_if_true": [(PHAddr.inventory_1, 2)]
+    },
+    "Moldia Shop Shield 1": {
+        "on_scenes": [0xC0E],
+        "not_has_locations": ["Molida Shop Buy Shield"],
+        "has_slot_data": [("shopsanity", "shields")],
+        "unset_if_true": [(PHAddr.inventory_1, 2)]
+    },
+    "Moldia Shop Shield 2": {
+        "on_scenes": [0xC0E],
+        "has_locations": ["Molida Shop Buy Shield"],
+        "has_slot_data": [("shield_in_pool", 0), ("shopsanity", "potions")],
+        "set_if_true": [(PHAddr.inventory_1, 2)]
+    },
+    "Moldia Shop Shield 5": {
+        "on_scenes": [0xC0E],
+        "has_items": [("Shield", 1)],
+        "has_locations": ["Molida Shop Buy Shield"],
+        "has_slot_data": [("shield_in_pool", 1)],
+        "set_if_true": [(PHAddr.inventory_1, 2)]
+    },
+    "Goron Shop Shield 1": {
+        "on_scenes": [0x1014],
+        "not_has_locations": ["Goron Shop Buy Shield"],
+        "has_slot_data": [("shopsanity", "shields")],
+        "unset_if_true": [(PHAddr.inventory_1, 2)]
+    },
+    "Goron Shop Shield 2": {
+        "on_scenes": [0x1014],
+        "has_locations": ["Goron Shop Buy Shield"],
+        "has_slot_data": [("shield_in_pool", 0), ("shopsanity", "potions")],
+        "set_if_true": [(PHAddr.inventory_1, 2)]
+    },
+    "Goron Shop Shield 5": {
+        "on_scenes": [0x1014],
+        "has_items": [("Shield", 1)],
+        "has_locations": ["Goron Shop Buy Shield"],
+        "has_slot_data": [("shield_in_pool", 1)],
+        "set_if_true": [(PHAddr.inventory_1, 2)]
+    },
+    "Island Shop Reset Shields": {
+        "on_scenes": [0xB11, 0xC0E, 0x1014],
+        "reset_flags": ["RESET no shields", "RESET has shield", "RESET want shield"]
+    },
+    "RESET no shields": {
+        "has_slot_data": [("shield_in_pool", 0)],
+        "unset_if_true": [(PHAddr.inventory_1, 2)]
+    },
+    "RESET has shield": {
+        "has_items": [("Shield", 1)],
+        "has_slot_data": [("shield_in_pool", 1)],
+        "set_if_true": [(PHAddr.inventory_1, 2)]
+    },
+    "RESET want shield": {
+        "has_items": [("Shield", 0)],
+        "has_slot_data": [("shield_in_pool", 1)],
+        "unset_if_true": [(PHAddr.inventory_1, 2)]
     }
 }
 
