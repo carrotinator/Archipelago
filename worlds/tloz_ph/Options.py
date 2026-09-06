@@ -949,7 +949,7 @@ class PhantomHourglassShopsanity(OptionSet):
     - all: all of the above.
     """
     display_name = "Shopsanity"
-    valid_keys = {"uniques", "shields", "ammo", "treasure", "potions", "all"}
+    valid_keys = {"uniques", "shields", "ammo", "treasure", "potions", "all", "restocks"}
     default = {"uniques"}
 
 @dataclass

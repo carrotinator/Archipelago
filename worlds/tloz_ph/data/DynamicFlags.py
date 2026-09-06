@@ -1613,5 +1613,17 @@ DYNAMIC_FLAGS = {
         "has_slot_data": [("logic", 0, "not")],
         "update_stage_flags": SPAWN_B3_REAPLING_FLAGS
     },
+
+    # Shopsanity
+    "Island Shops skip uniques": {
+        "on_scenes": [0xb11, 0xc03, 0x1014],
+        "has_slot_data": [("shopsanity", "uniques", "not")],
+        "set_if_true": [(PHAddr.flags_shops, 0x9a)]
+    },
+    "Beedle Shops skip uniques": {
+        "on_scenes": [0x500],
+        "has_slot_data": [("shopsanity", "uniques", "not")],
+        "set_if_true": [(PHAddr.flags_shops, 0x25), (PHAddr.adv_flags_14, 0x2)]
+    }
 }
 
