@@ -34,7 +34,7 @@ randomize_minigames = [OptionFilter(PhantomHourglassRandomizeMinigames, 0, "gt")
 # Basic Items
 has_sword = Has("Sword (Progressive)") | Has("Oshus' Sword")
 has_phantom_sword = Has("Sword (Progressive)", 2) | (has_sword & Has("Phantom Sword"))
-has_shield = True_()
+has_shield = Has("Shield")
 has_shovel = Has("Shovel")
 has_bow = Has("Bow (Progressive)") | Has("Bow")
 has_bombs = Has("Bombs (Progressive)") | Has("Bomb Bag")
@@ -116,7 +116,7 @@ has_swordless_damage = has_swordless_cave_damage | has_chus
 has_cave_damage = Or(has_sword, has_swordless_cave_damage)
 has_damage = has_cave_damage | has_chus
 has_fire_sword = has_sword & has_spirit("Power", 2)
-has_super_shield = has_spirit("Wisdom", 2) # & has_shield
+has_super_shield = has_spirit("Wisdom", 2) & has_shield
 has_beam_sword = has_sword & has_spirit("Courage", 2)
 has_stun_sword = has_sword & (has_boomerang | has_super_shield)
 can_cut_bamboo = has_sword | has_explosives
