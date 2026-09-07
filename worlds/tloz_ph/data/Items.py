@@ -103,7 +103,7 @@ ITEMS_DATA = {
         "vanilla_model": [0x29, 0x7],
         "ghost_model": True,
         "model_reset": True,
-        "block_ammo": [0xb11],
+        # "block_ammo": [0xb11],
         "item_groups": ["Equipment", "Tools", "Bombs", "Items With Ammo", "Bomb Bag", "Upgrades"]
     },
     "Bomb Bag": {
@@ -112,7 +112,7 @@ ITEMS_DATA = {
         "value": 0x10,
         "give_ammo": [10],
         "inventory_id": 4,
-        "block_ammo": [0xb11],
+        # "block_ammo": [0xb11],
         "ammo_address": PHAddr.bomb_count,
         'item_groups': ["Equipment", "Tools", "Bombs", "Items With Ammo", "Bomb Bag"],
         "variant_prog": ["Bombs (Progressive)", "Bomb Bag", "Bomb Bag Upgrade"],  # prog, base, upgrade
@@ -126,7 +126,7 @@ ITEMS_DATA = {
         'classification': ItemClassification.progression,
         "progressive": [(PHAddr.bomb_upgrades, 0x1), (PHAddr.bomb_upgrades, 0x2)],
         "give_ammo": [20, 30],
-        "block_ammo": [0xb11],
+        # "block_ammo": [0xb11],
         "ammo_address": PHAddr.bomb_count,
         "tags": ["progressive_overwrite"],
         'item_groups': ["Equipment", "Tools", "Bombs", "Items With Ammo", "Bomb Bag", "Upgrades"],
@@ -793,7 +793,7 @@ ITEMS_DATA = {
         "id": 54,
         "model": 0x7,
         "model_reset": True,
-        "block_ammo": [0xb11],
+        # "block_ammo": [0xb11],
         "item_groups": ["Ammo Refills"],
     },
     "Refill: Arrows": {
@@ -2192,7 +2192,7 @@ ITEMS_DATA = {
         "ghost_model": True,
         "model_reset": True,
         "blocked_scenes": [0x200],
-        "item_groups": ["Fish"],
+        "item_groups": ["Fish", "Normal Fish"],
     },
     "Fish: Toona": {
         "classification": ItemClassification.filler,
@@ -2205,7 +2205,7 @@ ITEMS_DATA = {
         "ghost_model": True,
         "model_reset": True,
         "blocked_scenes": [0x200],
-        "item_groups": ["Fish"],
+        "item_groups": ["Fish", "Normal Fish"],
     },
     "Fish: Loovar": {
         "classification": ItemClassification.progression_skip_balancing,
@@ -2218,7 +2218,7 @@ ITEMS_DATA = {
         "ghost_model": True,
         "model_reset": True,
         "blocked_scenes": [0x200],
-        "item_groups": ["Fish"],
+        "item_groups": ["Fish", "Normal Fish"],
     },
     "Fish: Rusty Swordfish": {
         "classification": ItemClassification.progression_skip_balancing,
@@ -2231,7 +2231,7 @@ ITEMS_DATA = {
         "ghost_model": True,
         "model_reset": True,
         "blocked_scenes": [0x200],
-        "item_groups": ["Fish"],
+        "item_groups": ["Fish", "Normal Fish"],
     },
     "Fish: Legendary Neptoona": {
         "classification": ItemClassification.progression_skip_balancing,
@@ -2244,7 +2244,7 @@ ITEMS_DATA = {
         "ghost_model": True,
         "model_reset": True,
         "blocked_scenes": [0x200],
-        "item_groups": ["Fish"],
+        "item_groups": ["Fish", "Normal Fish"],
     },
     "Fish: Stowfish": {
         "classification": ItemClassification.progression_skip_balancing,
