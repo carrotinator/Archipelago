@@ -26,75 +26,75 @@ HINT_DATA = {
         "has_items": ["Bow", "Bombchu Bag"]
     },
     "Mercay Shop": {
-        "locations": ["Mercay Shop Buy Shield", "Mercay Shop Buy Treasure",
-                      "Mercay Shop Buy Red Potion"],
+        "locations": ["Mercay Shop Shield", "Mercay Shop Treasure",
+                      "Mercay Shop Red Potion"],
         "scenes": [0xB11],
         "has_slot_data": ["shop_hints"]
     },
     "Mercay Shop Purp1": {
-        "locations": ["Mercay Shop Buy Purple Potion"],
+        "locations": ["Mercay Shop Purple Potion"],
         "scenes": [0xB11],
         "has_items": ["Shield"],
         "has_slot_data": ["shop_hints", "shield_in_pool", ("shopsanity", "potions")]
     },
     "Mercay Shop Purp2": {
-        "locations": ["Mercay Shop Buy Purple Potion"],
+        "locations": ["Mercay Shop Purple Potion"],
         "scenes": [0xB11],
         "has_slot_data": ["shop_hints", ["shield_in_pool", 0], ("shopsanity", "potions")]
     },
-    "Mercay Shop Buy Bomb Refill": {
+    "Mercay Shop Bomb Refill": {
         "scenes": [0xB11],
         "has_slot_data": ["shop_hints"],
         "any_has_items": ["Bombs (Progressive)", "Bomb Bag"]
     },
     "Molida Shop": {
-        "locations": ["Molida Shop Buy Red Potion", "Molida Shop Buy Shield"],
+        "locations": ["Molida Shop Red Potion", "Molida Shop Shield"],
         "scenes": [0xC0E],
         "has_slot_data": ["shop_hints"]
     },
     "Molida Shop Purp1": {
-        "locations": ["Molida Shop Buy Purple Potion"],
+        "locations": ["Molida Shop Purple Potion"],
         "scenes": [0xC0E],
         "has_items": ["Shield"],
         "has_slot_data": ["shop_hints", "shield_in_pool", ("shopsanity", "potions")]
     },
     "Molida Shop Purp2": {
-        "locations": ["Molida Shop Buy Purple Potion"],
+        "locations": ["Molida Shop Purple Potion"],
         "scenes": [0xC0E],
         "has_slot_data": ["shop_hints", ["shield_in_pool", 0], ("shopsanity", "potions")]
     },
-    "Molida Shop Buy Bomb Refill": {
+    "Molida Shop Bomb Refill": {
         "scenes": [0xC0E],
         "has_slot_data": ["shop_hints"],
         "any_has_items": ["Bombs (Progressive)", "Bomb Bag"]
     },
-    "Molida Shop Buy Arrow Refill": {
+    "Molida Shop Arrow Refill": {
         "scenes": [0xC0E],
         "has_slot_data": ["shop_hints"],
         "any_has_items": ["Bow (Progressive)", "Bow"]
     },
     "Goron Shop": {
-        "locations": ["Goron Shop Buy Shield", "Goron Shop Buy Yellow Potion"],
+        "locations": ["Goron Shop Shield", "Goron Shop Yellow Potion"],
         "scenes": [0x1014],
         "has_slot_data": ["shop_hints"]
     },
     "Goron Shop Purp1": {
-        "locations": ["Goron Shop Buy Purple Potion"],
+        "locations": ["Goron Shop Purple Potion"],
         "scenes": [0x1014],
         "has_items": ["Shield"],
         "has_slot_data": ["shop_hints", "shield_in_pool", ("shopsanity", "potions")]
     },
     "Goron Shop Purp2": {
-        "locations": ["Goron Shop Buy Purple Potion"],
+        "locations": ["Goron Shop Purple Potion"],
         "scenes": [0x1014],
         "has_slot_data": ["shop_hints", ["shield_in_pool", 0], ("shopsanity", "potions")]
     },
-    "Goron Shop Buy Arrow Refill": {
+    "Goron Shop Arrow Refill": {
         "scenes": [0x1014],
         "has_slot_data": ["shop_hints"],
         "any_has_items": ["Bow (Progressive)", "Bow"]
     },
-    "Goron Shop Buy Bombchu Refill": {
+    "Goron Shop Bombchu Refill": {
         "scenes": [0x1014],
         "has_slot_data": ["shop_hints"],
         "any_has_items": ["Bombchus (Progressive)", "Bombchu Bag"]
@@ -103,23 +103,23 @@ HINT_DATA = {
 
     # Beedle
     "Beedle Shop": {
-        "locations": ["Beedle Shop Wisdom Gem", "Beedle Shop Buy Red Potion",
-                      "Beedle Shop Buy Bottom Ship Part", "Beedle Shop Buy Treasure",
-                      "Beedle Shop Buy Purple Potion"],
+        "locations": ["Beedle Shop Wisdom Gem", "Beedle Shop Red Potion",
+                      "Beedle Shop Bottom Ship Part", "Beedle Shop Treasure",
+                      "Beedle Shop Purple Potion"],
         "scenes": [0x500],
         "has_slot_data": ["shop_hints"],
     },
     "Beedle Shop Bomb Bag": {
         "scenes": [0x500],
-        "locations": ["Beedle Shop Buy Top Ship Part", "Beedle Shop Bomb Bag"],
+        "locations": ["Beedle Shop Top Ship Part", "Beedle Shop Bomb Bag"],
         "has_slot_data": ["shop_hints"],
         "any_has_items": ["Bombs (Progressive)", "Bomb Bag"]
     },
     "Masked Beedle": {
         "locations": ["Masked Beedle Heart Container", "Masked Beedle Courage Gem",
-                      "Masked Beedle Buy Red Potion", "Masked Beedle Buy Yellow Potion",
-                      "Masked Beedle Buy Top Ship Part", "Masked Beedle Buy Bottom Ship Part",
-                      "Masked Beedle Buy Treasure"],
+                      "Masked Beedle Red Potion", "Masked Beedle Yellow Potion",
+                      "Masked Beedle Top Ship Part", "Masked Beedle Bottom Ship Part",
+                      "Masked Beedle Treasure"],
         "scenes": [0x500],
         "has_slot_data": ["shop_hints", "randomize_masked_beedle"],
     },

@@ -1,44 +1,5 @@
 [
   {
-    "name": "Beedle's Ship",
-    "sections": [
-      {
-        "name": "Beedle Membership Bronze"
-      },
-      {
-        "name": "Beedle Membership Gold"
-      },
-      {
-        "name": "Beedle Membership Platinum"
-      },
-      {
-        "name": "Beedle Membership Silver"
-      },
-      {
-        "name": "Beedle Membership VIP"
-      },
-      {
-        "name": "Beedle Shop Bomb Bag"
-      },
-      {
-        "name": "Beedle Shop Wisdom Gem"
-      },
-      {
-        "name": "Masked Beedle Courage Gem"
-      },
-      {
-        "name": "Masked Beedle Heart Container"
-      }
-    ],
-    "map_locations": [
-      {
-        "map": "Sea Overview",
-        "x": 472,
-        "y": 421
-      }
-    ]
-  },
-  {
     "name": "Fish",
     "sections": [
       {

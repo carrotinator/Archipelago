@@ -198,7 +198,7 @@ options_keys = {
 
     "shopsanity": {"all"},
     "randomize_masked_beedle": False,
-    "remove_locations": {"Temple of the Ocean King"}
+    # "remove_locations": {"Temple of the Ocean King"}
 }
 
 class TestPHGeneration(WorldTestBase):

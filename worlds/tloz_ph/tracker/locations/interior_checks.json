@@ -6,7 +6,51 @@
   { "name": "Bannan Island West Wayfarer Dig", "sections": [{ "name": "Bannan Island West Wayfarer Dig" }], "map_locations": [{ "map": "Bannan Island", "x": 66, "y": 48}] },
   { "name": "Wayfarer", "sections": [{ "name": "Wayfarer's Gift" }, { "name": "Wayfarer Give Legendary Neptoona" }, { "name": "Wayfarer Give Loovar" }, { "name": "Wayfarer Give Rusty Swordfish" }, { "name": "Wayfarer Give Stowfish" }], "map_locations": [{ "map": "Wayfarer's House", "x": 126, "y": 86 }] },
   { "name": "Wayfarer Trade Quest Chest", "sections": [{ "name": "Wayfarer Trade Quest Chest" }], "map_locations": [{ "map": "Wayfarer's House", "x": 130, "y": 78}] },
-  { "name": "Beedle", "sections": [{ "name": "Beedle Membership Bronze" }, { "name": "Beedle Membership Gold" }, { "name": "Beedle Membership Platinum" }, { "name": "Beedle Membership Silver" }, { "name": "Beedle Membership VIP" }, { "name": "Beedle Shop Bomb Bag" }, { "name": "Beedle Shop Wisdom Gem" }, { "name": "Masked Beedle Courage Gem" }, { "name": "Masked Beedle Heart Container" }], "map_locations": [{ "map": "Beedle's Ship", "x": 128, "y": 86 }] },
+
+    { "name": "Beedle", "sections": [
+    { "name": "Beedle Membership Bronze" },
+    { "name": "Beedle Membership Silver" },
+    { "name": "Beedle Membership Gold" },
+    { "name": "Beedle Membership Platinum" },
+    { "name": "Beedle Membership VIP" }
+  ], "map_locations": [
+    { "map": "Beedle's Ship", "x": 128, "y": 72 }
+  ] },
+  { "name": "Beedle", "sections": [
+    { "name": "Beedle Shop Bomb Bag" },
+    { "name": "Beedle Shop Top Ship Part" },
+    { "name": "Masked Beedle Heart Container" },
+    { "name": "Masked Beedle Top Ship Part" }
+  ], "map_locations": [
+    { "map": "Beedle's Ship", "x": 120, "y": 84 }
+  ] },
+  { "name": "Beedle", "sections": [
+    { "name": "Beedle Shop Wisdom Gem" },
+    { "name": "Beedle Shop Purple Potion" },
+    { "name": "Masked Beedle Courage Gem" },
+    { "name": "Masked Beedle Yellow Potion" }
+  ], "map_locations": [
+    { "map": "Beedle's Ship", "x": 136, "y": 84 }
+  ] },
+      { "name": "Beedle", "sections": [
+    { "name": "Beedle Shop Red Potion" },
+    { "name": "Masked Beedle Red Potion" }
+  ], "map_locations": [
+    { "map": "Beedle's Ship", "x": 128, "y": 84 }
+  ] },
+  { "name": "Beedle", "sections": [
+    { "name": "Beedle Shop Bottom Ship Part" },
+    { "name": "Masked Beedle Bottom Ship Part" }
+  ], "map_locations": [
+    { "map": "Beedle's Ship", "x": 124, "y": 92 }
+  ] },
+  { "name": "Beedle", "sections": [
+    { "name": "Beedle Shop Treasure" },
+    { "name": "Masked Beedle Treasure" }
+  ], "map_locations": [
+    { "map": "Beedle's Ship", "x": 132, "y": 92 }
+  ] },
+
   { "name": "Blaaz", "sections": [{ "name": "Blaaz Boss Reward" }, { "name": "Blaaz Heart Container" }], "map_locations": [{ "map": "Blaaz Arena", "x": 126, "y": 86 }] },
   { "name": "Cannon Island Bee Chest", "sections": [{ "name": "Cannon Island Bee Chest" }], "map_locations": [{ "map": "Cannon Island", "x": 90, "y": 66}] },
   { "name": "Cannon Island Bee Dig", "sections": [{ "name": "Cannon Island Bee Dig" }], "map_locations": [{ "map": "Cannon Island", "x": 66, "y": 90}] },
@@ -58,7 +102,98 @@
   { "name": "Goron Temple B2 Kill Eyeslugs Chest", "sections": [{ "name": "Goron Temple B2 Kill Eyeslugs Chest" }], "map_locations": [{ "map": "Goron Temple B2", "x": 110, "y": 78}] },
   { "name": "Goron Temple B3 Kill Miblins Chest", "sections": [{ "name": "Goron Temple B3 Kill Miblins Chest" }], "map_locations": [{ "map": "Goron Temple B3", "x": 94, "y": 110}] },
   { "name": "Harrow Island Digs", "sections": [{ "name": "Harrow Island Dig 1" }, { "name": "Harrow Island Dig 2" }, { "name": "Harrow Island Dig 3" }, { "name": "Harrow Island Dig 4" }], "map_locations": [{ "map": "Harrow Island", "x": 128, "y": 122 }] },
-  { "name": "Shops", "sections": [{ "name": "Island Shop Bombchu Bag" }, { "name": "Island Shop Heart Container" }, { "name": "Island Shop Power Gem" }, { "name": "Island Shop Quiver" }], "map_locations": [{ "map": "Mercay Shop", "x": 112, "y": 143 }, { "map": "Molida Shop", "x": 112, "y": 143 }, { "map": "Goron Shop", "x": 128, "y": 91 }] },
+
+  { "name": "Mercay Shop", "sections": [
+    { "name": "Island Shop Power Gem" },
+    { "name": "Island Shop Quiver" },
+    { "name": "Island Shop Bombchu Bag" },
+    { "name": "Island Shop Heart Container" }
+  ], "map_locations": [
+    { "map": "Mercay Shop", "x": 116, "y": 147 }
+  ] },
+  { "name": "Mercay Shop", "sections": [
+    { "name": "Mercay Shop Treasure" }
+  ], "map_locations": [
+    { "map": "Mercay Shop", "x": 108, "y": 147 }
+  ] },
+  { "name": "Mercay Shop", "sections": [
+    { "name": "Mercay Shop Bomb Refill" }
+  ], "map_locations": [
+    { "map": "Mercay Shop", "x": 104, "y": 139 }
+  ] },
+      { "name": "Mercay Shop", "sections": [
+    { "name": "Mercay Shop Red Potion" }
+  ], "map_locations": [
+    { "map": "Mercay Shop", "x": 112, "y": 139 }
+  ] },
+  { "name": "Mercay Shop", "sections": [
+    { "name": "Mercay Shop Shield" },
+    { "name": "Mercay Shop Purple Potion" }
+  ], "map_locations": [
+    { "map": "Mercay Shop", "x": 120, "y": 139 }
+  ] },
+
+
+  { "name": "Molida Shop", "sections": [
+    { "name": "Island Shop Power Gem" },
+    { "name": "Island Shop Quiver" },
+    { "name": "Island Shop Bombchu Bag" },
+    { "name": "Island Shop Heart Container" }
+  ], "map_locations": [
+    { "map": "Molida Shop", "x": 116, "y": 147 }
+  ] },
+  { "name": "Molida Shop", "sections": [
+    { "name": "Molida Shop Arrow Refill" }
+  ], "map_locations": [
+    { "map": "Molida Shop", "x": 108, "y": 147 }
+  ] },
+  { "name": "Molida Shop", "sections": [
+    { "name": "Molida Shop Bomb Refill" }
+  ], "map_locations": [
+    { "map": "Molida Shop", "x": 104, "y": 139 }
+  ] },
+      { "name": "Molida Shop", "sections": [
+    { "name": "Molida Shop Red Potion" }
+  ], "map_locations": [
+    { "map": "Molida Shop", "x": 112, "y": 139 }
+  ] },
+  { "name": "Molida Shop", "sections": [
+    { "name": "Molida Shop Shield" },
+    { "name": "Molida Shop Purple Potion" }
+  ], "map_locations": [
+    { "map": "Molida Shop", "x": 120, "y": 139 }
+  ] },
+
+  { "name": "Goron Shop", "sections": [
+    { "name": "Island Shop Power Gem" },
+    { "name": "Island Shop Quiver" },
+    { "name": "Island Shop Bombchu Bag" },
+    { "name": "Island Shop Heart Container" }
+  ], "map_locations": [
+    {"map": "Goron Shop", "x": 132, "y": 95}
+  ] },
+  { "name": "Goron Shop", "sections": [
+    { "name": "Goron Shop Arrow Refill" }
+  ], "map_locations": [
+    {"map": "Goron Shop", "x": 124, "y": 95}
+  ] },
+  { "name": "Goron Shop", "sections": [
+    { "name": "Goron Shop Bombchu Refill" }
+  ], "map_locations": [
+    {"map": "Goron Shop", "x": 120, "y": 87}
+  ] },
+      { "name": "Goron Shop", "sections": [
+    { "name": "Goron Shop Yellow Potion" }
+  ], "map_locations": [
+    {"map": "Goron Shop", "x": 128, "y": 87}
+  ] },
+  { "name": "Goron Shop", "sections": [
+    { "name": "Goron Shop Shield" },
+    { "name": "Goron Shop Purple Potion" }
+  ], "map_locations": [
+    {"map": "Goron Shop", "x": 136, "y": 87}
+  ] },
+
   { "name": "Astrid After Fire Temple Gift", "sections": [{ "name": "Astrid After Fire Temple Gift" }], "map_locations": [{ "map": "Astrid's House", "x": 128, "y": 90}] },
   { "name": "Astrid's Basement Dig", "sections": [{ "name": "Astrid's Basement Dig" }], "map_locations": [{ "map": "Astrid's Basement", "x": 146, "y": 118}] },
   { "name": "Isle of Ember West Grapple Chest", "sections": [{ "name": "Isle of Ember West Grapple Chest" }], "map_locations": [{ "map": "Isle of Ember", "x": 94, "y": 55}] },

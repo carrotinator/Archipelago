@@ -433,7 +433,6 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
 
     def location_is_active(self, location_name, location_data):
         if location_name in self.locations_to_remove:
-            print(f"Location removed {location_name}")
             return False
         if not location_data.conditional and not location_data.has_slot_data:
             return True
