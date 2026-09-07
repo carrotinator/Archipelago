@@ -942,7 +942,7 @@ class PhantomHourglassShopsanity(OptionSet):
     Randomize shop items.
     Shops sell the vanilla after buying the randomized items.
     (+x) denotes with masked beedle enabled, [+y] denotes with restocks
-    - uniques: unique items, including the chain in island shops. 6(+2) locations, 6000(+1500) rupees
+    - uniques: unique items, including the chain in island shops. 3[+3](+2) locations, 2000[+4000](+1500) rupees
     - shields: 3 locations, 240 rupees
     - ammo: refills of bombs and arrows etc. 5 locations, 250 rupees
     - treasure: treasure and ship parts. 3[+1](+2[+1]) locations, variable rupees

@@ -184,9 +184,9 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
 
         # ============ Shops ====================
 
-        ["Island Shop", "Island Shop Power Gem", False, has_rupees(required_rupees)],
-        ["Island Shop", "Island Shop Quiver", False, has_rupees(required_rupees) & has_bow],
-        ["Island Shop", "Island Shop Bombchu Bag", False, has_rupees(required_rupees) & has_bow & has_chus],
+        ["Island Shop", "Island Shop Power Gem", False, has_restock_rupees(required_rupees, 4000)],
+        ["Island Shop", "Island Shop Quiver", False, has_restock_rupees(required_rupees, 3000) & has_bow],
+        ["Island Shop", "Island Shop Bombchu Bag", False, has_restock_rupees(required_rupees, 2000) & has_bow & has_chus],
         ["Island Shop", "Island Shop Heart Container", False, has_rupees(required_rupees) & has_bow & has_chus],
 
         ["Mercay Shop", "Mercay Shop Buy", False, has_rupees(required_rupees)],
@@ -199,9 +199,9 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
         ["Goron Shop Buy", "Goron Shop Arrows", False, has_bow],
         ["Goron Shop Buy", "Goron Shop Chus", False, has_chus],
 
-        ["Mercay Shop Buy", "Mercay Shop Shield", False, shop_shield],
-        ["Molida Shop Buy", "Molida Shop Shield", False, shop_shield],
-        ["Goron Shop Buy", "Goron Shop Shield", False, shop_shield],
+        ["Mercay Shop Buy", "Mercay Shop Shield", False, shop_shield(required_rupees, 150)],
+        ["Molida Shop Buy", "Molida Shop Shield", False, shop_shield(required_rupees, 150)],
+        ["Goron Shop Buy", "Goron Shop Shield", False, shop_shield(required_rupees, 150)],
 
         ["SW Ocean East", "Beedle", False, None],
         ["SW Ocean West", "Beedle", False, None],
@@ -209,10 +209,10 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
         ["SE Ocean", "Beedle", False, None],
         ["NE Ocean", "Beedle", False, None],
 
-        ["Beedle", "Beedle Gem", False, has_rupees(required_rupees)],
-        ["Beedle", "Beedle Bomb Bag", False, has_bombs & has_rupees(required_rupees)],
-        ["Beedle", "Masked Ship Gem", False, has_rupees(required_rupees)],
-        ["Beedle", "Masked Ship HC", False, has_rupees(required_rupees)],
+        ["Beedle", "Beedle Gem", False, has_restock_rupees(required_rupees, 200)],
+        ["Beedle", "Beedle Bomb Bag", False, has_bombs & has_restock_rupees(required_rupees, 800)],
+        ["Beedle", "Masked Ship Gem", False, has_restock_rupees(required_rupees, 200)],
+        ["Beedle", "Masked Ship HC", False, has_restock_rupees(required_rupees, 1500)],
         ["Beedle", "Beedle Shop", False, has_rupees(required_rupees)],
 
         ["Beedle", "Beedle Bronze Membership", False, beedle_bronze],

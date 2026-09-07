@@ -633,11 +633,27 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
     def count_required_rupees(self):
         multiplier = 0.7 if self.options.shop_hints.value else 1
         rupees = 0
-        if "uniques" in self.options.shopsanity.value:
-            rupees += 4500+1500*multiplier  # island shop + beedle
-        if self.options.randomize_masked_beedle.value:
-            rupees += 1500*multiplier
-        self.required_rupees = int(rupees)
+
+        rupee_totals = {
+            "uniques": (2000, 4000, 1500, 0),
+            "shields": (240, 0, 0, 0),
+            "ammo": (250, 0, 0, 0),
+            "treasure": (1800, 800, 2000, 1500),  # masked ship parts 1500, normals 800, treasure 500
+            "potions": (330, 250, 80, 200)
+        }
+
+        for k, r in rupee_totals.items():
+            if k in self.options.shopsanity.value:
+                rupees += r[0]
+                if self.options.randomize_masked_beedle.value:
+                    rupees += r[2]
+                    if "restocks" in self.options.shopsanity.value:
+                        rupees += r[3]
+                if "restocks" in self.options.shopsanity.value:
+                    rupees += r[1]
+
+        self.required_rupees = int(rupees*multiplier)
+        print(f"Required Rupees: {rupees} => {self.required_rupees}")
 
     def create_events(self):
         if self.is_ut:
@@ -1306,8 +1322,13 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                 for i in range(count):
                     random_filler_item = self.get_filler_item_name()
                     item_pool_dict[random_filler_item] = item_pool_dict.get(random_filler_item, 0) + 1
-        # for i in item_pool_dict.items():
-        #     print(i)
+        r = 0
+        for i, c in item_pool_dict.items():
+            if i in self.item_mapping_collect:
+                g, t = self.item_mapping_collect[i]
+                if g in ["Rupees", "Treasure"]:
+                    r += c*t
+        print(f"Total rupees in pool: {r}")
         return item_pool_dict
 
     def choose_progressive_items(self) -> dict[str, int]:

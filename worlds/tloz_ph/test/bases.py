@@ -167,7 +167,7 @@ options_keys = {
 
     "ph_time_logic": "no_logic",
     "ph_starting_time": 20,
-    "ph_time_increment": 5,
+    "ph_time_increment": 7,
 
     "goal_requirements": "defeat_bosses",
     "bellum_access": "spawn_phantoms_on_b13",
@@ -196,8 +196,8 @@ options_keys = {
     "ship_items": "whole_mismatched",
     "starting_ship": "mismatched",
 
-    "shopsanity": {"shields", "potions", "uniques"},
-    "randomize_masked_beedle": True
+    "shopsanity": {"all"},
+    "randomize_masked_beedle": False
 }
 
 class TestPHGeneration(WorldTestBase):

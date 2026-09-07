@@ -120,7 +120,8 @@ has_super_shield = has_spirit("Wisdom", 2) & has_shield
 has_beam_sword = has_sword & has_spirit("Courage", 2)
 has_stun_sword = has_sword & (has_boomerang | has_super_shield)
 can_cut_bamboo = has_sword | has_explosives
-shop_shield = Filtered(has_shield, options=[OptionFilter(PhantomHourglassShieldInPool, 1)], filtered_resolution=True)
+
+
 
 clever_pots = hard_logic
 clever_bombs = has_bombs | hard_logic
@@ -194,12 +195,21 @@ can_farm_rupees = Or(
     Has("_can_play_harrow") & [OptionFilter(PhantomHourglassRandomizeHarrow, 1)]
 )
 
-
+shop_restocks = [OptionFilter(PhantomHourglassShopsanity, "restocks", "contains")]
+shop_potions = [OptionFilter(PhantomHourglassShopsanity, "potions", "contains")]
+def has_restock_rupees(base_cost, locked_cost):
+    return has_rupees(base_cost) | (has_rupees(base_cost-locked_cost) & shop_restocks)
 
 def has_rupees(count):
     return (can_farm_rupees | ut_glitched
             | Has("Rupees", count)
             | (HasFromList("Rupees", "Treasure", count=count) & Has("_has_treasure_teller")))
+
+def shop_shield(base_cost, locked_cost):
+    return And(
+        Filtered(has_shield, options=[OptionFilter(PhantomHourglassShieldInPool, 1)], filtered_resolution=True),
+        has_rupees(base_cost) | (has_rupees(base_cost-locked_cost) & shop_restocks & shop_potions)
+        )
 
 beedle_bronze = HasBeedlePoints(1) | has_rupees(80)
 
