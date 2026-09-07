@@ -281,6 +281,8 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                     if (self.options.dungeon_hint_type.value == 2 and event.name in BOSS_EVENT_TO_LOCATION
                             and BOSS_EVENT_TO_LOCATION[event.name] not in required_dungeon_locations):
                         continue
+                    if "silent_event" in event.extra_data:
+                        continue
 
                     print(f"Adding Event: {event.name} {event.id} => {event.vanilla_reciprocal.id}")
                     self.ut_pairings[str(event.id)] = event.vanilla_reciprocal.id
@@ -1846,9 +1848,14 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
 
                 for i in new_entrances:
                     pairing = self.ut_pairings.get(str(i), None)
+                    entr = entrance_id_to_entrance[i]
                     # print(f"Pairing {pairing} {entrance_id_to_entrance[i].name}")
                     # print(f"UT pairings {self.ut_pairings}")
-                    if pairing is not None:
+
+                    if "silent_event" in entr.extra_data:
+                        print(f"Connecting silent entrance: {entr.entrance_region} -> {entr.exit_region}")
+                        self.get_region(entr.entrance_region).connect(self.get_region(entr.exit_region))
+                    elif pairing is not None:
                         exit_name = entrance_id_to_entrance[i].name
                         _exit: "Entrance" = self.get_entrance(entrance_id_to_entrance[i].name)
                         entrance_region: "Region" = self.get_region(entrance_id_to_region[pairing])
@@ -1863,12 +1870,6 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                             from rule_builder.rules import True_
                             print(f"Setting blank rule for silent entrance {_exit} -> {entrance_region}")
                             self.set_rule(_exit, True_())
-
-                    else:
-                        entr = entrance_id_to_entrance[i]
-                        if "silent_event" in entr.extra_data:
-                            print(f"Connecting silent entrance: {entr.entrance_region} -> {entr.exit_region}")
-                            self.get_region(entr.entrance_region).connect(self.get_region(entr.exit_region))
 
                 self.ut_connected_entrances |= new_entrances
 

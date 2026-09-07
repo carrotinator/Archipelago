@@ -1392,8 +1392,7 @@ class PhantomHourglassClient(DSZeldaClient):
     async def check_location_post_processing(self, ctx, location):
         if location is None:
             self.last_location = None
-            print(self.getting_location)
-            if self.getting_location & 0x10 and self.current_scene in [0xc0b, 0x1b00, 0x1400]:
+            if self.getting_location & 2 and self.current_scene in [0xc0b, 0x1b00, 0x1400]:
                 printl(f"Detected Unknown ship part, give treasure?")
                 await self.give_random_treasure(ctx)
             return
@@ -1432,6 +1431,8 @@ class PhantomHourglassClient(DSZeldaClient):
             printl(f"Not map switching due to cave: {hex(scene)}")
             return
         if map_type_lookup.get(scene) == "ship":
+            return
+        if map_type_lookup.get(scene) == "shop" and not ctx.slot_data["shopsanity"]:
             return
 
         if scene in range(4) or scene in [0x300]:  # Sea overview if port shuffle
@@ -1585,7 +1586,9 @@ class PhantomHourglassClient(DSZeldaClient):
                                 not model_reset_vanillas.get(item_data.model)
                                 or model_reset_vanillas.get(item_data.model) == item_name # cancel reset for models that work in vanilla
                         )):
-                    self.last_vanilla_item.pop()
+                    printl(f"\t\tcanceling removal of {self.last_vanilla_item.pop()}")
+                    # self.delay_reset = 0
+
 
                 if self.last_vanilla_item and "monotone_incremental" in item_data.tags and "delay_reset" in self.last_location:
                     printl(f"Monotone Incremental {item_data} from delay reset, canceling delay reset.")
@@ -1776,7 +1779,7 @@ class PhantomHourglassClient(DSZeldaClient):
                 write_list.append(Address.from_pointer(addr + 31*4, size=2).get_inner_write_list(0))  # closing
 
                 if identifiers.get(ident) in ["Spirit Door", "Key Door"]:
-                    if ctx.slot_data["exclude_non_required_dungeons"] == 2 and STAGES[self.current_stage] not in ctx.slot_data["required_dungeons"] + ["Temple of the Ocean King"]:
+                    if ctx.slot_data["exclude_non_required_dungeons"] == 2 and STAGES[self.current_stage] not in ctx.slot_data["required_dungeons"] + ["Temple of the Ocean King", "Mountain Passage"]:
                         printl(f"opening excluded key door {addr}")
                         write_list.append(Address.from_pointer(addr + 8, 1).get_inner_write_list(3))
                     else:
