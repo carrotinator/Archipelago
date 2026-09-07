@@ -229,6 +229,8 @@ class PhantomHourglassClient(DSZeldaClient):
         self.ammo_addresses: list[Address] = PHAddr.ammo_counts
         self.masked_beedle: bool = False  # last seen beedle variant
 
+        self.models_set: dict[str, int] = {}  # when special modes like nothing or treasure is set, use this for choosing vanilla item to remove stuff.
+
 
     async def check_game_version(self, ctx: "BizHawkClientContext") -> bool:
         rom_name_bytes = (await PHAddr.game_identifier.read_bytes(ctx))[0]
@@ -1619,6 +1621,7 @@ class PhantomHourglassClient(DSZeldaClient):
         self.key_door_watches.clear()
         self.paired_object_watches.clear()
         self.boss_door_addr = None
+        self.models_set.clear()
 
     @staticmethod
     async def find_table_object(ctx: "BizHawkClientContext", start_offset: int,
@@ -1695,6 +1698,7 @@ class PhantomHourglassClient(DSZeldaClient):
                     printl(f"Writing {model} to addr {chest_content_addr} for loc {loc}")
                 else:
                     printl(f"Could not find chests for item swapping, probably restarted client in already loaded room.")
+            self.models_set[loc] = model
 
         await bizhawk.write(ctx.bizhawk_ctx, write_list)
 
@@ -2061,7 +2065,7 @@ class PhantomHourglassClient(DSZeldaClient):
         return Address.from_pointer(chest_object+4)
 
     async def process_actors(self, ctx):
-        if self.current_scene not in SHOP_SCENES:
+        if self.current_scene not in SHOP_SCENES + [0x1300, 0xd14]:
             return
 
         table_size = await PHAddr.actor_table_size.read(ctx)
@@ -2106,9 +2110,16 @@ class PhantomHourglassClient(DSZeldaClient):
         return False
 
     async def _set_vanilla_item(self, ctx, location, vanilla_item: str | None = None):
-        printl(f"Setting vanilla item for {location.get('name')}")
+        printl(f"Setting vanilla item for {location.name}")
         if "chest_offset" in location or "gift_addr" in location:
-            model = ctx.slot_data.get("location_models", {}).get(str(location["id"]), 0x1E)
+            model = self.models_set.get(
+                location.name,
+                ctx.slot_data.get(
+                    "location_models", {}
+                ).get(
+                    str(location["id"]), 0x1E
+                )
+            )
             printl(f"Got swapped item model as vanilla item {hex(model)}: {model_resets.get(model)} {model_reset_vanillas.get(model)} {vanilla_item}")
             # Always remove for previously checked locations
             if model_resets.get(model, ""):

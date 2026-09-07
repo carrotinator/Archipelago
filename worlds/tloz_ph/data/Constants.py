@@ -2046,6 +2046,9 @@ ACTOR_IDENTS: dict[int, str] = {
     0x182f24: "Shop: Quiver",
     0x182b74: "Shop: Bombchu Bag",
 
+    # Digs
+    0x158134: "Rupee digs",
+
     # Interface?
     0x182550: "Quit Button"
 
