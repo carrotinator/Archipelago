@@ -326,6 +326,9 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                 # print(len(self.salvage_locations), self.options.salvage_count.value)
                 self.locations_to_remove.update(salvage_locs[self.options.salvage_count.value-1:])
 
+            print(f"remove_locations: {self.options.remove_locations.value}")
+            for loc in self.options.remove_locations.value:
+                self.locations_to_remove |= set(LOCATION_GROUPS.get(loc, {loc}))
 
         self.restrict_non_local_items()
         self.create_item_mappings()
@@ -430,6 +433,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
 
     def location_is_active(self, location_name, location_data):
         if location_name in self.locations_to_remove:
+            print(f"Location removed {location_name}")
             return False
         if not location_data.conditional and not location_data.has_slot_data:
             return True
@@ -653,7 +657,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                     rupees += r[1]
 
         self.required_rupees = int(rupees*multiplier)
-        print(f"Required Rupees: {rupees} => {self.required_rupees}")
+        # print(f"Required Rupees: {rupees} => {self.required_rupees}")
 
     def create_events(self):
         if self.is_ut:
@@ -1322,13 +1326,13 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                 for i in range(count):
                     random_filler_item = self.get_filler_item_name()
                     item_pool_dict[random_filler_item] = item_pool_dict.get(random_filler_item, 0) + 1
-        r = 0
-        for i, c in item_pool_dict.items():
-            if i in self.item_mapping_collect:
-                g, t = self.item_mapping_collect[i]
-                if g in ["Rupees", "Treasure"]:
-                    r += c*t
-        print(f"Total rupees in pool: {r}")
+        # r = 0
+        # for i, c in item_pool_dict.items():
+        #     if i in self.item_mapping_collect:
+        #         g, t = self.item_mapping_collect[i]
+        #         if g in ["Rupees", "Treasure"]:
+        #             r += c*t
+        # print(f"Total rupees in pool: {r}")
         return item_pool_dict
 
     def choose_progressive_items(self) -> dict[str, int]:

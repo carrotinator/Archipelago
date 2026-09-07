@@ -338,7 +338,7 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
         ["Molida South", "Molida Shop", True, None],
         ["Molida Shop", "Island Shop", False, None],
         ["Molida South", "Romanos' House", True, None],
-        ["Romanos' House", "Archery Game", False, (Has("_beat_toc") | (open_post_dungeon & has_bow)) & has_rupees(100)],
+        ["Romanos' House", "Archery Game", False, (Has("_beat_toc") | (open_post_dungeon & has_bow)) & has_rupees(500)],
         ["Molida South", "Sun Lake Cave", True, None],
         ["Molida South", "Sun Lake Cave Upper", False, has_shovel],
 
@@ -492,7 +492,7 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
         ["Keese Passage East", "Bannan East", True, None],
         ["Bannan East", "Bannan East Grapple", False, has_grapple],
         ["Bannan East Grapple", "Bannan East Grapple Dig", False, has_shovel],
-        ["Bannan East", "Bannan Cannon Game", False, has_cannon & has_rupees(100)],
+        ["Bannan East", "Bannan Cannon Game", False, has_cannon & has_rupees(500)],
         ["Wayfarer's House", "Wayfarer Trade Quest", False, bannan_scroll],
         ["Wayfarer's House", "Wayfarer Give Loovar", False, has_fish("Loovar")],
         ["Wayfarer's House", "Wayfarer Give Rusty Swordfish", False, has_rsf],
@@ -626,7 +626,7 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
 
         ["Dee Ess Island", "Dee Ess Dig", False, has_shovel],
         ["Dee Ess Island", "Dee Ess Eye Brutes", False, can_kill_eye_brute],
-        ["Dee Ess Island", "Dee Ess Goron Race", False, (Has("_beat_gt") | open_post_dungeon) & has_rupees(150)],
+        ["Dee Ess Island", "Dee Ess Goron Race", False, (Has("_beat_gt") | open_post_dungeon) & has_rupees(500)],
 
         # ================= Isle of Frost ====================
 

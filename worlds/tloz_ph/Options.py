@@ -3,8 +3,7 @@ from datetime import datetime
 from .data.Entrances import ENTRANCES
 
 from Options import Choice, DeathLink, DefaultOnToggle, PerGameCommonOptions, Range, Toggle, StartInventoryPool, \
-    ItemDict, ItemsAccessibility, ItemSet, Visibility, OptionGroup, PlandoConnections, OptionSet
-from worlds.tloz_ph.data.Items import ITEMS_DATA
+    ItemDict, ItemsAccessibility, ItemSet, Visibility, OptionGroup, PlandoConnections, OptionSet, LocationSet
 
 
 class PhantomHourglassGoal(Choice):
@@ -940,15 +939,16 @@ class PhantomHourglassShipAutoEquip(Toggle):
 class PhantomHourglassShopsanity(OptionSet):
     """
     Randomize shop items.
+    Shop items logically require 0.7 * total cost of all shop items.
     Shops sell the vanilla after buying the randomized items.
     (+x) denotes with masked beedle enabled, [+y] denotes with restocks
-    - uniques: unique items, including the chain in island shops. 3[+3](+2) locations, 2000[+4000](+1500) rupees
+    - uniques: unique items. 3[+3](+2) locations, 2000[+4000](+1500) rupees
     - shields: 3 locations, 240 rupees
     - ammo: refills of bombs and arrows etc. 5 locations, 250 rupees
     - treasure: treasure and ship parts. 3[+1](+2[+1]) locations, variable rupees
     - potions: 4[+4](+1[+1]) locations. 330[+650](+80[+200])
+    - restocks: randomizes shop items that unlock after buying something else and reentering the shop.
     - all: all of the above.
-    - restocks: allows items that unlock after buying something else.
     """
     display_name = "Shopsanity"
     valid_keys = {"uniques", "shields", "ammo", "treasure", "potions", "all", "restocks"}
@@ -961,6 +961,12 @@ class PhantomHourglassShieldInPool(Toggle):
     """
     display_name = "Shields in Item Pool"
     default = 0
+
+class PhantomHourglassRemoveLocations(LocationSet):
+    """
+    Removes locations from generation.
+    """
+    display_name = "Remove Locations"
 
 @dataclass
 class PhantomHourglassOptions(PerGameCommonOptions):
@@ -1078,6 +1084,7 @@ class PhantomHourglassOptions(PerGameCommonOptions):
     add_items_to_pool: PhantomHourglassAddItemsToPool
     remove_items_from_pool: PhantomHourglassRemoveItemsFromPool
     death_link: DeathLink
+    remove_locations: PhantomHourglassRemoveLocations
 
 
 ph_option_groups = [
@@ -1186,7 +1193,8 @@ ph_option_groups = [
     ]),
     OptionGroup("Item & Location Options", [
         PhantomHourglassAddItemsToPool,
-        PhantomHourglassRemoveItemsFromPool
+        PhantomHourglassRemoveItemsFromPool,
+        PhantomHourglassRemoveLocations
     ]),
 ]
 

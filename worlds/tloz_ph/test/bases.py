@@ -197,7 +197,8 @@ options_keys = {
     "starting_ship": "mismatched",
 
     "shopsanity": {"all"},
-    "randomize_masked_beedle": False
+    "randomize_masked_beedle": False,
+    "remove_locations": {"Temple of the Ocean King"}
 }
 
 class TestPHGeneration(WorldTestBase):
