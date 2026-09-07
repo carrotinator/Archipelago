@@ -1837,6 +1837,17 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                             print(f"Globally connecting menu => {_exit.parent_region}")
                             self.get_region("Menu").connect(_exit.parent_region)
 
+                        if "silent_event" in ENTRANCES[exit_name].extra_data:
+                            from rule_builder.rules import True_
+                            print(f"Setting blank rule for silent entrance {_exit} -> {entrance_region}")
+                            self.set_rule(_exit, True_())
+
+                    else:
+                        entr = entrance_id_to_entrance[i]
+                        if "silent_event" in entr.extra_data:
+                            print(f"Connecting silent entrance: {entr.entrance_region} -> {entr.exit_region}")
+                            self.get_region(entr.entrance_region).connect(self.get_region(entr.exit_region))
+
                 self.ut_connected_entrances |= new_entrances
 
         elif "ph_disconnect_entrances" in key and stored_data:

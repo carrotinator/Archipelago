@@ -164,7 +164,7 @@ class PhantomHourglassClient(DSZeldaClient):
         self.last_ship_parts = []
         self.at_sea = False
         self.lowered_water = False
-        self.visited_entrances = set()
+        self.traversed_entrances = set()
         self.redisconnected_entrances = set()
         self.checked_entrances = set()
 
@@ -1292,7 +1292,7 @@ class PhantomHourglassClient(DSZeldaClient):
         return None
 
     async def update_stored_entrances(self, ctx: "BizHawkClientContext"):
-        self.visited_entrances.clear()
+        self.traversed_entrances.clear()
         self.redisconnected_entrances.clear()
         self.visited_scenes.clear()
         self.checked_entrances.clear()
@@ -1306,15 +1306,15 @@ class PhantomHourglassClient(DSZeldaClient):
 
     # UT store entrances to remove
     async def store_visited_entrances(self, ctx: "BizHawkClientContext", detect_data, exit_data, interaction="traverse"):
-        self.visited_entrances |= set(get_stored_data(ctx, traversal_key, set()))
-        old_visited_entrances = self.visited_entrances.copy()
+        self.traversed_entrances |= set(get_stored_data(ctx, traversal_key, set()))
+        old_visited_entrances = self.traversed_entrances.copy()
         new_data = {detect_data.id, exit_data.id} if not ctx.slot_data["decouple_entrances"] and detect_data.two_way else {detect_data.id}
         printl(f"New Storage Data: {new_data} {ctx.slot_data['decouple_entrances']}")
 
         if interaction == "traverse" or ctx.slot_data.get("ut_blocked_entrances_behaviour", 1) == 0:
             key = storage_key(ctx, traversal_key)
-            self.visited_entrances.update(new_data)
-            new_data = self.visited_entrances-old_visited_entrances
+            self.traversed_entrances.update(new_data)
+            new_data = self.traversed_entrances-old_visited_entrances
         elif interaction == "check":
             key = storage_key(ctx, checked_key)
             self.checked_entrances.update(new_data)
@@ -2053,7 +2053,7 @@ class PhantomHourglassClient(DSZeldaClient):
         return Address.from_pointer(chest_object+4)
 
     async def process_actors(self, ctx):
-        if self.current_scene not in [0xb11, 0x500, 0x1014, 0xC0E]:
+        if self.current_scene not in SHOP_SCENES:
             return
 
         table_size = await PHAddr.actor_table_size.read(ctx)

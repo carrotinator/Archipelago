@@ -1189,10 +1189,10 @@ UT_EVENT_DATA = {
          "offset": 1},
         {"address": PHAddr.goron_bomb_blocks,
          "value": 0x8,
-         "event": "gms"},
+         "entrance": "EVENT: Goron NE Middle Bomb Wall"},
         {"address": PHAddr.goron_bomb_blocks,
          "value": 0x1,
-         "event": "gss"}],
+         "entrance": "EVENT: Goron NE South Bomb Wall"}],
     0x1003: [
         {"address": PHAddr.adv_flags_35,
          "value": 0x2,
@@ -1200,89 +1200,79 @@ UT_EVENT_DATA = {
     ],
     0x1002: {"address": PHAddr.adv_flags_34,
              "value": 0x20,
-             "entrance": "EVENT: Goron SW Kill Yellow Chus"},
+             "entrance": "EVENT: Goron SW Kill Yellow Chus"
+             },
     0x130B: {"address": PHAddr.adv_flags_6,
              "value": 0x2,
-             "entrance": "EVENT: Open Eddo's Door", },
+             "entrance": "EVENT: Open Eddo's Door"
+             },
     0xe01: {"address": "stage_flags",
             "value": 0x20,
-            "entrance": "EVENT: Gust Windmills", },
+            "entrance": "EVENT: Gust Windmills"
+            },
     0x1000: [{"address": "stage_flags",
               "value": 0x2,
-              "event": "gsb"},
+              "entrance": "EVENT: Goron NW Bridge Shortcut"
+              },
              {"address": "stage_flags",
               "value": 0x20,
-              "event": "gls"},
+              "entrance": "EVENT: Goron NW Like Like Spikes"},
              ],
     0xB02: {"address": "stage_flags",
             "value": 0x1,
-            "event": "fi",
-            "offset": 1},
+            "entrance": "EVENT: Mercay NE Freedle Island Bridge",
+            "offset": 1
+            },
     0x1203: {"address": "stage_flags",
              "value": 0x80,
-             "event": "rb",
-             "offset": 1},
+             "entrance": "EVENT: Ruins SE Bridge Shortcut",
+             "offset": 1
+             },
     0xF03: {"address": "stage_flags",
             "value": 0x10,
-            "event": "fif",
-            "offset": 2},
+            "entrance": "EVENT: Frost SE Ice Spikes",
+            "offset": 2
+            },
     0x1A00: {"address": PHAddr.adv_flags_38,
              "value": 0x10,
-             "event": "ub"},
-    0xd01: {"address": "stage_flags",
+             "entrance": "EVENT: Uncharted Island Bridge"
+             },
+    0xC01: {"address": "stage_flags",
             "value": 0x40,
-            "event": "md"},
+            "entrance": "EVENT: Molida North Open Temple Door"
+            },
     0x1c03: {"address": "stage_flags",
              "value": 0x80,
-             "event": "tfw",
-             "offset": 1},
+             "entrance": "EVENT: Temple of Fire Blue Warp",
+             "offset": 1
+             },
     0x1d04: {"address": PHAddr.tow_warp,
              "value": 0x1,
-             "event": "tww"},
+             "entrance": "EVENT: Temple of Wind Blue Warp"
+             },
     0x1e03: {"address": PHAddr.toc_warp,
              "value": 0x1,
-             "event": "tcw"},
+             "entrance": "EVENT: Temple of Courage Blue Warp"},
     0x2004: {"address": "stage_flags",
              "value": 0x80,
-             "event": "gtw",
+             "entrance": "EVENT: Goron Temple Blue Warp",
              "offset": 3},
     0x1f02: {"address": PHAddr.toi_warp,
              "value": 0x1,
-             "event": "tiw"},
+             "entrance": "EVENT: Temple of Ice Blue Warp"},
     0x2105: {"address": "stage_flags",
              "value": 0x10,
-             "event": "mtw",
+             "entrance": "EVENT: Mutoh's Temple Blue Warp",
              "offset": 1},
     0x1300: {"address": PHAddr.cannon_bomb_blocks,
              "value": 0x1,
-             "event": "cb"},
+             "entrance": "EVENT: Cannon Island Eddo's Bomb Blocks"},
     0xC0A: {"address": PHAddr.molida_bomb_blocks,
             "value": 0x1,
-            "event": "mcb"},
+            "entrance": "EVENT: Sun Lake Cave Bomb Blocks"},
 }
 
 hidden_event_connect = {
-    # Connected on flag read
-    "gsb": ("Goron NW Shortcut", "Goron NW Outside Temple"),
-    "fi": ("Mercay NE", "Mercay NW Freedle Island"),
-    "gms": ("Goron NE Middle", "Goron NE"),
-    "gss": ("Goron NE South", "Goron NE"),
-    "gls": ("Goron NW Outside Temple", "Goron NW Like Like"),
-
-    "rb": ("Ruins SE Return Bridge West", "Ruins SE Return Bridge East"),
-    "fif": ("Frost SE Exit", "Frost SE"),
-    "ub": ("Uncharted Outside Cave", "Uncharted Island"),
-    "md": ("Molida Outside Temple", "Molida North"),
-    "cb": ("Cannon Outside Eddo", "Cannon Bomb Garden"),
-    "mcb": ("Sun Lake Cave", "Sun Lake Cave Back"),
-
-    "tfw": ("ToF 1F", "ToF 4F"),
-    "tww": ("ToW 1F", "ToW 2F"),
-    "tcw": ("ToC 1F", "ToC 3F"),
-    "gtw": ("GT 1F", "GT B4"),
-    "tiw": ("ToI 1F", "ToI Blue Warp"),
-    "mtw": ("MT 1F", "MT B3"),
-
     # map warp connections
     "wsw": ("Menu", "SW Ocean East", "Warp to SW Ocean"),
     "wse": ("Menu", "SE Ocean", "Warp to SE Ocean"),
@@ -1728,18 +1718,7 @@ model_resets = {
     0x82: "Big Rupoor (-50)",
 }
 
-shop_location_lookup = {
-    0x2d: "Island Shop Power Gem",
-    0x28: "Island Shop Quiver",
-    0x2a: "Island Shop Bombchu Bag",
-    0xa: "Island Shop Heart Container"
-}
-
-SHOP_SCENES = [
-    0xB11,
-    0xc0e,
-
-]
+SHOP_SCENES = [0xb11, 0x500, 0x1014, 0xC0E]
 
 @dataclass
 class DigSpotData:
@@ -2056,6 +2035,7 @@ ACTOR_IDENTS: dict[int, str] = {
     # Shop Items
     0x182e38: "Shop: Bomb Refill",
     0x183010: "Shop: Arrow Refill",
+    0x182c60: "Shop: Chu Refill",
     0x18299c: "Shop: Treasure",
     0x1826d8: "Shop: Potion",
     0x1828b0: "Shop: Gem",
@@ -2115,7 +2095,7 @@ SHOP_LOCATIONS = {
         "Gem": "Beedle Shop Wisdom Gem",
     },
     0x501: {  # Masked beedle variant
-        "Ship Part1": "Masked Beedle Buy Top Ship Part ",
+        "Ship Part1": "Masked Beedle Buy Top Ship Part",
         "Ship Part2": "Masked Beedle Buy Bottom Ship Part",
         "Potion3": "Masked Beedle Buy Red Potion",
         "Treasure": "Masked Beedle Buy Treasure",

@@ -1625,6 +1625,11 @@ DYNAMIC_FLAGS = {
         "has_slot_data": [("shopsanity", "uniques", "not")],
         "set_if_true": [(PHAddr.flags_shops, 0x25), (PHAddr.adv_flags_14, 0x2)]
     },
+    "No Masked Beedle": {
+        "on_scenes": [0x500],
+        "has_slot_data": [("randomize_masked_beedle", 0)],
+        "set_if_true": [(PHAddr.flags_shops, 0x1), (PHAddr.adv_flags_14, 0x2)]
+    },
     "Island Shops no restocks": {
         "on_scenes": [0xb11, 0xc03, 0x1014],
         "has_slot_data": [("shopsanity", "restocks", "not"), ("shopsanity", "uniques")],
@@ -1722,6 +1727,130 @@ DYNAMIC_FLAGS = {
         "has_items": [("Shield", 0)],
         "has_slot_data": [("shield_in_pool", 1)],
         "unset_if_true": [(PHAddr.inventory_1, 2)]
-    }
+    },
+
+    # Event backups
+    "Event backup ruins lower water": {
+        "on_scenes": [0x2400, 0x1100, 0x1101, 0x1102, 0x1103, 0x1201, 0x1202, 0x1203, 0x1204],
+        "has_traversed_entrances": ["EVENT: Bremeur's Temple Lower Water"],
+        "set_if_true": [(PHAddr.lower_water, 0x4)]
+    },
+    "Event backup wood heart": {
+        "on_scenes": [0x1400],
+        "has_traversed_entrances": ["EVENT: SS Wayfarer Give Wood Heart"],
+        "set_if_true": [(PHAddr.adv_flags_22, 0x8)]
+    },
+    "Event backup goron spike switch": {
+        "on_scenes": [0x1001],
+        "has_traversed_entrances": ["EVENT: Goron NE Spike Switch"],
+        "update_stage_flags": [0, 0x4]
+    },
+    "Event backup mid wall": {
+        "on_scenes": [0x1001],
+        "has_traversed_entrances": ["EVENT: Goron NE Middle Bomb Wall"],
+        "set_if_true": [(PHAddr.goron_bomb_blocks, 8)]
+    },
+    "Event backup south wall": {
+        "on_scenes": [0x1001],
+        "has_traversed_entrances": ["EVENT: Goron NE South Bomb Wall"],
+        "set_if_true": [(PHAddr.goron_bomb_blocks, 1)]
+    },
+    "Event backup goron se bridge": {
+        "on_scenes": [0x1003, 0x100a],
+        "has_traversed_entrances": ["EVENT: Goron SE Shout to Bridge Goron"],
+        "set_if_true": [(PHAddr.adv_flags_35, 2)]
+    },
+    "Event backup goron chus": {
+        "on_scenes": [0x1002, 0x100a],
+        "has_traversed_entrances": ["EVENT: Goron SW Kill Yellow Chus"],
+        "set_if_true": [(PHAddr.adv_flags_34, 0x20)]
+    },
+    "Event backup eddo's door": {
+        "on_scenes": [0x130B, 0x130A],
+        "has_traversed_entrances": ["EVENT: Open Eddo's Door"],
+        "set_if_true": [(PHAddr.adv_flags_6, 0x2)]
+    },
+    "Event backup gust windmills": {
+        "on_scenes": [0xe01],
+        "has_traversed_entrances": ["EVENT: Gust Windmills"],
+        "update_stage_flags": [0x20]
+    },
+
+    "Event backup goron nw bridge": {
+        "on_scenes": [0x1000],
+        "has_traversed_entrances": ["EVENT: Goron NW Bridge Shortcut"],
+        "update_stage_flags": [0x2]
+    },
+    "Event backup goron nw spikes": {
+        "on_scenes": [0x1000],
+        "has_traversed_entrances": ["EVENT: Goron NW Like Like Spikes"],
+        "update_stage_flags": [0x20]
+    },
+    "Event backup freedle island bridge": {
+        "on_scenes": [0xB02],
+        "has_traversed_entrances": ["EVENT: Mercay NE Freedle Island Bridge"],
+        "update_stage_flags": [0, 0x1]
+    },
+    "Event backup ruins se bridge": {
+        "on_scenes": [0x1203, 0x1103],
+        "has_traversed_entrances": ["EVENT: Ruins SE Bridge Shortcut"],
+        "update_stage_flags": [0, 0x80]
+    },
+    "Event backup frost se spikes": {
+        "on_scenes": [0xF03],
+        "has_traversed_entrances": ["EVENT: Frost SE Ice Spikes"],
+        "update_stage_flags": [0, 0, 0x10]
+    },
+    "Event backup uncharted bridge": {
+        "on_scenes": [0x1A00],
+        "has_traversed_entrances": ["EVENT: Uncharted Island Bridge"],
+        "set_if_true": [(PHAddr.adv_flags_38, 0x10)]
+    },
+    "Event backup molida temple door": {
+        "on_scenes": [0xc01],
+        "has_traversed_entrances": ["EVENT: Molida North Open Temple Door"],
+        "update_stage_flags": [0x40]
+    },
+    "Event backup cannon bomb blocks": {
+        "on_scenes": [0x1300],
+        "has_traversed_entrances": ["EVENT: Cannon Island Eddo's Bomb Blocks"],
+        "set_if_true": [(PHAddr.cannon_bomb_blocks, 0x1)]
+    },
+    "Event backup sun lake bomb blocks": {
+        "on_scenes": [0xC0A],
+        "has_traversed_entrances": ["EVENT: Sun Lake Cave Bomb Blocks"],
+        "set_if_true": [(PHAddr.molida_bomb_blocks, 0x1)]
+    },
+
+    "Event backup tof warp": {
+        "on_scenes": [0x1c03, 0x1c00],
+        "has_traversed_entrances": ["EVENT: Temple of Fire Blue Warp"],
+        "update_stage_flags": [0, 0x80]
+    },
+    "Event backup tow warp": {
+        "on_scenes": [0x1d04, 0x1d00],
+        "has_traversed_entrances": ["EVENT: Temple of Wind Blue Warp"],
+        "set_if_true": [(PHAddr.tow_warp, 0x1)]
+    },
+    "Event backup toc warp": {
+        "on_scenes": [0x1e03, 0x1e00],
+        "has_traversed_entrances": ["EVENT: Temple of Courage Blue Warp"],
+        "update_stage_flags": [1]
+    },
+    "Event backup gt warp": {
+        "on_scenes": [0x2004, 0x2000],
+        "has_traversed_entrances": ["EVENT: Goron Temple Blue Warp"],
+        "update_stage_flags": [0, 0, 0, 0x80]
+    },
+    "Event backup toi warp": {
+        "on_scenes": [0x1f02, 0x1f00],
+        "has_traversed_entrances": ["EVENT: Temple of Ice Blue Warp"],
+        "set_if_true": [(PHAddr.toi_warp, 0x1)]
+    },
+    "Event backup mt warp": {
+        "on_scenes": [0x2105, 0x2100],
+        "has_traversed_entrances": ["EVENT: Mutoh's Temple Blue Warp"],
+        "update_stage_flags": [0, 0x10]
+    },
 }
 

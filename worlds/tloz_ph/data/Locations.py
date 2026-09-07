@@ -1,11 +1,7 @@
 
-import json
 from worlds.tloz_ph.data.Constants import *
 from ..DSZeldaClient.subclasses import SRAM
 from ..DSZeldaClient.LocationClass import DSLocation
-
-# TODO: Add sram data for saveslot 2
-# TODO: Add the rest of sram data in bulk
 
 LOCATION_LIST: list[DSLocation] = [
     DSLocation("Sword Cave Chest",
