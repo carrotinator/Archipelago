@@ -886,7 +886,7 @@ class PhantomHourglassBossRewardPool(Choice):
     What items are in the boss reward pool?
     - metals: boss rewards are metals
     - spirits_and_metals: the reward pool starts with a spirit of each type, then fills remaining rewards with metals.
-    Does not work with progressive_single_spirits.
+    In cases where there are spirit items outside of dungeon reward locations, the game will also check if you've gotten those locations.
     """
     display_name = "Boss Reward Pool"
     option_metals = 0

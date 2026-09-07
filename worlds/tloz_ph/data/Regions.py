@@ -177,7 +177,7 @@ REGIONS = [
     "Bellum",
     "Ghost Ship Fight",
     "Bellumbeck",
-    "Beat Bellumbeck",
+    "Defeat Bellumbeck",
 
     # SW Ocean
     "SW Ocean East",

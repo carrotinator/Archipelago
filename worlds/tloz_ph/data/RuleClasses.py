@@ -380,6 +380,8 @@ class HasRequiredSpirits(Rule[PhantomHourglassWorld], game=tloz_ph):
                 # print(f"spirits: {state.has('Spirit (Progressive)', self.player, len(spirit_items))} and {state.has('_required_dungeon', self.player, len(spirit_items))}")
                 return state.has("Spirit (Progressive)", self.player, len(spirit_items)) and state.has("_required_dungeon", self.player, len(spirit_items))
             # print(f"spirits: {state.has_all(spirit_items, self.player)}")
+            if spirit_items[0].endswith("(Progressive)"):
+                return state.has_all(spirit_items, self.player) and state.has("_required_dungeon", self.player, world.options.dungeons_required.value)
             return state.has_all(spirit_items, self.player)
 
         @override
@@ -400,13 +402,13 @@ class HasRequiredSpirits(Rule[PhantomHourglassWorld], game=tloz_ph):
             required_items = world.boss_reward_items_pool
             spirit_items = [i for i in required_items if i in ITEM_GROUPS["Spirits"]]
             print(f"Spirit items: {spirit_items}")
+            extra_bit: list[JSONMessagePart] = []
             if "Spirit (Progressive)" in spirit_items:
-                extra_bit: list[JSONMessagePart] = []
+
                 if len(spirit_items) < 3:
-                    extra_bit = [{"type": "text", "text": " And Has Cleared"},
-                                 {"type": "color", "color": "green" if state.has("Spirit (Progressive)", self.player,
-                                                                                 len(spirit_items)) else "salmon",
-                                  "text": f"{state.count('_required_dungeon', self.player)}/{world.options.dungeons_required.value} _required_dungeon"}
+                    extra_bit = [{"type": "text", "text": " & Has Cleared "},
+                                 {"type": "color", "color": "green" if state.count('_required_dungeon', self.player)>=world.options.dungeons_required.value else "salmon",
+                                  "text": f"{state.count('_required_dungeon', self.player)}/{world.options.dungeons_required.value} required dungeons"}
                                  ]
                 return [
                         {"type": "text", "text": "Has "},
@@ -414,9 +416,14 @@ class HasRequiredSpirits(Rule[PhantomHourglassWorld], game=tloz_ph):
                          "text": f"{state.count('Spirit (Progressive)', self.player)}/{len(spirit_items)} Spirit (Progressive)"}
                     ] + extra_bit
 
+            if spirit_items[0].endswith("(Progressive)"):
+                extra_bit = [{"type": "text", "text": " & Has Cleared "},
+                             {"type": "color", "color": "green" if state.count('_required_dungeon', self.player)>=world.options.dungeons_required.value else "salmon",
+                              "text": f"{state.count('_required_dungeon', self.player)}/{world.options.dungeons_required.value} required dungeons"}
+                             ]
             return [
                         {"type": "text", "text": "Has All: [ "},
                         *[{"type": "color", "color": "green" if state.has(i, self.player) else "salmon",
-                         "text": f"{i}, "} for i in spirit_items],
-                        {"type": "text", "text": "]"},
-                    ]
+                         "text": f"{i}{', ' if i != spirit_items[-1] else ''}"} for i in spirit_items],
+                        {"type": "text", "text": "]"}
+                    ] + extra_bit

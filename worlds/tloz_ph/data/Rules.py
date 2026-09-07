@@ -224,6 +224,7 @@ can_kill_phantoms_traps = can_kill_phantoms | phantom_traps
 can_pass_sea_monster = has_cannon | [OptionFilter(PhantomHourglassSkipOceanFights, 1)]
 
 goal_midway = [OptionFilter(PhantomHourglassGoal, PhantomHourglassGoal.option_triforce_door)]
+goal_bellumbeck = [OptionFilter(PhantomHourglassBellumAccess, 4, "ne"), OptionFilter(PhantomHourglassGoal, 0, "ne")]
 
 bellum_access_b13 = [OptionFilter(PhantomHourglassBellumAccess, 0)]
 bellum_access_staircase_plus = [OptionFilter(PhantomHourglassBellumAccess, 1, "ge")]

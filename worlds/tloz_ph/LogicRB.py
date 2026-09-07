@@ -905,12 +905,12 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
 
         # Goal stuff
         ["SW Ocean East", "Bellumbeck", False, can_defeat_bellumbeck & has_metals & bellum_access_wreck],
-        ["Bellumbeck", "Beat Bellumbeck", False, can_defeat_bellumbeck],
-        ["Beat Bellumbeck", "Goal", False, None],
+        ["Bellumbeck", "Defeat Bellumbeck", False, can_defeat_bellumbeck],
+        ["Defeat Bellumbeck", "Goal", False, Filtered(True_(), options=goal_bellumbeck)],
         ["Goal", "Goal Event", False, None],  # Event stuff
         ["Goal", "Goal Event Triforce", False, None],  # Event stuff
         ["Goal", "Goal Event Bellumbeck", False, None],  # Event stuff
-        ["TotOK B6 Midway", "Goal", False, Filtered(Or(), options=goal_midway)],
+        ["TotOK B6 Midway", "Goal", False, Filtered(True_(), options=goal_midway)],
         ["Zauz's House", "Goal", False, win_on_metals],
 
     ]

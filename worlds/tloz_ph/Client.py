@@ -832,7 +832,7 @@ class PhantomHourglassClient(DSZeldaClient):
                     has_metals = self.metal_count >= ctx.slot_data["required_metals"]
                     has_spirits = True
                     if ctx.slot_data["boss_reward_pool"]:
-                        spirit_pool = [s for s in ctx.slot_data["boss_reward_items_pool"] if s in ITEM_GROUPS["Spirits"]]
+                        spirit_pool: list[str] = [s for s in ctx.slot_data["boss_reward_items_pool"] if s in ITEM_GROUPS["Spirits"]]
                         if "Spirit (Progressive)" in spirit_pool:
                             if len(spirit_pool) == 3:
                                 has_spirits = self.item_count(ctx, "Spirit (Progressive)") >= 3
@@ -843,6 +843,11 @@ class PhantomHourglassClient(DSZeldaClient):
                                     if self.location_name_to_id[loc] not in ctx.checked_locations:
                                         has_spirits = False
                                 printl(f"\t\tProgressive Spirits < 3: {spirit_pool} {has_spirits}")
+                        elif spirit_pool[0].endswith("(Progressive)"):
+                            has_spirits = all([self.item_count(ctx, i) for i in spirit_pool])
+                            for loc in ctx.slot_data["required_dungeon_locations"]:
+                                if self.location_name_to_id[loc] not in ctx.checked_locations:
+                                    has_spirits = False
                         else:
                             has_spirits = all([self.item_count(ctx, i) for i in spirit_pool])
                             printl(f"\t\tSpirit Pool: {spirit_pool} {has_spirits}")

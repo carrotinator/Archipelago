@@ -291,8 +291,6 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                 self.ut_map_page_hidden_locations, self.ut_map_page_hidden_entrances = get_hidden_entrances(self)
 
         else:
-            if self.options.spirit_type == 0:
-                self.options.boss_reward_pool.value = 0
             if 'all' in self.options.shopsanity.value:
                 self.options.shopsanity.value = self.options.shopsanity.valid_keys.copy()
 
