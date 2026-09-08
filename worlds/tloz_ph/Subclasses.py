@@ -180,6 +180,23 @@ class PHItem(DSItem):
             return remove_vanilla_throwable_keys
         return super().get_remove_vanilla_function()
 
+    def get_value(self, ctx):
+        if isinstance(self.value, str):
+            if "Sand" in self.value:
+                sand_lookup = {
+                    "Phantom Hourglass": ctx.slot_data["ph_starting_time"] * 60,
+                    "Sand of Hours": ctx.slot_data["ph_time_increment"] * 60,
+                    "Sand of Hours (Small)": 3600,
+                    "Sand of Hours (Boss)": 7200
+                }
+                return sand_lookup[self.value]
+
+            elif self.value == "pack_size":
+                return ctx.slot_data["spirit_gem_packs"]
+            else:
+                raise ValueError(f"Special item value {self.value} is not supported")
+        return self.value
+
 
 class PHEntrance(Entrance):
     switch_state = {"TotOK": 0b1, "ToF": 0b1, "ToC": 0b1, "GT": 0b1, "ToI": 0b1}

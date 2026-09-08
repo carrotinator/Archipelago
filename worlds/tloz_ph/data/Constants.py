@@ -2045,6 +2045,7 @@ ACTOR_IDENTS: dict[int, str] = {
     0x1830FC: "Shop: Heart Container",
     0x182f24: "Shop: Quiver",
     0x182b74: "Shop: Bombchu Bag",
+    0x182d4c: "Shop: Bomb Bag",
 
     # Digs
     0x158134: "Rupee digs",

@@ -5,6 +5,7 @@ from .data import LOCATIONS_DATA, DYNAMIC_FLAGS
 from .data.Items import ITEMS
 from .data.Hints import HINT_DATA
 from .data.Entrances import ENTRANCES
+from .DSZeldaClient.subclasses import compare_slot_data
 
 def build_entrance_id_to_data():
     entrances = {}
@@ -34,17 +35,10 @@ def build_location_room_to_watches() -> Dict[int, dict[str, DSLocation]]:
 
 def build_scene_to_dynamic_flag(ctx) -> Dict[int, list[dict]]:
     scene_to_dynamic_flag: Dict[int, list[dict]] = {}
-    def check_slot_data(d):
-        for option, value, *args in d.get("has_slot_data", []):
-            value = value if isinstance(value, list) else [value]
-            # print(f"\t{d['name']}: {option} {value}")
-            if ctx.slot_data.get(option) not in value:
-                return False
-        return True
 
     for flag_name, data in DYNAMIC_FLAGS.items():
         data["name"] = flag_name
-        if not check_slot_data(data):
+        if not compare_slot_data(ctx, data):
             continue
 
         for scene in data.get("on_scenes", []):

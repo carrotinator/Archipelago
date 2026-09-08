@@ -448,30 +448,31 @@ DYNAMIC_FLAGS = {
         "unset_if_true": [(PHAddr.adv_flags_2, 0x40)]
     },
     # Endgame
+    "Spawn Phantoms in Totok B13 Progressive": {
+        "on_scenes": [0x2511],
+        "has_items": [("Sword (Progressive)", 2)],
+        "has_slot_data": [("bellum_access", [1, 2, 3])],
+        "set_if_true": [(PHAddr.adv_flags_22, 0x40)],
+        "reset_flags": ["RESET Spawn Phantoms in Totok B13"]
+    },
     "Spawn Phantoms in Totok B13": {
         "on_scenes": [0x2511],
-        "has_items": [("Sword (Progressive)", 2)],
-        "has_slot_data": [["bellum_access", 1]],
+        "has_items": [("Oshus' Sword", 1), ("Phantom Sword", 1)],
+        "has_slot_data": [("bellum_access", [1, 2, 3])],
         "set_if_true": [(PHAddr.adv_flags_22, 0x40)],
         "reset_flags": ["RESET Spawn Phantoms in Totok B13"]
     },
-    "Spawn Phantoms in Totok B13 2": {
+    "Spawn Phantoms in Totok B13 door option progressive": {
         "on_scenes": [0x2511],
         "has_items": [("Sword (Progressive)", 2)],
-        "has_slot_data": [["bellum_access", 2]],
-        "set_if_true": [(PHAddr.adv_flags_22, 0x40)],
-        "reset_flags": ["RESET Spawn Phantoms in Totok B13"]
-    },
-    "Spawn Phantoms in Totok B13 3": {
-        "on_scenes": [0x2511],
-        "has_items": [("Sword (Progressive)", 2)],
-        "has_slot_data": [["bellum_access", 3]],
+        "goal_requirement": True,
+        "has_slot_data": [["bellum_access", 0]],
         "set_if_true": [(PHAddr.adv_flags_22, 0x40)],
         "reset_flags": ["RESET Spawn Phantoms in Totok B13"]
     },
     "Spawn Phantoms in Totok B13 door option": {
         "on_scenes": [0x2511],
-        "has_items": [("Sword (Progressive)", 2)],
+        "has_items": [("Oshus' Sword", 1), ("Phantom Sword", 1)],
         "goal_requirement": True,
         "has_slot_data": [["bellum_access", 0]],
         "set_if_true": [(PHAddr.adv_flags_22, 0x40)],
@@ -502,24 +503,19 @@ DYNAMIC_FLAGS = {
         "has_slot_data": [["bellum_access", 2]],
         "has_locations": ["TotOK Lobby Phantom Hourglass"]
     },
-    "Spawn phantom wreckage": {
-        "on_scenes": [0x0],
-        "goal_requirement": True,
-        "has_items": [("Sword (Progressive)", 2), ("Spirit of Courage (Progressive)", 1)],
-        "set_if_true": [(PHAddr.adv_flags_31, 0x1)],
-        "has_slot_data": [["bellum_access", 3]],
-    },
-    "Spawn phantom wreckage single": {
-        "on_scenes": [0x0],
-        "goal_requirement": True,
-        "has_items": [("Sword (Progressive)", 2), ("Spirit of Courage", 1)],
-        "set_if_true": [(PHAddr.adv_flags_31, 0x1)],
-        "has_slot_data": [["bellum_access", 3]],
-    },
     "Spawn phantom wreckage progressive": {
         "on_scenes": [0x0],
         "goal_requirement": True,
-        "has_items": [("Sword (Progressive)", 2), ("Spirit (Progressive)", 3)],
+        "has_items": [("Sword (Progressive)", 2)],
+        "any_has_items": [("Spirit (Progressive)", 3), ("Spirit of Courage (Progressive)", 1), ("Spirit of Courage", 1)],
+        "set_if_true": [(PHAddr.adv_flags_31, 0x1)],
+        "has_slot_data": [["bellum_access", 3]],
+    },
+    "Spawn phantom wreckage non-progressive": {
+        "on_scenes": [0x0],
+        "goal_requirement": True,
+        "has_items": [("Oshus' Sword", 1), ("Phantom Sword", 1)],
+        "any_has_items": [("Spirit (Progressive)", 3), ("Spirit of Courage (Progressive)", 1), ("Spirit of Courage", 1)],
         "set_if_true": [(PHAddr.adv_flags_31, 0x1)],
         "has_slot_data": [["bellum_access", 3]],
     },
@@ -1147,24 +1143,21 @@ DYNAMIC_FLAGS = {
         "set_if_true": [(PHAddr.adv_flags_22, 0x20)]
     },
     "RESET Block phantom sword crafting": {
-        # "on_scenes": [0xB00],
-        "has_items": [("Sword (Progressive)", 2)],
+        "any_has_items": [("Sword (Progressive)", 2), ("Phantom Sword", 1)],
         "set_if_true": [(PHAddr.inventory_5, 0x20)]
     },
     "Oshus not have phantom sword": {
-        # "on_scenes": [0xB00],
-        "has_items": [("Sword (Progressive)", 2, "not_has")],
+        "has_items": [("Sword (Progressive)", 2, "not_has"), ("Phantom Sword", 0)],
         "unset_if_true": [(PHAddr.inventory_5, 0x20)],
     },
     "Oshus have phantom sword": {
         "on_scenes": [0xB0A],
-        "has_items": [("Sword (Progressive)", 2)],
+        "any_has_items": [("Sword (Progressive)", 2), ("Phantom Sword", 1)],
         "not_has_locations": ["Oshus Phantom Sword"],
         "unset_if_true": [(PHAddr.inventory_5, 0x20)]
     },
     "RESET Oshus have phantom sword": {
-        # "on_scenes": [0xB00],
-        "has_items": [("Sword (Progressive)", 2)],
+        "any_has_items": [("Sword (Progressive)", 2), ("Phantom Sword", 1)],
         "set_if_true": [(PHAddr.inventory_5, 0x20)]
     },
     "Block Oshus Gem": {
@@ -1173,7 +1166,6 @@ DYNAMIC_FLAGS = {
         "unset_if_true": [(PHAddr.adv_flags_36, 0x4), (PHAddr.adv_flags_1, 0x2)]
     },
     "RESET Block Oshus Gem": {
-        # "on_scenes": [0xB00],
         "has_locations": ["TotOK Lobby Phantom Hourglass"],
         "set_if_true": [(PHAddr.adv_flags_36, 0x4)],
         "unset_if_true": [(PHAddr.adv_flags_22, 0x2)]
@@ -1405,11 +1397,6 @@ DYNAMIC_FLAGS = {
         "last_scenes": [0x200],
         "has_items": [("Fish: Legendary Neptoona", 1)],
         "set_if_true": [(PHAddr.neptoona_count, 0x1)]
-    },
-    "Safety give sword cause silly": {
-        "on_scenes": [0, 1, 2, 3, 0xB03],
-        "has_items": [("Sword (Progressive)", 1)],
-        "set_if_true": [(PHAddr.inventory_1, 1)]
     },
     # Salvage
     "Salvage has no hitbox until you get cannon...": {

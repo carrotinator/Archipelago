@@ -372,6 +372,8 @@ def get_hidden_entrances(world: "PhantomHourglassWorld"):
         entr_hidden.setdefault("Isle of Ruins", []).append("EVENT: Defeat Eox")
         entr_hidden.setdefault("Isle of Ruins NE", []).append("EVENT: Defeat Eox")
         locs_hidden.setdefault("Mutoh's Temple B2", []).extend([266, 267, 268])
+    if ENTRANCES["Ghost Ship Cubus Sisters Reunion"].id in active_entrances:
+        entr_hidden.setdefault("Ghost Ship B1", []).append("EVENT: Defeat Cubus Sisters")
     # Dungeon entrances & events
     if ENTRANCES["Ember Enter Temple"].id in active_entrances:
         entr_hidden.setdefault("Isle of Ember (East)", []).append("EVENT: Defeat Blaaz")

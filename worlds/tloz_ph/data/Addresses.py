@@ -214,6 +214,7 @@ class PHAddr:
     treasure_maps_3 = Address(0x1BA653, name="treasure_maps_3")
     
     sword_count = Address(0x1ba6b8)
+    shield_count = Address(0x1ba6bA)
     boomerang_bit = Address(0x1BA6BC)
     shovel_bit = Address(0x1BA6BE)
     bomb_count = Address(0x1BA6C0, size=2, name="bomb_count")

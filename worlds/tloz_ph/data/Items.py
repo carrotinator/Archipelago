@@ -74,6 +74,7 @@ ITEMS_DATA = {
     "Shield": {
         "classification": ItemClassification.progression,
         "address": PHAddr.inventory_1,
+        "set_bit": [(PHAddr.shield_count, 1)],
         "value": 0x2,
         "id": 4,
         "model": 0x4,
@@ -590,6 +591,7 @@ ITEMS_DATA = {
         "tags": ["monotone_incremental"],
         "id": 32,
         "model": 0x2D,
+        "variants": ["Power Gem Pack"],
         "item_groups": ["Spirit Gems", "Single Spirit Gems", "Power Gems"],
     },
     "Wisdom Gem": {
@@ -599,6 +601,7 @@ ITEMS_DATA = {
         "tags": ["monotone_incremental"],
         "id": 33,
         "model": 0x2E,
+        "variants": ["Wisdom Gem Pack"],
         "item_groups": ["Spirit Gems", "Single Spirit Gems", "Wisdom Gems"],
     },
     "Courage Gem": {
@@ -608,6 +611,7 @@ ITEMS_DATA = {
         "tags": ["monotone_incremental"],
         "id": 34,
         "model": 0x2F,
+        "variants": ["Courage Gem Pack"],
         "item_groups": ["Spirit Gems", "Single Spirit Gems", "Courage Gems"],
     },
     "Power Gem Pack": {

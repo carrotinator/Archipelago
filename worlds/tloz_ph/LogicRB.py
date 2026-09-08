@@ -553,7 +553,7 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
         ["Dee Ess Island", "Dee Ess Boat", False, None],
             ["Dee Ess Boat", "Dee Ess Island", False, require_sea_chart("SE")],
             ["Dee Ess Boat", "SE Ocean", True, require_sea_chart("SE")],
-        ["SE Ocean", "Pirate Ambush", False, pirate_ambush_se],
+        ["SE Ocean", "Pirate Ambush", False, unlock_ambush],
         ["SE Ocean", "SS Wayfarer", True, Has("Wood Heart") & Has("_wayfarer_gift")],
         ["SS Wayfarer", "SS Wayfarer Trade", False, Has("Wood Heart")],
         ["SS Wayfarer Trade", "SS Wayfarer Event", False, None],
@@ -736,7 +736,7 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
             ["Ruins Boat", "NE Ocean", False, require_sea_chart("NE")],
             ["Ruins Boat", "Ruins SW Port", False, Has("Regal Necklace")],
             ["Ruins SW Port", "Ruins Boat", False, None],
-        ["NE Ocean", "Pirate Ambush", False, pirate_ambush_ne],
+        ["NE Ocean", "Pirate Ambush", False, unlock_ambush],
 
         # ================= IotD ====================
 

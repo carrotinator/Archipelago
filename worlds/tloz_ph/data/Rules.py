@@ -279,23 +279,7 @@ def simple_boss_key(dung):
 # Pirate Ambush
 unlock_ambush = Has("_beat_ghost_ship") | open_post_dungeon
 
-pirate_ambush_nw = Has("_beat_cubus_sisters") & Has("_beat_ghost_ship") & vanilla_dungeons & vanilla_bosses & (
-    has_sea_chart("SW") | (
-    has_frog_n & (has_frog_square | has_frog_se)
-    )
-)
-pirate_ambush_ne = unlock_ambush & (
-    has_sea_chart("SE") | (
-        has_frog_square & (
-            has_frog_x | has_frog_phi | has_frog_n
-        )
-    ) | (
-        hard_logic & has_sea_chart("NW")
-    )
-)
-pirate_ambush_se = unlock_ambush & (
-    has_sea_chart("SW") | has_sea_chart("NE") | (has_frog_se & has_frog_n)
-)
+pirate_ambush_nw = Has("_beat_cubus_sisters") & Has("_beat_ghost_ship") & vanilla_dungeons & vanilla_bosses
 
 # Mountain Passage
 mp_rat = can_kill_bat | (clever_pots & vanilla_caves)

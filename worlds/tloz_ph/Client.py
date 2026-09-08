@@ -1438,7 +1438,7 @@ class PhantomHourglassClient(DSZeldaClient):
             return
 
         if scene in range(4) or scene in [0x300]:  # Sea overview if port shuffle
-            tab_scene = 1 if ctx.slot_data["shuffle_ports"] else 0
+            tab_scene = 1 if ctx.slot_data["shuffle_ports"] or ctx.slot_data["shuffle_dungeon_entrances"] else 0
         else:
             tab_scene = scene | (1 << 16) if ctx.slot_data.get("shuffle_overworld_transitions", False) else scene
         printl(f"Storing new scene for UT {hex(tab_scene)}")
@@ -1565,7 +1565,7 @@ class PhantomHourglassClient(DSZeldaClient):
                 self.last_vanilla_item.pop()
                 printl(f"oops it's vanilla or dummy! {self.last_vanilla_item}")
             elif self.current_scene not in getattr(item_data, "blocked_scenes", []):
-                _write_list += await item_data.receive_item(self, ctx, num_received_items)
+                _write_list += await item_data.receive_item(self, ctx, num_received_items+1)
             return _write_list
 
         # printl(f"Getting item last location: {self.last_location} location_models: {ctx.slot_data.get("location_models", {})}")
@@ -1575,7 +1575,7 @@ class PhantomHourglassClient(DSZeldaClient):
             if "chest_offset" in self.last_location or "gift_addr" in self.last_location:
                 printl(f"Handling Item: {item_name} ghost? {item_data.ghost_model} reset? {item_data.model_reset} last_vanilla: {self.last_vanilla_item}")
                 if (item_data.ghost_model or item_data.model is None or model_id in [0x1D, 0x1E]) and self.current_scene not in getattr(item_data, "blocked_scenes", []):
-                    write_list += await item_data.receive_item(self, ctx, num_received_items)
+                    write_list += await item_data.receive_item(self, ctx, num_received_items+1)
 
                 vanilla_model = item_data.vanilla_model[0]
                 printl(f"\tCancel removal conditions: {vanilla_model in model_resets} "
@@ -2089,12 +2089,14 @@ class PhantomHourglassClient(DSZeldaClient):
                     shop_scene = 0x501 if self.masked_beedle else 0x500
                 shop_scene = SHOP_LOCATIONS.get(shop_scene, {})
                 location = shop_scene.get(k, shop_scene.get(k+str(shop_slot), ""))
+                # print(f"{k} {k+str(shop_slot)} scene {shop_scene.keys()}")
                 if not location:
                     continue
                 data = LOCATIONS_DATA[location]
+
                 if (data.id not in ctx.checked_locations and compare_slot_data(ctx, data)) or (k == "Shield" and ctx.slot_data["shield_in_pool"]):
                     size = 4 if k.endswith("Refill") else 1
-                    print(f"Creating watch for {location} {addr} -> {hex_f(addr+0x56*4)} size {size}")
+                    printl(f"Creating watch for {location} {addr} -> {hex_f(addr+0x56*4)} size {size}")
 
                     self.watches[location] = Address.from_pointer(addr+0x56*4, size=1)
                     data.gift_addr = Address.from_pointer(addr+356, size=size)
@@ -2140,6 +2142,7 @@ class PhantomHourglassClient(DSZeldaClient):
             printl(f"Not In Cutscene!")
             self.was_in_cutscene = False
             await self.update_main_read_list(ctx, self.current_stage)
+            await self.set_stage_flags(ctx, self.current_stage)
 
         # Detect picking up phantom items
         if self.current_scene in held_trigger_scenes and read_result[PHAddr.link_held_item_offset_totok] != self.last_held_offset:
