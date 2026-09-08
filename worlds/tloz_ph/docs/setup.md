@@ -24,7 +24,7 @@
 
 ## External Patches and Enhancements
 - Works with some controller/dpad patches!
-- Works with player model patches. [Guide](https://gamebanana.com/tuts/19109) for making them.
+- Currently does not Work with player model patches, but might once we have multi-version support. [Guide](https://gamebanana.com/tuts/19109) for making them.
 - [moonlight-n3ds](https://github.com/zoeyjodon/moonlight-N3DS) can be used to controll bizhawk with a modded 3ds
 - [moonlight-wiiu](https://github.com/GaryOderNichts/moonlight-wiiu) can be used to controll bizhawk with a wii U
 
