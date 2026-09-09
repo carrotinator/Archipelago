@@ -176,7 +176,7 @@ options_keys = {
     "require_specific_bosses": True,
     "totok_in_dungeon_pool": False,
     "ghost_ship_in_dungeon_pool": "rescue_tetra",
-    "shuffle_bosses": "no_shuffle",
+    "shuffle_bosses": "shuffle",
 
     "additional_metal_names": "custom",
 
@@ -196,9 +196,10 @@ options_keys = {
     "ship_items": "whole_mismatched",
     "starting_ship": "mismatched",
 
-    "shopsanity": {"all"},
+    "shopsanity": {"All"},
     "randomize_masked_beedle": False,
     # "remove_locations": {"Temple of the Ocean King"}
+    "plando_dungeon_pool": []
 }
 
 class TestPHGeneration(WorldTestBase):

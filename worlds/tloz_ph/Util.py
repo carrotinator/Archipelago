@@ -71,3 +71,13 @@ def build_item_id_to_name_dict() -> Dict[int, str]:
         item_id_to_name[index] = item_name
     return item_id_to_name
 
+def title2(s: str):
+    res = ""
+    words = s.split(' ')
+    res += words[0].title()
+    for word in words[1:]:
+        if word.lower() in ['of', "the", "and", "or"]:
+            res += " " + word.lower()
+        else:
+            res += " " + word.title()
+    return res

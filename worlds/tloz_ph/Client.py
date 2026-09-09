@@ -2065,7 +2065,7 @@ class PhantomHourglassClient(DSZeldaClient):
         return Address.from_pointer(chest_object+4)
 
     async def process_actors(self, ctx):
-        if self.current_scene not in SHOP_SCENES + [0x1300, 0xd14]:
+        if self.current_scene not in SHOP_SCENES + [0x1300, 0xd14, 0xf00, 0xf02]:
             return
 
         table_size = await PHAddr.actor_table_size.read(ctx)

@@ -256,7 +256,6 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             required_dungeon_locations = slot_data.get("required_dungeon_locations", [])
             self.locations_to_remove = {self.location_id_to_name[i] for i in slot_data.get("removed_locations", [])}
 
-
             # Figure out what events are active, and add to ut_pairings
             print(F"Generating early")
             print(f"UT Pairings: {self.ut_pairings}")
@@ -291,10 +290,10 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             if not self.ut_map_page_hidden_locations or not self.ut_map_page_hidden_entrances:
                 from .tracker.TrackerUtil import get_hidden_entrances
                 self.ut_map_page_hidden_locations, self.ut_map_page_hidden_entrances = get_hidden_entrances(self)
-
         else:
+            self.options.shopsanity.value = {s.lower() for s in self.options.shopsanity.value}
             if 'all' in self.options.shopsanity.value:
-                self.options.shopsanity.value = self.options.shopsanity.valid_keys.copy()
+                self.options.shopsanity.value = self.options.shopsanity.valid_keys
 
             self.pick_required_dungeons()
             if self.options.shuffle_dungeon_entrances:
@@ -326,7 +325,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                 # print(len(self.salvage_locations), self.options.salvage_count.value)
                 self.locations_to_remove.update(salvage_locs[self.options.salvage_count.value-1:])
 
-            print(f"remove_locations: {self.options.remove_locations.value}")
+            # print(f"remove_locations: {self.options.remove_locations.value}")
             for loc in self.options.remove_locations.value:
                 self.locations_to_remove |= set(LOCATION_GROUPS.get(loc, {loc}))
 
@@ -455,7 +454,6 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                     return False
             return True
 
-
         if location_name in LOCATION_GROUPS["Golden Frogs"]:
             return self.options.randomize_frogs != PhantomHourglassFrogRandomization.option_start_with
         if location_name in LOCATION_GROUPS["Rupee Dig Spots"]:
@@ -478,23 +476,38 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             return self.options.randomize_triforce_crest
         if location_name == "Man of Smiles' Prize Postcard":  # This it pretty random but whatever...
             return self.options.randomize_beedle_membership.value > 0
-        # if "EVENT" in location_name:
-        #     print(f"Found event {location_name} {self.is_ut}")
-        #     return self.is_ut
         return False
 
     def pick_required_dungeons(self):
         implemented_dungeons = DUNGEON_NAMES[1:]
+        # Plando dungeon pool
+        if self.options.plando_dungeon_pool.value:
+            plandoed_dungeons = {DUNGEON_ABBREVIATIONS_LOWER.get(d.lower(), title2(d)) for d in self.options.plando_dungeon_pool.value}
+            if "Temple of the Ocean King" in plandoed_dungeons:
+                self.options.totok_in_dungeon_pool.value = 1
+            implemented_dungeons = list(plandoed_dungeons)
+
         # Remove optional dungeons from pool
-        if self.options.ghost_ship_in_dungeon_pool.value == 2:
+        if self.options.ghost_ship_in_dungeon_pool.value == 2 and "Ghost Ship" in implemented_dungeons:
             implemented_dungeons.remove("Ghost Ship")
-        if not self.options.totok_in_dungeon_pool:
+        if not self.options.totok_in_dungeon_pool.value and "Temple of the Ocean King" in implemented_dungeons:
             implemented_dungeons.remove("Temple of the Ocean King")
-        self.random.shuffle(implemented_dungeons)
+
+        dungeons_required = len(implemented_dungeons) if self.options.dungeons_required > len(implemented_dungeons) \
+            else self.options.dungeons_required.value
+        if (self.options.totok_in_dungeon_pool.value
+            and dungeons_required <= 3
+            and self.options.boss_reward_pool.value == 1
+            and self.options.spirit_type.value in [1, 2]
+            and "Temple of the Ocean King" in implemented_dungeons):
+            print(f"Boss rewards incompatible with TotOK for ({self.player_name}), removing TotOK from dungeon pool")
+            implemented_dungeons.remove("Temple of the Ocean King")
+
         # Cap dungeons required if over the number of eligible dungeons
         dungeons_required = len(implemented_dungeons) if self.options.dungeons_required > len(implemented_dungeons) \
             else self.options.dungeons_required.value
         self.options.dungeons_required.value = dungeons_required
+        self.random.shuffle(implemented_dungeons)
         self.required_dungeons = implemented_dungeons[:dungeons_required]
 
         # Cap zauz metals at number of metals
@@ -515,8 +528,6 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         # Cap metal hunt items
         if self.options.metal_hunt_total < self.options.metal_hunt_required:
             self.options.metal_hunt_total.value = self.options.metal_hunt_required.value
-
-
 
         # Choose excluded dungeons
         if self.options.exclude_non_required_dungeons.value:
@@ -604,7 +615,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
         if self.options.dungeon_hint_location.value == 0 and self.options.dungeon_hint_type == "hint_boss":
             self.options.start_location_hints.value.update(self.required_bosses)
 
-        print(f"Picked Required Dungeons: {self.required_dungeons} bosses {self.required_bosses} \npairs {self.dungeon_boss_pairs}")
+        # print(f"Picked Required Dungeons: {self.required_dungeons} bosses {self.required_bosses} \npairs {self.dungeon_boss_pairs}")
 
 
     def pick_metals(self, count):
@@ -1547,7 +1558,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             collection_state = self.multiworld.get_all_state()
             # Perform a prefill to place confined items inside locations of this dungeon
             self.random.shuffle(boss_reward_locations)
-            print(f"Pre-Filling boss rewards: {boss_reward_locations} \n {boss_reward_items}")
+            # print(f"Pre-Filling boss rewards: {boss_reward_locations} \n {boss_reward_items}")
             fill_restrictive(self.multiworld, collection_state, boss_reward_locations, boss_reward_items,
                              single_player_placement=True, lock=True, allow_excluded=True)
 

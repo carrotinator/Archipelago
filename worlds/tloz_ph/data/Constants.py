@@ -966,7 +966,7 @@ CATEGORY_LOCATION_GROUPS = {
 
 LOCATION_GROUPS = CATEGORY_LOCATION_GROUPS | STAGE_LOCATION_GROUPS
 
-DUNGEON_NAMES = [
+DUNGEON_NAMES: list[str] = [
     "Mountain Passage",
     "Temple of the Ocean King",
     "Temple of Fire",
@@ -977,6 +977,20 @@ DUNGEON_NAMES = [
     "Mutoh's Temple",
     "Ghost Ship"
 ]
+
+DUNGEON_ABBREVIATIONS: dict[str, str] = {
+    "TotOK": "Temple of the Ocean King",
+    "ToF": "Temple of Fire",
+    "ToW": "Temple of Wind",
+    "ToC": "Temple of Courage",
+    "GT": "Goron Temple",
+    "ToI": "Temple of Ice",
+    "MT": "Mutoh's Temple",
+    "GS": "Ghost Ship"
+}
+DUNGEON_ABBREVIATIONS_LOWER: dict[str, str] = {
+    k.lower(): v for k, v in DUNGEON_ABBREVIATIONS.items()
+}
 
 DUNGEON_TO_BOSS_ITEM_LOCATION = {
     "Temple of the Ocean King": "TotOK B13 Sea Chart Chest",

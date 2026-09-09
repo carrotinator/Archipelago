@@ -1,10 +1,8 @@
 from dataclasses import dataclass
-from datetime import datetime
-from .data.Entrances import ENTRANCES
-
 from Options import Choice, DeathLink, DefaultOnToggle, PerGameCommonOptions, Range, Toggle, StartInventoryPool, \
     ItemDict, ItemsAccessibility, ItemSet, Visibility, OptionGroup, PlandoConnections, OptionSet, LocationSet
-
+from .data.Constants import DUNGEON_NAMES, DUNGEON_ABBREVIATIONS
+from .data.Entrances import ENTRANCES
 
 class PhantomHourglassGoal(Choice):
     """
@@ -951,7 +949,7 @@ class PhantomHourglassShopsanity(OptionSet):
     - all: all of the above.
     """
     display_name = "Shopsanity"
-    valid_keys = {"uniques", "shields", "ammo", "treasure", "potions", "all", "restocks"}
+    valid_keys_casefold = {"uniques", "shields", "ammo", "treasure", "potions", "all", "restocks"}
     default = {"uniques"}
 
 class PhantomHourglassShieldInPool(Toggle):
@@ -968,6 +966,15 @@ class PhantomHourglassRemoveLocations(LocationSet):
     """
     display_name = "Remove Locations"
 
+class PhantomHourglassPlandoDungeonPool(OptionSet):
+    """
+    Plando what dungeons to pick between with other dungeon options.
+    Allows both full names and abbreviations
+    """
+    display_name = "Plando Dungeon Pool"
+    default = set()
+    valid_keys_casefold = set(DUNGEON_NAMES[1:]) | set(DUNGEON_ABBREVIATIONS.keys())
+
 @dataclass
 class PhantomHourglassOptions(PerGameCommonOptions):
     # Accessibility
@@ -983,6 +990,7 @@ class PhantomHourglassOptions(PerGameCommonOptions):
     ghost_ship_in_dungeon_pool: PhantomHourglassGhostShipInDungeonPool
     totok_in_dungeon_pool: PhantomHourglassTotokInDungeonPool
     boss_reward_pool: PhantomHourglassBossRewardPool
+    plando_dungeon_pool: PhantomHourglassPlandoDungeonPool
 
     # Metal Hunt
     metal_hunt_required: PhantomHourglassMetalHuntRequiredMetals
@@ -1098,7 +1106,8 @@ ph_option_groups = [
         PhantomHourglassExcludeNonRequiredDungeons,
         PhantomHourglassGhostShipInDungeonPool,
         PhantomHourglassTotokInDungeonPool,
-        PhantomHourglassBossRewardPool
+        PhantomHourglassBossRewardPool,
+        PhantomHourglassPlandoDungeonPool
     ]),
     OptionGroup("Metal Hunt Options", [
         PhantomHourglassMetalHuntRequiredMetals,
