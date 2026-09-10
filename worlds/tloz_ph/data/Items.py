@@ -702,7 +702,7 @@ ITEMS_DATA = {
     "Gold Rupee (300)": {
         "classification": DEPRIORITIZED_SKIP_BALANCING_FALLBACK,
         "address": PHAddr.rupee_count,
-        "value": 0x12c,
+        "value": 300,
         "tags": ["incremental", "backup_filler"],
         "size": 2,
         "id": 43,
@@ -712,7 +712,7 @@ ITEMS_DATA = {
     "Rupoor (-10)": {
         "classification": ItemClassification.trap,
         "address": PHAddr.rupee_count,
-        "value": -0xa,
+        "value": -10,
         "tags": ["incremental"],
         "size": 2,
         "id": 44,
@@ -722,7 +722,7 @@ ITEMS_DATA = {
     "Big Rupoor (-50)": {
         "classification": ItemClassification.trap,
         "address": PHAddr.rupee_count,
-        "value": -0x32,
+        "value": -50,
         "tags": ["incremental"],
         "size": 2,
         "id": 45,

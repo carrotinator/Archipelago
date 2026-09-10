@@ -2062,7 +2062,7 @@ ACTOR_IDENTS: dict[int, str] = {
     0x182d4c: "Shop: Bomb Bag",
 
     # Digs
-    0x158134: "Rupee digs",
+    0x158134: "Dig Spot",
 
     # Interface?
     0x182550: "Quit Button"
@@ -2167,6 +2167,11 @@ pedestal_rooms: list[int] = [
     0x250C,
     0x2510
 ]
+
+DIG_MODELS: list[int] = [
+    0x1a, 0x1b  # removed 0x9, cause that is default, and don't need to store that data
+] + list(range(0x4C, 0x6b))
+
 
 if __name__ == "__main__":
     for cat, value in CATEGORY_LOCATION_GROUPS.items():

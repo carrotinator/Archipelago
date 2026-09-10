@@ -63,10 +63,12 @@ def buy_beedle_points_eval(state, player, options: PhantomHourglassOptions, poin
     Evaluate if you have enough rupees to buy beedle points
     """
     points_res = points - state.count("Beedle Points", player)
+
     if points_res <= 0:
         return True
     cost = points_res * 100
-    return beedle_eval(state, player, options, cost)
+    rupees = state.multiworld.worlds[player].required_rupees
+    return beedle_eval(state, player, options, rupees)
 
 tloz_ph = PhantomHourglassWorld.game
 
@@ -165,6 +167,7 @@ class HasBeedlePoints(PHShop, game=tloz_ph):
             rupee_count = count_rupees(state, self.player)
             has_rupees = rupee_count >= cost
             can_farm = _can_farm_rupees(state, self.player) and (state.multiworld.worlds[self.player].options.randomize_beedle_membership == "randomize_with_grinding" or self.price <= 20)
+            needed_rupees = state.multiworld.worlds[self.player].required_rupees
 
             return [
                 {"type": "text", "text": "Has "},
@@ -172,7 +175,7 @@ class HasBeedlePoints(PHShop, game=tloz_ph):
                 {"type": "text", "text": " Beedle Points"},
                 {"type": "color", "color": "blue", "text": " OR "},
                 {"type": "text", "text": "Has "},
-                {"type": "color", "color": "green" if has_rupees else "salmon", "text": f"{rupee_count}/{str(cost)}"},
+                {"type": "color", "color": "green" if has_rupees else "salmon", "text": f"{rupee_count}/{needed_rupees}"},
                 {"type": "text", "text": " Rupees"},
                 {"type": "color", "color": "blue", "text": " OR "},
                 {"type": "color", "color": "green" if can_farm else "salmon", "text": "can_farm_rupees"},

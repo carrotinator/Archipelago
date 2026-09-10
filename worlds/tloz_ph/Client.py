@@ -600,6 +600,7 @@ class PhantomHourglassClient(DSZeldaClient):
             if self.minigame_chest_reset and not in_minigame:
                 self.minigame_chest_reset = False
                 printl(f"Exited minigame, reloading chests")
+                await self.process_map_objects(ctx)
                 await self.set_chest_contents(ctx)
             if not self.minigame_chest_reset and in_minigame:
                 self.minigame_chest_reset = True
@@ -1415,13 +1416,11 @@ class PhantomHourglassClient(DSZeldaClient):
                     entr = ENTRANCES[event_name]
                     await self.store_visited_entrances(ctx, entr, entr.vanilla_reciprocal)
 
-        if "reload_chests" in location:
-            reload_data = location["reload_chests"]
+        if location.reload_chests:
             printl(f"Reloading Chests!")
-            if reload_data is True:
-                self.chest_reload_watches.append((PHAddr.in_cutscene, 0xd8, "eq"))
-            elif isinstance(reload_data, tuple):
-                self.chest_reload_watches.append(reload_data)
+            self.chest_reload_watches.append((PHAddr.in_cutscene, 0xd8, "eq"))
+            # elif isinstance(reload_data, tuple):
+            #     self.chest_reload_watches.append(reload_data)
 
         self.last_location = location
 
@@ -2091,7 +2090,13 @@ class PhantomHourglassClient(DSZeldaClient):
         return Address.from_pointer(chest_object+4)
 
     async def process_actors(self, ctx):
-        if self.current_scene not in SHOP_SCENES + [0x1300, 0xd14, 0xf00, 0xf02]:
+        dig_scene = False
+        for loc in self.locations_in_scene.values():
+            if loc.dig_spot:
+                dig_scene = True
+                break
+
+        if self.current_scene not in SHOP_SCENES and not dig_scene:
             return
 
         table_size = await PHAddr.actor_table_size.read(ctx)
@@ -2106,6 +2111,12 @@ class PhantomHourglassClient(DSZeldaClient):
             ident = ACTOR_IDENTS.get(ident, "")
             if not ident:
                 continue
+
+            if ident == "Dig Spot":
+                location = ""  # Figure out what location we're looking at...
+                if location:
+                    data.gift_addr = Address.from_pointer(addr+0x158, 1)
+                    self.locations_in_scene[data.name] = data
 
             if ident.startswith("Shop:"):
                 shop_slot += 1

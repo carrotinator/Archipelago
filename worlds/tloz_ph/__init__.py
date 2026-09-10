@@ -1719,12 +1719,19 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             loc_data = LOCATIONS_DATA.get(loc.name, None)
             if not loc_data or not (loc_data.chest_offset is not None or loc_data.gift_addr or loc_data.shop_model):
                 continue
+
+
             if item.game in ["Phantom Hourglass"]:
-                if ITEMS[item.name].model is not None:
-                    if not (item.name.startswith("Treasure Map") and loc_data.shop_model):
+                if ITEMS[item.name].model is not None and not item.name.startswith("Treasure Map") and loc_data.shop_model:
+                    location_models[loc_data.id] = ITEMS[item.name].model
+                    continue
+                elif loc_data.dig_spot:
+                    if ITEMS[item.name].model in DIG_MODELS:
                         location_models[loc_data.id] = ITEMS[item.name].model
                         continue
 
+            if loc_data.dig_spot: # default for digs is 0x9, so don't set force gems
+                continue
             if item.classification & ItemClassification.progression or item.classification & ItemClassification.useful:
                 location_models[loc_data.id] = 0x1E  # blue force gem
             else:
