@@ -292,8 +292,9 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                 self.ut_map_page_hidden_locations, self.ut_map_page_hidden_entrances = get_hidden_entrances(self)
         else:
             self.options.shopsanity.value = {s.lower() for s in self.options.shopsanity.value}
+            # print(f"Shopsanity {self.options.shopsanity.value}, {self.options.shopsanity.valid_keys_casefold}")
             if 'all' in self.options.shopsanity.value:
-                self.options.shopsanity.value = self.options.shopsanity.valid_keys
+                self.options.shopsanity.value = self.options.shopsanity.valid_keys_casefold
 
             self.pick_required_dungeons()
             if self.options.shuffle_dungeon_entrances:

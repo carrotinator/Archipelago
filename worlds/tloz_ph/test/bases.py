@@ -199,7 +199,17 @@ options_keys = {
     "shopsanity": {"All"},
     "randomize_masked_beedle": False,
     # "remove_locations": {"Temple of the Ocean King"}
-    "plando_dungeon_pool": []
+    "plando_dungeon_pool": ["Temple of Courage", "tow", "gs", "gt"],
+    "plando_items": [
+        {
+            "locations": [
+                "Crayk Boss Reward"
+            ],
+            "items": {
+                "Big Green Rupee (100)": 1
+            }
+        }
+    ]
 }
 
 class TestPHGeneration(WorldTestBase):

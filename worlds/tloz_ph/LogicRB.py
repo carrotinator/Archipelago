@@ -604,6 +604,7 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
         # ================= Goron Temple ====================
         ["GT 1F", "GT 1F Upper", False, has_shovel],
         ["GT 1F Upper", "GT 1F NW", False, has_explosives | has_hammer],
+        ["GT 1F", "GT 1F NW", False, grapple_glitch & has_bow & has_chus],
         ["GT 1F NW", "GT 1F Bow", False, has_bow],
         ["GT 1F NW", "GT B1", False, has_explosives & has_sword & can_kill_eye_brute],
         ["GT B1", "GT B2", False, bombchu_switches],

@@ -1673,8 +1673,8 @@ class PhantomHourglassClient(DSZeldaClient):
         write_list = []
         for loc, data in self.locations_in_scene.items():
             model = ctx.slot_data.get("location_models", {}).get(str(data.id), 0x1E)
-            chest_offset = data.get("chest_offset", None)
-            gift_addr = data.get("gift_addr", None)
+            chest_offset = data.chest_offset
+            gift_addr = data.gift_addr
             if data.id in ctx.checked_locations or data.id not in ctx.server_locations:
                 model = 0
 
@@ -1685,22 +1685,40 @@ class PhantomHourglassClient(DSZeldaClient):
                     printl(f"\tSetting read item model: {loc} {hex(model)}")
                     write_list.append(addr.get_inner_write_list(model))
 
-            elif chest_offset is not None:
-                # Farmable locations set treasure
-                if "farmable" in data and data["id"] in ctx.checked_locations:
-                    model = 0x7D
-                vanilla_item_model = self.item_data[data["vanilla_item"]].vanilla_model
-                printl(f"\tVanilla model {vanilla_item_model} offsets {chest_offset}")
-                chest_obj = await self.find_table_object(ctx, chest_offset, 9, vanilla_item_model, size=1)
-                if chest_obj:
-                    chest_content_addr = Address.from_pointer(chest_obj + 9 * 4, 1)
-                    write_list.append(chest_content_addr.get_inner_write_list(model))
-                    printl(f"Writing {model} to addr {chest_content_addr} for loc {loc}")
-                else:
-                    printl(f"Could not find chests for item swapping, probably restarted client in already loaded room.")
+            # elif chest_offset is not None:
+            #     # Farmable locations set treasure
+            #     if "farmable" in data and data["id"] in ctx.checked_locations:
+            #         model = 0x7D
+            #     vanilla_item_model = self.item_data[data["vanilla_item"]].vanilla_model
+            #     printl(f"\tVanilla model {vanilla_item_model} offsets {chest_offset}")
+            #     chest_obj = await self.find_table_object(ctx, chest_offset, 9, vanilla_item_model, size=1)
+            #     if chest_obj:
+            #         chest_content_addr = Address.from_pointer(chest_obj + 9 * 4, 1)
+            #         write_list.append(chest_content_addr.get_inner_write_list(model))
+            #         printl(f"Writing {model} to addr {chest_content_addr} for loc {loc}")
+            #     else:
+            #         printl(f"Could not find chests for item swapping, probably restarted client in already loaded room.")
             self.models_set[loc] = model
 
         await bizhawk.write(ctx.bizhawk_ctx, write_list)
+
+    def set_chest_item(self, ctx, location, obj_addr):
+        res: list[tuple] = []
+        model = ctx.slot_data.get("location_models", {}).get(str(location.id), 0x1E)
+        # Set non-randomized locations to nothing
+        if location.id not in ctx.server_locations:
+            model = 0
+        # Farmable locations set treasure
+        if location.id in ctx.checked_locations:
+            model = 0
+            if "farmable" in location:
+                model = 0x7D
+
+        chest_content_addr = Address.from_pointer(obj_addr + 9 * 4, 1)
+        res.append(chest_content_addr.get_inner_write_list(model))
+        printl(f"Writing {model} to addr {chest_content_addr} for loc {location.name}")
+        self.models_set[location.name] = model
+        return res
 
     async def process_map_objects(self, ctx):
         if self.current_stage <=3:
@@ -1767,6 +1785,11 @@ class PhantomHourglassClient(DSZeldaClient):
         xs = await read_multiple(ctx, obj_idents.keys(), signed=True, offset=6*4)
         zs = await read_multiple(ctx, obj_idents.keys(), signed=True, offset=8*4)
 
+        # Prep chest identification
+        chest_locations = [c for c in self.locations_in_scene.values() if c.chest_offset]
+        chest_locations.sort(key=lambda c: c.chest_offset)
+        chest_counter = 0
+        printl(f"Chest objects in scene {hex_f(self.current_scene)}, {[c.name for c in chest_locations]}")
 
         for i, pack in enumerate(zip(obj_idents.items(), list(xs.values()), list(zs.values()))):
             pack2, x, z = pack
@@ -1776,7 +1799,7 @@ class PhantomHourglassClient(DSZeldaClient):
                 printl("Map Object Overflow!")
                 break
             if ident not in identifiers:
-                printl(f"Unknown map object: {hex_f(ident)} @ {addr} #{i}")
+                print(f"Unknown map object: {hex_f(ident)} @ {addr} #{i}")
                 continue
 
             if identifiers.get(ident) in ["Spirit Door", "Key Door", "Blue Door", "Arena Door", "Door"]:
@@ -2027,7 +2050,10 @@ class PhantomHourglassClient(DSZeldaClient):
                     write_list.append(addr.get_inner_write_list(9, 4, 2))
 
             if identifiers.get(ident) in ["Small Chest", "Big Chest", "Unspawned Big Chest", "Unspawned Small Chest"]:
-                # Set chest contents?
+                if chest_counter < len(chest_locations):
+                    write_list += self.set_chest_item(ctx, chest_locations[chest_counter], addr)
+                chest_counter += 1
+
                 pass
 
             if identifiers.get(ident) == "Unspawned Small Chest" and self.current_scene == 0x2512:

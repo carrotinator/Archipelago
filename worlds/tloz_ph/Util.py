@@ -71,13 +71,15 @@ def build_item_id_to_name_dict() -> Dict[int, str]:
         item_id_to_name[index] = item_name
     return item_id_to_name
 
+# better title case that .title(), for keeping dungeon names in title case
 def title2(s: str):
     res = ""
     words = s.split(' ')
     res += words[0].title()
-    for word in words[1:]:
-        if word.lower() in ['of', "the", "and", "or"]:
+    for word in words[1:-1]:
+        if word.lower() in ['of', "the", "and", "or", "in", "a", "an", "to", "but", "for", "so", "by", "in", "at"]:
             res += " " + word.lower()
         else:
             res += " " + word.title()
+    res += " " + words[-1].title()
     return res
