@@ -330,6 +330,19 @@ DYNAMIC_FLAGS = {
         "set_if_true": [(PHAddr.adv_flags_3, 0xC0)],
         "reset_flags": ["RESET Spirit of Wisdom boss flag", "RESET Spirit of Courage boss flag"]
     },
+    "Spirit of Wisdom no boss flag": {
+        "on_scenes": [0x1701],
+        "has_items": [("Spirit of Wisdom (Progressive)", 0), ("Spirit of Wisdom", 0),
+                      ("Spirit (Progressive)", 2, "not")],
+        "unset_if_true": [(PHAddr.adv_flags_3, 0x40)],
+        "reset_flags": ["RESET Spirit of Wisdom boss flag"]
+    },
+    "Spirit of Courage no boss flag": {
+        "on_scenes": [0x1701],
+        "has_items": [("Spirit of Courage (Progressive)", 0), ("Spirit of Courage", 0), ("Spirit (Progressive)", 3, "not")],
+        "unset_if_true": [(PHAddr.adv_flags_3, 0x80)],
+        "reset_flags": ["RESET Spirit of Wisdom boss flag", "RESET Spirit of Courage boss flag"]
+    },
     "Spirit of Courage boss flag single": {
         "on_scenes": [0x1701],
         "has_items": [("Spirit of Courage", 1)],
@@ -1147,7 +1160,7 @@ DYNAMIC_FLAGS = {
         "set_if_true": [(PHAddr.inventory_5, 0x20)]
     },
     "Oshus not have phantom sword": {
-        "has_items": [("Sword (Progressive)", 2, "not_has"), ("Phantom Sword", 0)],
+        "has_items": [("Sword (Progressive)", 2, "not"), ("Phantom Sword", 0)],
         "unset_if_true": [(PHAddr.inventory_5, 0x20)],
     },
     "Oshus have phantom sword": {
@@ -1202,19 +1215,21 @@ DYNAMIC_FLAGS = {
         "on_scenes": [0x700],
         "not_has_locations": ["Prince of Red Lions Trade Quest Item"],
         "unset_if_true": [(PHAddr.flags_trade_quest, 0x98), (PHAddr.inventory_6, 0x20)],
-        "reset_flags": ["RESET Swordsmans Scroll", "RESET Guard Notebook", "RESET Kaleidoscope", "RESET Wood Heart"]
-    },
-    "Nyave Trade Quest": {
-        "on_scenes": [0xA00],
-        "not_has_locations": ["Nyave Trade Quest Item"],
-        "unset_if_true": [(PHAddr.flags_trade_quest, 0x80), (PHAddr.inventory_6, 0x20)],
-        "reset_flags": ["RESET Swordsmans Scroll", "RESET Wood Heart"]
+        "reset_flags": ["RESET Swordsmans Scroll", "RESET Guard Notebook", "RESET Kaleidoscope",
+                        "RESET Wood Heart", "RESET Remove Kaleidoscope", "RESET Remove Guard Notebook"]
     },
     "Hoiger Trade Quest": {
         "on_scenes": [0x900],
         "not_has_locations": ["Hoiger Howgendoogen Trade Quest Item"],
         "unset_if_true": [(PHAddr.flags_trade_quest, 0x90), (PHAddr.inventory_6, 0x20)],
-        "reset_flags": ["RESET Swordsmans Scroll", "RESET Guard Notebook", "RESET Wood Heart"]
+        "reset_flags": ["RESET Swordsmans Scroll", "RESET Guard Notebook", "RESET Wood Heart",
+                        "RESET Remove Kaleidoscope", "RESET Remove Guard Notebook"]
+    },
+    "Nyave Trade Quest": {
+        "on_scenes": [0xA00],
+        "not_has_locations": ["Nyave Trade Quest Item"],
+        "unset_if_true": [(PHAddr.flags_trade_quest, 0x80), (PHAddr.inventory_6, 0x20)],
+        "reset_flags": ["RESET Swordsmans Scroll", "RESET Wood Heart", "RESET Remove Kaleidoscope"]
     },
     "Wayfarer Trade Quest": {
         "on_scenes": [0x800],
@@ -1235,27 +1250,31 @@ DYNAMIC_FLAGS = {
     #     "check_bits": [(0x1B5592, 0x8)],
     # },
     "RESET Swordsmans Scroll": {
-        # "on_scenes": [0x0, 0x1, 0x2, 0x3],
         "has_items": [("Swordsman's Scroll", 1)],
         "set_if_true": [(PHAddr.inventory_6, 0x20)]
     },
     "RESET Wood Heart": {
-        # "on_scenes": [0x0, 0x1, 0x2, 0x3],
         "has_items": [("Wood Heart", 1)],
         "not_has_locations": ["Wayfarer Trade Quest Chest"],
         "set_if_true": [(PHAddr.flags_trade_quest, 0x80)]
     },
     "RESET Guard Notebook": {
-        # "on_scenes": [0x0, 0x1, 0x2, 0x3],
         "has_items": [("Guard Notebook", 1)],
         "not_has_locations": ["Nyave Trade Quest Item"],
         "set_if_true": [(PHAddr.flags_trade_quest, 0x10)]
     },
+    "RESET Remove Guard Notebook": {
+        "has_items": [("Guard Notebook", 0)],
+        "unset_if_true": [(PHAddr.flags_trade_quest, 0x10)]
+    },
     "RESET Kaleidoscope": {
-        # "on_scenes": [0x1, 0x2, 0x3],
         "has_items": [("Kaleidoscope", 1)],
         "not_has_locations": ["Hoiger Howgendoogen Trade Quest Item"],
         "set_if_true": [(PHAddr.flags_trade_quest, 0x8)]
+    },
+    "RESET Remove Kaleidoscope": {
+        "has_items": [("Kaleidoscope", 0)],
+        "unset_if_true": [(PHAddr.flags_trade_quest, 0x8)]
     },
     # Ghost Ship HC
     "Ghost Ship HC": {
@@ -1596,8 +1615,8 @@ DYNAMIC_FLAGS = {
         "update_stage_flags": SKIP_OCEAN_FIGHTS_FLAGS
     },
     "Spawn gs b3 reapling": {
-        "on_scenes": [0x4102],
-        "has_slot_data": [("logic", 0, "not")],
+        "on_scenes": [0x2902],
+        "has_slot_data": [("logic", [1, 2])],
         "update_stage_flags": SPAWN_B3_REAPLING_FLAGS
     },
 

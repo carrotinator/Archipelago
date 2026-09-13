@@ -411,7 +411,8 @@ class PhantomHourglassClient(DSZeldaClient):
         write_list = []
         for i, count in enumerate(counts):
             data = self.item_data[items[i]]
-            write_list += data.ammo_address.get_write_list(data.give_ammo[min(count - 1, 2)])
+            ammo_count = data.give_ammo[min(count - 1, 2)] if count else 0
+            write_list += data.ammo_address.get_write_list(ammo_count)
         printl(f"Writing ammo: {hex_f(write_list)}")
         await bizhawk.write(ctx.bizhawk_ctx, write_list)
         await self.full_heal(ctx)
@@ -426,8 +427,9 @@ class PhantomHourglassClient(DSZeldaClient):
         if ctx.slot_data["goal_requirements"] < 2:
             total = ctx.slot_data["dungeons_required"]
             required = total
+            metal_total = len([1 for i in ctx.slot_data["boss_reward_items_pool"] if i in ITEM_GROUPS["Metals"]])
         elif ctx.slot_data["goal_requirements"] == 2:
-            total = ctx.slot_data["metal_hunt_total"]
+            total = metal_total = ctx.slot_data["metal_hunt_total"]
             required = ctx.slot_data["metal_hunt_required"]
         else:
             return
@@ -445,7 +447,7 @@ class PhantomHourglassClient(DSZeldaClient):
 
         elif scene == 0x160A:
             zauz_required = ctx.slot_data["zauz_required_metals"]
-            logger.info(f"Zauz needs {zauz_required} rare metals to give an item. You have {self.metal_count}/{total} metals.")
+            logger.info(f"Zauz needs {zauz_required} rare metals to give an item. You have {self.metal_count}/{metal_total} metals.")
 
     def process_loading_variable(self, read_result) -> bool:
         return read_result[PHAddr.loading_room] == 0xEE
@@ -1026,6 +1028,8 @@ class PhantomHourglassClient(DSZeldaClient):
         if hasattr(item_data, "hint_on_receive"):
             if ctx.slot_data["randomize_salvage"] == 1:
                 await self.scout_location(ctx, item_data.hint_on_receive)
+        if item_name == "Phantom Sword" and not (self.item_count(ctx, "Oshus' Sword") or self.item_count(ctx, "Sword (Progressive)")):
+            await PHAddr.sword_count.overwrite(ctx, 0)
         # Increment metal count
         if item_name in ITEM_GROUPS["Metals"]:
             printl(f"Old thingy metal count: {self.metal_count+1}")
@@ -1133,7 +1137,7 @@ class PhantomHourglassClient(DSZeldaClient):
             if self.current_scene != self.goal_room:
                 return game_clear
             if self.current_scene == 0x3300 and not self.defeated_bellum:
-                if await PHAddr.defeated_bellum.read(ctx, silent=True) == 1:
+                if await PHAddr.defeated_bellum.read(ctx, silent=True) in [1, 0xBB]:
                     if (await PHAddr.potion_protector.read(ctx, silent=True)  # drink potion
                             or await self.health_address.read(ctx) == 0):  # die and revive
                         printl(f"Tried to drink potion, don't send goal!")
@@ -2091,10 +2095,10 @@ class PhantomHourglassClient(DSZeldaClient):
 
     async def process_actors(self, ctx):
         dig_scene = False
-        for loc in self.locations_in_scene.values():
-            if loc.dig_spot:
-                dig_scene = True
-                break
+        # for loc in self.locations_in_scene.values():  # don't bother with dig changing in this update
+        #     if loc.dig_spot:
+        #         dig_scene = True
+        #         break
 
         if self.current_scene not in SHOP_SCENES and not dig_scene:
             return
@@ -2115,7 +2119,7 @@ class PhantomHourglassClient(DSZeldaClient):
             if ident == "Dig Spot":
                 location = ""  # Figure out what location we're looking at...
                 if location:
-                    data.gift_addr = Address.from_pointer(addr+0x158, 1)
+                    location.gift_addr = Address.from_pointer(addr+0x158, 1)
                     self.locations_in_scene[data.name] = data
 
             if ident.startswith("Shop:"):
@@ -2308,6 +2312,7 @@ class PhantomHourglassClient(DSZeldaClient):
 
         loops = [[self.item_data[i].id for i in j] for j in zip(progs, base, upgrades)]
         count, base_count, upgrade_count = [0, 0, 0], [0, 0, 0], [0, 0, 0]
+        counts: list[list[int | bool]] = []
         spirit_count, prog_upgrade_count = 0, 0
         prog_spirit = self.item_data["Spirit (Progressive)"].id
         prog_upgrade = self.item_data["Spirit Upgrade"].id
@@ -2325,13 +2330,17 @@ class PhantomHourglassClient(DSZeldaClient):
                 elif k.item == prog_upgrade:
                     prog_upgrade_count += 1
         for i, g in enumerate(zip(count, base_count, upgrade_count)):
-            p, b, u = g
-            count[i] = min(max(p, 1+u+prog_upgrade_count if b else 0, 1+u+prog_upgrade_count if spirit_count > i else 0), 3)
-
+            p, b, u = g  # prog singles, base, upgrades
+            counts.append([p or b or spirit_count > i,
+                         u >= 1 or p >= 2 or prog_upgrade_count >= 1,
+                         u >= 2 or p >= 3 or prog_upgrade_count >= 2])
+            # count[i] = min(max(p, 1+u+prog_upgrade_count if b else 0, 1+u+prog_upgrade_count if spirit_count > i else 0), 3)
+        print(f"spirits {counts}")
         spirit_writes = {PHAddr.fairies_0: 0, PHAddr.fairies_1: 0}
-        for name, prog_count in zip(progs, count):
+        for name, prog_count in zip(progs, counts):
             item = self.item_data[name]
-            for addr, _value in item.progressive[:prog_count]:
+            print(f"Spirit evals: {name} {[i for i, ev in enumerate(prog_count) if ev]}")
+            for addr, _value in [item.progressive[i] for i, ev in enumerate(prog_count) if ev]:
                 spirit_writes[addr] |= _value
         printl(f"Spirit writes {hex_f(spirit_writes)}")
         await write_multiple(ctx, spirit_writes.keys(), spirit_writes.values())

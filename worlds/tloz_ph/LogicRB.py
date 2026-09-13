@@ -846,7 +846,7 @@ def make_overworld_logic(world: "PhantomHourglassWorld"):
 
         # ================= Maze Island ====================
 
-        ["Maze Island", "Maze Island Minigame", False, has_sword],
+        ["Maze Island", "Maze Island Minigame", False, has_sword & has_rupees(500)],
         ["Maze Island Minigame", "Maze Island Bomb Chest", False, has_explosives],
         ["Maze Island Minigame", "Maze Island Minigame Normal", False, has_bow],
         ["Maze Island Minigame Normal", "Maze Island Minigame Expert", False, has_grapple],

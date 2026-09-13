@@ -349,9 +349,10 @@ ITEMS_DATA = {
     },
     "Spirit of Courage (Progressive)": {
         "classification": ItemClassification.progression,
-        "progressive": [(PHAddr.fairies_0, 0x10), (PHAddr.fairies_0, 0x90), (PHAddr.fairies_1, 0x4)],
+        "progressive": [(PHAddr.fairies_0, 0x10), (PHAddr.fairies_0, 0x80), (PHAddr.fairies_1, 0x4)],
         "variant": ["Spirit of Courage", "Courage Upgrade"],
         "extra_variants": {"Spirit (Progressive)": 3},
+        "set_bit": [(PHAddr.fairies_0, 0x10)],  # doesn't work, but can't set in in prog[1] cause of spirit island resets
         "extra_variants_upgrades": ["Courage Upgrade", "Spirit Upgrade"],
         "id": 14,
         "model": 0x2F,

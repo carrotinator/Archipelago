@@ -1710,6 +1710,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             state.prog_items[self.player][mapping[0]] -= mapping[1]
 
         return True
+
     def get_location_models(self):
         # get item placement models to send to client
         location_models = {}
@@ -1718,11 +1719,11 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             if item is None: continue
             loc_data = LOCATIONS_DATA.get(loc.name, None)
             if not loc_data or not (loc_data.chest_offset is not None or loc_data.gift_addr or loc_data.shop_model):
-                continue
-
+                # print(f"Failed: {loc} {item} | {loc_data.shop_model} {loc_data.gift_addr} {loc_data.chest_offset}")
+                continue  # add dig_spot to this check to enable dig model swaps when ready
 
             if item.game in ["Phantom Hourglass"]:
-                if ITEMS[item.name].model is not None and not item.name.startswith("Treasure Map") and loc_data.shop_model:
+                if ITEMS[item.name].model is not None and not (item.name.startswith("Treasure Map") and loc_data.shop_model):
                     location_models[loc_data.id] = ITEMS[item.name].model
                     continue
                 elif loc_data.dig_spot:
@@ -1737,8 +1738,11 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             else:
                 location_models[loc_data.id] = 0x1D  # red force gem
 
-        return location_models
         # print(f"Location Models: {location_models}")
+        return location_models
+
+    # def post_fill(self) -> None:
+    #     self.get_location_models()
 
     def fill_slot_data(self) -> dict:
         options = [
