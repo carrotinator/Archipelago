@@ -69,6 +69,7 @@ ITEMS_DATA = {
         "model": 0x3,
         "ghost_model": True,
         "model_reset": True,
+        "blocked_scenes": [0xb0A],
         "item_groups": ["Equipment", "Swords", "Upgrades"]
     },
     "Shield": {
@@ -2182,7 +2183,18 @@ ITEMS_DATA = {
         "model": 0x25,
         "ghost_model": True,
         "model_reset": True,
-        "item_groups": ["Ships"],
+        "item_groups": ["Ships", "Mismatched Ship"],
+    },
+    "Ship (Progressive)": {
+        "classification": ItemClassification.useful,
+        "tags": ["backup_filler"],
+        "ship": "progressive",
+        "id": 247,
+        "value": 8,
+        "model": 0x25,
+        "ghost_model": True,
+        "model_reset": True,
+        "item_groups": ["Ships", "Progressive Ship"],
     },
 
     # Fish

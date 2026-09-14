@@ -804,14 +804,14 @@ class PhantomHourglassClient(DSZeldaClient):
         for i in ctx.items_received:
             item_id = i.item
             item_name = self.item_id_to_name[item_id]
-            if "Ship:" in item_name and not item_name == "Ship: Mismatched":
+            if "Ship:" in item_name and item_name not in ["Ship: Mismatched", "Ship (Progressive)"]:
                 item_data = self.item_data[item_name]
                 ships[item_data.ship] = 1
 
         ship_write_list = [] + ships * 8
         printl(f"whole ship writes: {ship_write_list}")
         ship_order = ctx.slot_data["ship_part_order"]
-        ship_count = min(self.item_count(ctx, "Ship: Mismatched"), len(ship_order))
+        ship_count = min(max(self.item_count(ctx, "Ship: Mismatched"), self.item_count(ctx, "Ship (Progressive)")), len(ship_order))
         if starting_ship == -2:  # ship_part_order 0 is the starting ship
             ship_count += 1
         for part in ship_order[:ship_count]:

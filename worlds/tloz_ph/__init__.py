@@ -1445,14 +1445,21 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             if starting_ship >= 0:
                 whole_ship_pool.pop(self.options.starting_ship.value)
             res = {i: 1 for i in whole_ship_pool}
-        if self.options.ship_items.value == 2 or self.options.starting_ship.value == -2:
+
+        if self.options.ship_items.value == 3:  # Progressive ship
+            if starting_ship == -2:
+                self.options.starting_ship.value = starting_ship = 0
+            included_ships = range(starting_ship+1, 9)
+            self.ship_part_order: list[list[int]] = [[i]*8 for i in included_ships]
+            res = {"Ship (Progressive)": len(included_ships)}
+
+        elif self.options.ship_items.value == 2 or self.options.starting_ship.value == -2:
             included_ships = list(range(9))
             if starting_ship >= 0:
                 included_ships.remove(starting_ship)
             part_positions: list[list[int]] = [included_ships.copy() for _ in range(8)]
             [self.random.shuffle(i) for i in part_positions]
             # print(f"ship part positions: {part_positions}")
-
             ship_part_order: list[list[int]] = [[] for _ in included_ships]
             # print(f"pre order {ship_part_order}")
             for part in part_positions:
@@ -1462,6 +1469,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             self.ship_part_order = ship_part_order
             if self.options.ship_items.value == 2:
                 res = {"Ship: Mismatched": 8}
+
         return res
 
     def create_items(self):

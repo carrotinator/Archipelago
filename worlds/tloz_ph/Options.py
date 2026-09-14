@@ -916,13 +916,16 @@ class PhantomHourglassShipItems(Choice):
     """
     What ship items do you find?
     Ship parts cannot be sold for rupees, but once a part is unlocked you can use it to customize your ship in the shipyard on Mercay Island.
-    - option_no_ships: no ship items
-    - option_whole_ships: you find whole ships
-    - option_whole_mismatched: you find 8 random parts at a time
+    Auto equipping found ships can be toggled in game at any time with the client command `/boat equip`.
+    - no_ships: no ship items
+    - whole_ships: you find whole ships
+    - whole_progressive: starting from your starting ship, each `Ship (Progressive)` item gives you the complete next ship in menu order.
+    - whole_mismatched: you find 8 shuffled parts at a time (one of each part type)
     """
     display_name = "Ship Items"
     option_no_ships = 0
     option_whole_ships = 1
+    option_whole_progressive = 3
     option_whole_mismatched = 2
     default = 1
 

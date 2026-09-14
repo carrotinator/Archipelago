@@ -17,7 +17,7 @@ async def receive_ship(client: "PhantomHourglassClient", ctx: "BizHawkClientCont
     res = []
     if not (await PHAddr.custom_storage.read(ctx) & 2):
         current_parts = []
-        if item.name == "Ship: Mismatched":
+        if item.name in ["Ship: Mismatched", "Ship (Progressive)"]:
             part_count = item.get_count(ctx) + (1 if ctx.slot_data["starting_ship"] == -2 else 0)
             part_order = ctx.slot_data["ship_part_order"]
             part_count = min(part_count, len(part_order))
