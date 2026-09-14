@@ -1141,6 +1141,7 @@ ph_option_groups = [
         PhantomHourglassFrogRandomization,
         PhantomHourglassRandomizeFishing,
         PhantomHourglassRandomizeSalvage,
+        PhantomHourglassSalvageCount,
         PhantomHourglassRandomizeHarrow,
         PhantomHourglassRandomizeDigSpots,
         PhantomHourglassTriforceCrestRandomization,

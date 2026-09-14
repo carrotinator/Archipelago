@@ -1143,7 +1143,9 @@ class PhantomHourglassClient(DSZeldaClient):
                 self.sent_goal = True
                 game_clear = True
         else:
-            if self.current_scene != self.goal_room:
+            if self.current_stage == 0x36:  # Backup check credits scene
+                self.defeated_bellum = True
+            elif self.current_scene != self.goal_room:
                 return game_clear
             if self.current_scene == 0x3300 and not self.defeated_bellum:
                 if await PHAddr.defeated_bellum.read(ctx, silent=True) in [1, 0xBB]:

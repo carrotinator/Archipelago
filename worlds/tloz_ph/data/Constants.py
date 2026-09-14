@@ -171,7 +171,7 @@ STAGES = {
     49: "Bellum",
     50: "Bellum's Ghost Ship",
     51: "Bellumbeck",
-    0x36: "Credits",
+    0x36: "Credits",  # 54
 
 }
 
