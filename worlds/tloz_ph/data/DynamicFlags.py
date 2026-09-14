@@ -1751,20 +1751,21 @@ DYNAMIC_FLAGS = {
         "has_traversed_entrances": ["EVENT: Goron NE Spike Switch"],
         "update_stage_flags": [0, 0x4]
     },
-    "Event backup mid wall": {
-        "on_scenes": [0x1001],
-        "has_traversed_entrances": ["EVENT: Goron NE Middle Bomb Wall"],
-        "set_if_true": [(PHAddr.goron_bomb_blocks, 8)]
-    },
-    "Event backup south wall": {
-        "on_scenes": [0x1001],
-        "has_traversed_entrances": ["EVENT: Goron NE South Bomb Wall"],
-        "set_if_true": [(PHAddr.goron_bomb_blocks, 1)]
-    },
+    # "Event backup mid wall": {
+    #     "on_scenes": [0x1001],
+    #     "has_traversed_entrances": ["EVENT: Goron NE Middle Bomb Wall"],
+    #     "set_if_true": [(PHAddr.goron_bomb_blocks, 8)]
+    # },
+    # "Event backup south wall": {
+    #     "on_scenes": [0x1001],
+    #     "has_traversed_entrances": ["EVENT: Goron NE South Bomb Wall"],
+    #     "set_if_true": [(PHAddr.goron_bomb_blocks, 1)]
+    # },
     "Event backup goron se bridge": {
         "on_scenes": [0x1003, 0x100a],
         "has_traversed_entrances": ["EVENT: Goron SE Shout to Bridge Goron"],
-        "set_if_true": [(PHAddr.adv_flags_35, 2)]
+        "set_if_true": [(PHAddr.adv_flags_35, 2)],
+        "update_stage_flags": [0, 0x80]
     },
     "Event backup goron chus": {
         "on_scenes": [0x1002, 0x100a],
@@ -1817,11 +1818,11 @@ DYNAMIC_FLAGS = {
         "has_traversed_entrances": ["EVENT: Molida North Open Temple Door"],
         "update_stage_flags": [0x40]
     },
-    "Event backup cannon bomb blocks": {
-        "on_scenes": [0x1300],
-        "has_traversed_entrances": ["EVENT: Cannon Island Eddo's Bomb Blocks"],
-        "set_if_true": [(PHAddr.cannon_bomb_blocks, 0x1)]
-    },
+    # "Event backup cannon bomb blocks": {
+    #     "on_scenes": [0x1300],
+    #     "has_traversed_entrances": ["EVENT: Cannon Island Eddo's Bomb Blocks"],
+    #     "set_if_true": [(PHAddr.cannon_bomb_blocks, 0x1)]
+    # },
     "Event backup sun lake bomb blocks": {
         "on_scenes": [0xC0A],
         "has_traversed_entrances": ["EVENT: Sun Lake Cave Bomb Blocks"],

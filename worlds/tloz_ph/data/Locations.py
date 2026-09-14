@@ -2933,7 +2933,7 @@ LOCATION_LIST: list[DSLocation] = [
                x_max=75000,
                z_max=-75000,
                id=255,
-               chest_offset=0x3d,
+               chest_offset=61,
                scenes={0x1102, 0x1202}
                ),
     DSLocation("Isle of Ruins NE Secret Alcove Chest",
@@ -2953,7 +2953,7 @@ LOCATION_LIST: list[DSLocation] = [
                x_min=170000,
                z_max=-75000,
                id=257,
-               chest_offset=0xf,
+               chest_offset=15,
                scenes={0x1102, 0x1202}
                ),
     DSLocation("Isle of Ruins NE Behind Temple Chest",
@@ -2964,7 +2964,7 @@ LOCATION_LIST: list[DSLocation] = [
                x_max=105000,
                z_max=-150000,
                id=258,
-               chest_offset=0x38,
+               chest_offset=56,
                scenes={0x1202, 0x1102}
                ),
     DSLocation("Isle of Ruins NW Lower Water Bonk Tree",
@@ -3862,6 +3862,15 @@ LOCATION_LIST: list[DSLocation] = [
                exact_read=True,
                shop_model=True,
                has_slot_data=[['shopsanity', 'treasure'], ['randomize_masked_beedle', 0x1]],
+               ),
+    DSLocation("Sun Lake Cave OOB Sun Key Chest",
+               region="Sun Lake Cave Upper",
+               vanilla_item="Nothing!",
+               conditional = True,
+               x_min=300000,  # far oob
+               id=361,
+               chest_offset=0x5,  # this is needed for chest ordering to be correct
+               scenes=0xc0a
                ),
 ]
 

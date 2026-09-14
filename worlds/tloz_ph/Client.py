@@ -253,6 +253,7 @@ class PhantomHourglassClient(DSZeldaClient):
 
     async def on_connect(self, ctx):
         # Get train settings from host.yaml
+        await self.update_stored_entrances(ctx)
         host_settings: PhantomHourglassSettings = get_settings().get('tloz_ph_options')
         printl(f"SETTINGS: {host_settings.get('boat_speed', self.boat_speed)}")
         self.boat_speed = host_settings.get("boat_speed", self.boat_speed)
@@ -610,6 +611,11 @@ class PhantomHourglassClient(DSZeldaClient):
         # Process reloading of dig spots/bonk trees
         await self.repopulate_dig_spots(ctx)
 
+        # if self.reload_stage_flags:
+        #     print(f"reloading stage flags ph")
+        #     await self.set_stage_flags(ctx, self.current_stage)
+        #     self.reload_stage_flags = False
+
     async def detect_warp_to_start(self, ctx, read_result: dict):
         # Opened clog warp to start check
         if read_result.get(PHAddr.opened_clog, False):
@@ -658,7 +664,6 @@ class PhantomHourglassClient(DSZeldaClient):
         await PHAddr.text_speed.overwrite(ctx, 2)  # Set text speed to fast, no matter settings
         # Set treasure prices so they match seed (save file resets it on menu)
         await PHAddr.treasure_price_index.overwrite(ctx, ctx.slot_data.get("treasure_price_index", 0))
-        await self.update_stored_entrances(ctx)
 
         # Set warp to start location
         if ctx.slot_data["shuffle_overworld_transitions"]:
@@ -666,6 +671,9 @@ class PhantomHourglassClient(DSZeldaClient):
 
         # Update boat equip
         self.boat_equip = not (await PHAddr.custom_storage.read(ctx) & 2)
+
+        self.traversed_entrances |= set(get_stored_data(ctx, traversal_key, set()))
+        printl(f"Current traversals: {self.traversed_entrances}")
 
     async def watched_intro_cs(self, ctx):
         watched_intro = await PHAddr.watched_intro.read(ctx, silent=True) & 2
@@ -757,7 +765,7 @@ class PhantomHourglassClient(DSZeldaClient):
             text = f"Repaired Salvage Arm for "
             if repair_kits > 0:
                 write_list += PHAddr.custom_storage.get_write_list(prev[PHAddr.custom_storage] - 0x20)
-                text += f"1 Salvage Repair Kit. You have {prev[PHAddr.custom_storage]} remaining."
+                text += f"1 Salvage Repair Kit. You have {repair_kits-1} remaining."
             else:
                 # Repair cost, doesn't care if you're out of rupees out of qol
                 cost = 100 if prev[PHAddr.global_salvage_health] == 0 else (6 - prev[PHAddr.global_salvage_health]) * 10
@@ -901,13 +909,14 @@ class PhantomHourglassClient(DSZeldaClient):
         return True
 
     async def set_stage_flags(self, ctx, stage):
-        if stage == self.last_stage:
+        if stage == self.last_stage and not self.reload_stage_flags:
             return
         printl(f"Setting stage flags")
         self.stage_flag_address = await get_address_from_heap(ctx, PHAddr.gMapManager, STAGE_FLAGS_OFFSET)
         self.key_address = Address.from_pointer(self.stage_flag_address + SMALL_KEY_OFFSET)
         if stage in self.stage_flags:
             flags = self.stage_flags[stage]
+            print(f"\tstage flags: {self.stage_flags[stage]}")
 
             res = await self.stage_flag_address.set_bits(ctx, flags, silent=False)
             if res is not None:
@@ -1144,6 +1153,7 @@ class PhantomHourglassClient(DSZeldaClient):
                         await PHAddr.defeated_bellum.overwrite(ctx, 0, silent=True)
                     else:
                         self.defeated_bellum = True
+                        print(f"Got Goal")
 
             game_clear = self.defeated_bellum  # finished game
 
@@ -1495,17 +1505,21 @@ class PhantomHourglassClient(DSZeldaClient):
         return False
 
     async def print_map_data(self, ctx):
-        pointer_table: list[PHAddr] = []
-        for i in range(1000):  # safety shutoff
-            pointer = await Address.from_pointer(PHAddr.map_obj_table + 4*i, 4).read(ctx, silent=True)
-            if not pointer:
-                break
-            pointer_table.append(Address.from_pointer(pointer-0x2000000, 4))
+        pointer_table: list[Address] = []
+
+        rl = []
+        # print(f"Table size: {table_size} max {hex_f(array_start+table_size*4)}")
+        for i in range(await PHAddr.map_obj_table_size.read(ctx)):
+            rl.append(Address.from_pointer(PHAddr.map_obj_table + i * 4, size=3))
+        talbe_read = await read_multiple(ctx, rl)
+        pointer_table = [Address.from_pointer(v, size=3) for k, v in talbe_read.items() if k and 0 < v < 0x400000]
+        # print("table", hex_f(pointer_table))
 
         length = len(pointer_table)
         printl(ctx.slot_data["location_models"])
         printl(f"Generated pointer table with length {length}")
-        obj_types = await read_multiple(ctx, pointer_table, offset=4, keys=range(length))
+        obj_ids = await read_multiple(ctx, pointer_table, offset=0, keys=range(length))
+        obj_flags = await read_multiple(ctx, pointer_table, offset=4, keys=range(length))
         obj_x = await read_multiple(ctx, pointer_table, offset=4 * 6, keys=range(length), signed=True)
         obj_y = await read_multiple(ctx, pointer_table, offset=4 * 7, keys=range(length), signed=True)
         obj_z = await read_multiple(ctx, pointer_table, offset=4 * 8, keys=range(length), signed=True)
@@ -1521,16 +1535,17 @@ class PhantomHourglassClient(DSZeldaClient):
             y: int
             z: int
             item: int
+            flags: int
             addr: Address
 
             def __post_init__(self):
-                self.type_str = map_object_idents.get(self.typ, hex(self.typ))
+                self.type_str = idents_0.get(self.typ, f"<{map_object_idents.get(self.flags, hex(self.typ))}>")
 
             def __str__(self):
                 return f"\t{self.index}\t{self.type_str} ({self.x}, {self.y}, {self.z}) {hex(self.item)} {self.addr}"
 
         map_objects: list[MapObject] = []
-        atr = [a.values() for a in [obj_types, obj_x, obj_y, obj_z, item]] + [pointer_table]
+        atr = [a.values() for a in [obj_ids, obj_x, obj_y, obj_z, item, obj_flags]] + [pointer_table]
         grass_counter = 0
         for i, args in enumerate(zip(*atr)):
             m = MapObject(i, *args)
