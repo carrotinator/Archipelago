@@ -1260,7 +1260,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
             # if "Treasure Map" in item_name:
             #     filler_item_count += 1
             #     continue
-            if (item_name in ITEM_GROUPS["Equipment"] |
+            if (item_name in ITEM_GROUPS["Equipment"] | ITEM_GROUPS["Fishing Items"] |
                     ITEM_GROUPS["Technical Items"] |
                     ITEM_GROUPS["Spirits"] |
                     ITEM_GROUPS["Small Keys"] | ITEM_GROUPS["Boss Keys"] |
