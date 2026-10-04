@@ -212,6 +212,13 @@ options_keys = {
     ]
 }
 
+basic = {
+    "randomize_pedestal_items": "vanilla",
+    "pedestal_item_options": "unique_pedestals",
+    "randomize_boss_keys": "anywhere",
+    "progressive_items": False
+}
+
 class TestPHGeneration(WorldTestBase):
     game = "The Legend of Zelda - Phantom Hourglass"
-    options = options_keys
+    options = basic

@@ -1667,7 +1667,7 @@ class PhantomHourglassClient(DSZeldaClient):
             read_list = [Address.from_pointer(table_addr + 4 * (offset-_i), size=3) for _i in range(l)]
             objects = (await read_multiple(ctx, read_list)).values()
             objects = [a for a in objects if a]
-            checks = await read_multiple(ctx, [Address.from_pointer(a+int(check_offset*4), size=size) for a in objects])
+            checks = await read_multiple(ctx, [Address.from_pointer(a+int(check_offset*4), size=size) for a in objects if 0x400000 > a > 0])
             _i = 0
             printl(f"\tobjects: {[hex(o) for o in objects]}")
             printl(f"\tchecks: {checks}")
@@ -1725,6 +1725,9 @@ class PhantomHourglassClient(DSZeldaClient):
     def set_chest_item(self, ctx, location, obj_addr):
         res: list[tuple] = []
         model = ctx.slot_data.get("location_models", {}).get(str(location.id), 0x1E)
+        # vanilla pedestals don't want to change to nothing on requisition
+        if ctx.slot_data["randomize_pedestal_items"] == 0 and location.vanilla_item in ITEM_GROUPS["Regular Pedestal Items"]:
+            return []
         # Set non-randomized locations to nothing
         if location.id not in ctx.server_locations:
             model = 0
@@ -1733,6 +1736,7 @@ class PhantomHourglassClient(DSZeldaClient):
             model = 0
             if "farmable" in location:
                 model = 0x7D
+
 
         chest_content_addr = Address.from_pointer(obj_addr + 9 * 4, 1)
         res.append(chest_content_addr.get_inner_write_list(model))
@@ -1744,12 +1748,10 @@ class PhantomHourglassClient(DSZeldaClient):
         if self.current_stage <=3:
             return
 
-
         table_size = await PHAddr.map_obj_table_size.read(ctx)
         obj_idents = await self.get_table_data(ctx, PHAddr.map_obj_table, 0,
                                                  size=3, table_label=False, table_size=table_size)
         printl(f"map objects ({table_size})")  #: {hex_f(obj_idents)}")
-
         identifiers = idents_0
 
         def add_detection(name, a, **kwargs):
