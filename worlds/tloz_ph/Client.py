@@ -864,7 +864,17 @@ class PhantomHourglassClient(DSZeldaClient):
                         else:
                             has_spirits = all([self.item_count(ctx, i) for i in spirit_pool])
                             printl(f"\t\tSpirit Pool: {spirit_pool} {has_spirits}")
-                    return has_metals and has_spirits
+
+                    # Prevent player from entering bellum fights without phantom sword and spirit of courage, even if they're not technically required
+                    has_sword, has_celia = True, True
+                    if d.get("can_defeat_bellum", False):
+                        has_sword = (self.item_count(ctx, "Sword (Progressive)") >= 2 or
+                                     (self.item_count(ctx, "Oshus' Sword") and self.item_count(ctx, "Phantom Sword")))
+                        has_celia = (self.item_count(ctx, "Spirit (Progressive)") >= 3 or
+                                     self.item_count(ctx, "Spirit of Courage") or
+                                     self.item_count(ctx, "Spirit of Courage (Progressive)"))
+
+                    return has_metals and has_spirits and has_sword and has_celia
             return True
 
         # Beedle points

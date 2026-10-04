@@ -72,7 +72,8 @@ LOCATION_LIST: list[DSLocation] = [
                id=1,
                hint_entrance="Sword Cave Exit",
                chest_offset=0x1,
-               scenes=0xb13
+               scenes=0xb13,
+               location_groups=["Mercay Island"],
                ),
     DSLocation("Mercay SW Clear Rocks",
                region="Mercay SW",
@@ -83,7 +84,8 @@ LOCATION_LIST: list[DSLocation] = [
                sram_value=0x40,
                id=2,
                gift_addr=Address(0x2152CC),
-               scenes=0xb00
+               scenes=0xb00,
+               location_groups=["Mercay Island"],
                ),
     DSLocation("Mercay SW Tree Dig",
                region="Mercay SW Dig Spot",
@@ -92,6 +94,7 @@ LOCATION_LIST: list[DSLocation] = [
                item_override="Nothing!",
                dig_spot=True,
                id=3,
+               location_groups=["Mercay Island"],
                scenes=0xb00
                ),
     DSLocation("Mercay SE Cucco Chest",
@@ -101,6 +104,7 @@ LOCATION_LIST: list[DSLocation] = [
                sram_addr=PHSRAM.mercay_se_chests,
                sram_value=0x8,
                id=4,
+               location_groups=["Mercay Island"],
                chest_offset=0x72,
                scenes=0xb03
                ),
@@ -111,6 +115,7 @@ LOCATION_LIST: list[DSLocation] = [
                sram_value=0x1,
                vanilla_item="Big Green Rupee (100)",
                id=5,
+               location_groups=["Mercay Island"],
                scenes=0xb02
                ),
     DSLocation("Eye Bridge Cave Chest",
@@ -121,6 +126,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=6,
                hint_entrance="Eye Bridge Cave North Exit",
                chest_offset=0x2,
+               location_groups=["Mercay Island"],
                scenes=0xb10
                ),
     DSLocation("Mercay SE Ledge Chest West",
@@ -134,6 +140,7 @@ LOCATION_LIST: list[DSLocation] = [
                hint_entrance=['Mercay SE Ledge North', 'Mercay SE OOB West', 'Mercay SE OOB North'],
                hint_entrance_secondary="Mercay NE Ledge Cave",
                chest_offset=0x62,
+               location_groups=["Mercay Island"],
                scenes=0xb03
                ),
     DSLocation("Mercay SE Ledge Chest East",
@@ -147,6 +154,7 @@ LOCATION_LIST: list[DSLocation] = [
                hint_entrance=['Mercay SE Ledge North', 'Mercay SE OOB West', 'Mercay SE OOB North'],
                hint_entrance_secondary="Mercay NE Ledge Cave",
                chest_offset=0x63,
+               location_groups=["Mercay Island"],
                scenes=0xb03
                ),
     DSLocation("TotOK Lobby Phantom Hourglass",
@@ -157,6 +165,7 @@ LOCATION_LIST: list[DSLocation] = [
                vanilla_item="Nothing!",
                id=9,
                hint_entrance="TotOK Lobby Exit",
+               location_groups=["Temple of the Ocean King", "Temple of the Ocean King Lobby"],
                scenes=0x2600
                ),
     DSLocation("Long Bridge Cave Chest",
@@ -167,6 +176,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=10,
                hint_entrance=['Long Bridge Cave West', 'Long Bridge Cave East'],
                chest_offset=0x4,
+               location_groups=["Mercay Island"],
                scenes=0xb12
                ),
     DSLocation("Mercay NE Freedle Island Chest",
@@ -179,6 +189,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=11,
                hint_entrance="Mercay NE Freedle Island Cave",
                chest_offset=0x36,
+               location_groups=["Mercay Island"],
                scenes=0xb02
                ),
     DSLocation("Mercay NE Freedle Gift Item",
@@ -190,6 +201,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=12,
                hint_entrance="Mercay NE Freedle Island Cave",
                gift_addr=Address(0x21618c),
+               location_groups=["Mercay Island"],
                scenes=0xb02
                ),
     DSLocation("Mercay SE Ojibe (Docks Guy) Item",
@@ -200,6 +212,7 @@ LOCATION_LIST: list[DSLocation] = [
                item_override="Nothing!",
                id=13,
                persistent=True,
+               location_groups=["Mercay Island"],
                scenes=0xb03
                ),
     DSLocation("Shipyard Chest",
@@ -208,6 +221,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=14,
                hint_entrance="Shipyard Exit",
                chest_offset=0x1,
+               location_groups=["Mercay Island"],
                scenes=0xb0d
                ),
     DSLocation("Oshus Spirit Gem",
@@ -220,6 +234,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=15,
                hint_entrance="Oshus' Exit",
                gift_addr=Address(0x2153FC),
+               location_groups=["Mercay Island", "Oshus"],
                scenes=0xb0a
                ),
     DSLocation("Oshus Phantom Sword",
@@ -231,6 +246,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=16,
                hint_entrance="Oshus' Exit",
                reload_chests=True,
+               location_groups=["Mercay Island", "Oshus"],
                scenes=0xb0a
                ),
     DSLocation("Mountain Passage 1F Entrance Chest",
@@ -247,6 +263,7 @@ LOCATION_LIST: list[DSLocation] = [
                hint_entrance_secondary=['Mountain Passage 1F Staircase', 'Mountain Passage 2F Staircase',
                                         'Mountain Passage 2F Exit'],
                chest_offset=0x15,
+               location_groups=["Mercay Island", "Mountain Passage"],
                scenes=0x2700
                ),
     DSLocation("Mountain Passage 1F Side Chest",
@@ -262,6 +279,7 @@ LOCATION_LIST: list[DSLocation] = [
                hint_entrance=['Mountain Passage 1F Exit', 'Mountain Passage 1F Staircase'],
                hint_entrance_secondary=['Mountain Passage 2F Staircase', 'Mountain Passage 2F Exit'],
                chest_offset=0x13,
+               location_groups=["Mercay Island", "Mountain Passage"],
                scenes=0x2700
                ),
     DSLocation("Mountain Passage 1F Key Drop",
@@ -274,6 +292,7 @@ LOCATION_LIST: list[DSLocation] = [
                dungeon="Mountain Passage",
                id=19,
                do_special="keylock",
+               location_groups=["Mercay Island", "Mountain Passage"],
                hint_entrance=['Mountain Passage 1F Exit', 'Mountain Passage 1F Staircase'],
                hint_entrance_secondary=['Mountain Passage 2F Staircase', 'Mountain Passage 2F Exit'],
                scenes=0x2700
@@ -286,6 +305,7 @@ LOCATION_LIST: list[DSLocation] = [
                dungeon="Mountain Passage",
                id=20,
                do_special="keylock",
+               location_groups=["Mercay Island", "Mountain Passage"],
                hint_entrance="Mountain Passage 2F Staircase",
                hint_entrance_secondary="Mountain Passage 2F Exit",
                scenes=0x2701
@@ -297,6 +317,7 @@ LOCATION_LIST: list[DSLocation] = [
                # value=0x2,
                value=0x1,
                id=21,
+               location_groups=["Mercay Island", "Island Shop"],
                hint_entrance=['Mercay Shop Exit', 'Molida Shop Exit', 'Goron Shop Exit'],
                shop_model=True,
                has_slot_data=[['shopsanity', 'uniques']],
@@ -313,6 +334,7 @@ LOCATION_LIST: list[DSLocation] = [
                has_slot_data=[['shopsanity', 'uniques']],
                shop_model=True,
                restock="always",
+               location_groups=["Mercay Island", "Island Shop"],
                # scenes={0xc0e, 0x1014, 0xb11}
                ),
     DSLocation("Island Shop Bombchu Bag",
@@ -326,6 +348,7 @@ LOCATION_LIST: list[DSLocation] = [
                hint_entrance=['Mercay Shop Exit', 'Molida Shop Exit', 'Goron Shop Exit'],
                has_slot_data=[['shopsanity', 'uniques']],
                restock="always",
+               location_groups=["Mercay Island", "Island Shop"],
                # scenes={0xc0e, 0x1014, 0xb11}
                ),
     DSLocation("Island Shop Heart Container",
@@ -339,6 +362,7 @@ LOCATION_LIST: list[DSLocation] = [
                restock="always",
                hint_entrance=['Mercay Shop Exit', 'Molida Shop Exit', 'Goron Shop Exit'],
                has_slot_data=[['shopsanity', 'uniques']],
+               location_groups=["Mercay Island", "Island Shop"],
                # scenes={0xc0e, 0x1014, 0xb11}
                ),
     DSLocation("Beedle Shop Bomb Bag",
@@ -350,6 +374,7 @@ LOCATION_LIST: list[DSLocation] = [
                shop_model=True,
                id=25,
                has_slot_data=[['shopsanity', 'uniques']],
+               location_groups=["Beedle's Ship", "Beedle Shop"],
                # scenes=0x500
                ),
     DSLocation("Beedle Shop Wisdom Gem",
@@ -362,6 +387,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=26,
                shop_model=True,
                has_slot_data=[['shopsanity', 'uniques']],
+               location_groups=["Beedle's Ship", "Beedle Shop"],
                # scenes=0x500
                ),
     DSLocation("Masked Beedle Heart Container",
@@ -372,6 +398,7 @@ LOCATION_LIST: list[DSLocation] = [
                value=0x1,
                id=27,
                shop_model=True,
+               location_groups=["Beedle's Ship", "Masked Beedle Shop"],
                has_slot_data=[['shopsanity', 'uniques'], ['randomize_masked_beedle', 1]],
                # scenes=0x500
                ),
@@ -383,6 +410,7 @@ LOCATION_LIST: list[DSLocation] = [
                value=0x1,
                id=28,
                shop_model=True,
+               location_groups=["Beedle's Ship", "Masked Beedle Shop"],
                has_slot_data=[['shopsanity', 'uniques'], ['randomize_masked_beedle', 1]],
                # scenes=0x500
                ),
@@ -393,6 +421,7 @@ LOCATION_LIST: list[DSLocation] = [
                value=0x40,
                conditional=conditional_beedle_membership,
                id=322,
+               location_groups=["Beedle's Ship", "Beedle Memberships"],
                scenes=0x500
                ),
     DSLocation("Beedle Membership Silver",
@@ -402,6 +431,7 @@ LOCATION_LIST: list[DSLocation] = [
                value=0x20,
                conditional=conditional_beedle_membership,
                id=323,
+               location_groups=["Beedle's Ship", "Beedle Memberships"],
                scenes=0x500
                ),
     DSLocation("Beedle Membership Gold",
@@ -411,6 +441,7 @@ LOCATION_LIST: list[DSLocation] = [
                value=0x40,
                conditional=conditional_beedle_membership,
                id=324,
+               location_groups=["Beedle's Ship", "Beedle Memberships"],
                scenes=0x500
                ),
     DSLocation("Beedle Membership Platinum",
@@ -420,6 +451,7 @@ LOCATION_LIST: list[DSLocation] = [
                value=0x80,
                conditional=conditional_beedle_membership,
                id=325,
+               location_groups=["Beedle's Ship", "Beedle Memberships"],
                scenes=0x500
                ),
     DSLocation("Beedle Membership VIP",
@@ -429,6 +461,7 @@ LOCATION_LIST: list[DSLocation] = [
                value=0x1,
                conditional=conditional_beedle_membership,
                id=326,
+               location_groups=["Beedle's Ship", "Beedle Memberships"],
                scenes=0x500
                ),
     DSLocation("TotOK 1F Sea Chart Chest",
@@ -441,6 +474,7 @@ LOCATION_LIST: list[DSLocation] = [
                do_special="ut_event",
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x17,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2500
                ),
     DSLocation("TotOK 1F Linebeck Key",
@@ -454,6 +488,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=30,
                hint_entrance="TotOK Lobby Exit",
                gift_addr=Address(0x208a54),
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2500
                ),
     DSLocation("TotOK 1F Empty Chest",
@@ -464,6 +499,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=31,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x22,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2500
                ),
     DSLocation("TotOK B1 Small Key",
@@ -473,6 +509,7 @@ LOCATION_LIST: list[DSLocation] = [
                dungeon="Temple of the Ocean King",
                id=32,
                hint_entrance="TotOK Lobby Exit",
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2501
                ),
     DSLocation("TotOK B1 Shoot Eye Chest",
@@ -484,6 +521,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=33,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x9,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2501
                ),
     DSLocation("TotOK B1 Phantom Chest",
@@ -497,6 +535,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=34,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0xa,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2501
                ),
     DSLocation("TotOK B2 Bombchu Chest",
@@ -509,6 +548,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=35,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x11,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2502
                ),
     DSLocation("TotOK B2 Phantom Chest",
@@ -522,6 +562,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=36,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x12,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2502
                ),
     DSLocation("TotOK B2 Small Key",
@@ -542,6 +583,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=38,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x14,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2503
                ),
     DSLocation("TotOK B3 Phantom Chest",
@@ -555,6 +597,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=39,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x15,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2503
                ),
     DSLocation("TotOK B3 NW Chest",
@@ -568,6 +611,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=40,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x6,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2503
                ),
     DSLocation("TotOK B3 SW Chest",
@@ -582,6 +626,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=41,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x8,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2503
                ),
     DSLocation("TotOK B3 SE Chest",
@@ -595,6 +640,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=42,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x7,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2503
                ),
     DSLocation("TotOK B3 Small Key",
@@ -612,6 +658,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=44,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x3,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2504
                ),
     DSLocation("TotOK B4 Phantom Eye Chest",
@@ -624,6 +671,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=45,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x3,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2505
                ),
     DSLocation("TotOK B4 Phantom Chest",
@@ -636,6 +684,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=46,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x4,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2505
                ),
     DSLocation("TotOK B4 Small Key",
@@ -645,6 +694,7 @@ LOCATION_LIST: list[DSLocation] = [
                delay_pickup="TotOK B4 Small Key",
                id=47,
                hint_entrance="TotOK Lobby Exit",
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2505
                ),
     DSLocation("TotOK B5 Alt Path Chest",
@@ -656,6 +706,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=48,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0xc,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2506
                ),
     DSLocation("TotOK B5 Chest",
@@ -667,6 +718,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=49,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0xb,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2506
                ),
     DSLocation("TotOK B6 Phantom Chest",
@@ -679,6 +731,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=50,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x3,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2507
                ),
     DSLocation("TotOK B6 Bow Chest",
@@ -690,6 +743,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=51,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x2,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2507
                ),
     DSLocation("TotOK B6 Courage Crest",
@@ -701,6 +755,7 @@ LOCATION_LIST: list[DSLocation] = [
                dungeon="Temple of the Ocean King",
                id=52,
                hint_entrance="TotOK Lobby Exit",
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2508
                ),
     DSLocation("TotOK B7 North Chest",
@@ -713,6 +768,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=53,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x4,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x250a
                ),
     DSLocation("TotOK B7 Peg Chest",
@@ -725,6 +781,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=54,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x5,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x250a
                ),
     DSLocation("TotOK B7 Phantom Chest",
@@ -737,6 +794,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=55,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x3,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x250a
                ),
     DSLocation("TotOK B8 2 Crystals Chest",
@@ -748,6 +806,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=56,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x5,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x250b
                ),
     DSLocation("TotOK B8 Phantom Chest",
@@ -762,6 +821,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=57,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x4,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x250b
                ),
     DSLocation("TotOK B9 NW Chest",
@@ -773,6 +833,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=58,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x21,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x250c
                ),
     DSLocation("TotOK B9 Wizzrobe Chest",
@@ -786,6 +847,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=59,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x22,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x250c
                ),
     DSLocation("TotOK B9 Square Crystal",
@@ -805,6 +867,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=60,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x23,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x250c
                ),
     DSLocation("TotOK B9.5 Sea Chart Chest",
@@ -831,6 +894,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=62,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x1c,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x250e
                ),
     DSLocation("TotOK B10 Phantom Chest",
@@ -847,6 +911,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=63,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x17,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x250e
                ),
     DSLocation("TotOK B10 Phantom Eye Chest",
@@ -857,6 +922,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=64,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x1f,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x250e
                ),
     DSLocation("TotOK B10 Small Key",
@@ -876,6 +942,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=66,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x50,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x250f
                ),
     DSLocation("TotOK B11 Phantom Chest",
@@ -888,6 +955,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=67,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0xf,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x250f
                ),
     DSLocation("TotOK B12 NE Chest",
@@ -899,6 +967,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=68,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x9,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2510
                ),
     DSLocation("TotOK B12 NW Chest",
@@ -910,6 +979,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=69,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x8,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2510
                ),
     DSLocation("TotOK B12 Warp Phantom Force Gem",
@@ -928,6 +998,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=70,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x21,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2510
                ),
     DSLocation("TotOK B12 Kill Everything Chest",
@@ -939,6 +1010,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=71,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x22,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2510
                ),
     DSLocation("TotOK B12 Phantom Chest",
@@ -953,6 +1025,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=72,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0xa,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2510
                ),
     DSLocation("TotOK B13 Sea Chart Chest",
@@ -964,6 +1037,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=73,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0x3,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2511
                ),
     DSLocation("TotOK Flooded Chamber Left Chest",
@@ -975,6 +1049,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=331,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0xe,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2512
                ),
     DSLocation("TotOK Flooded Chamber Right Chest",
@@ -986,6 +1061,7 @@ LOCATION_LIST: list[DSLocation] = [
                id=332,
                hint_entrance="TotOK Lobby Exit",
                chest_offset=0xf,
+               location_groups=["Temple of the Ocean King", "TotOK"],
                scenes=0x2512
                ),
     DSLocation("Ocean SW Salvage Courage Crest",
