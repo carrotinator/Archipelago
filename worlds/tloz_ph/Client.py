@@ -873,6 +873,7 @@ class PhantomHourglassClient(DSZeldaClient):
                         has_celia = (self.item_count(ctx, "Spirit (Progressive)") >= 3 or
                                      self.item_count(ctx, "Spirit of Courage") or
                                      self.item_count(ctx, "Spirit of Courage (Progressive)"))
+                        printl(f"\thas sword? {has_sword} and spirit of courage {has_celia}")
 
                     return has_metals and has_spirits and has_sword and has_celia
             return True
