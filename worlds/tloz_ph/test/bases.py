@@ -216,7 +216,8 @@ basic = {
     "randomize_pedestal_items": "vanilla",
     "pedestal_item_options": "unique_pedestals",
     "randomize_boss_keys": "anywhere",
-    "progressive_items": False
+    "progressive_items": False,
+    "randomize_masked_beedle": True
 }
 
 class TestPHGeneration(WorldTestBase):

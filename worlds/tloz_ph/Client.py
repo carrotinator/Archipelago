@@ -1818,35 +1818,37 @@ class PhantomHourglassClient(DSZeldaClient):
         zs = await read_multiple(ctx, obj_idents.keys(), signed=True, offset=8*4)
 
         # Prep chest identification
-        chest_locations = [c for c in self.locations_in_scene.values() if c.chest_offset]
+        chest_locations = [c for c in self.locations_in_scene.values() if c.chest_offset is not None]
         chest_locations.sort(key=lambda c: c.chest_offset)
         chest_counter = 0
+        door_counter = 0
         printl(f"Chest objects in scene {hex_f(self.current_scene)}, {[c.name for c in chest_locations]}")
 
         for i, pack in enumerate(zip(obj_idents.items(), list(xs.values()), list(zs.values()))):
             pack2, x, z = pack
             addr, ident = pack2
-            # print(i, addr, identifiers.get(ident), x, z)
+            object_type = identifiers.get(ident, "")
+            # print(i, addr, object_type, x, z)
             if addr == 0x5544:
                 printl("Map Object Overflow!")
                 break
-            if ident not in identifiers:
+            if not object_type:
                 print(f"Unknown map object: {hex_f(ident)} @ {addr} #{i}")
                 continue
 
-            if identifiers.get(ident) in ["Spirit Door", "Key Door", "Blue Door", "Arena Door", "Door"]:
+            if object_type.endswith(f" Door") and object_type not in ["Boss Door", "Ghost Door", "Tap Door"]: # in ["Spirit Door", "Key Door", "Blue Door", "Arena Door", "Door"]:
                 write_list.append(Address.from_pointer(addr + 31*4, size=2).get_inner_write_list(0))  # closing
 
-                if identifiers.get(ident) in ["Spirit Door", "Key Door"]:
+                if object_type in ["Spirit Door", "Key Door"]:
                     if ctx.slot_data["exclude_non_required_dungeons"] == 2 and STAGES[self.current_stage] not in ctx.slot_data["required_dungeons"] + ["Temple of the Ocean King", "Mountain Passage"]:
                         printl(f"opening excluded key door {addr}")
                         write_list.append(Address.from_pointer(addr + 8, 1).get_inner_write_list(3))
                     else:
                         self.key_door_watches[Address.from_pointer(addr + 8, 1)] = "key"
-                if identifiers.get(ident) in ["Arena Door"]:
+                if object_type in ["Arena Door"]:
                     self.key_door_watches[Address.from_pointer(addr + 8, 1)] = "arena"
 
-                if identifiers.get(ident) in ["Blue Door"]:
+                if object_type in ["Blue Door"]:
                     if self.current_scene in [0xb13]:
                         write_list.pop()  # softlock in sign lol. do this for other doors opened from signs, like astrid's basement
 
@@ -1866,7 +1868,12 @@ class PhantomHourglassClient(DSZeldaClient):
                                  or self.item_count(ctx, "Force Gems"))):
                         open_door(addr)
 
-            if identifiers.get(ident) in ["Spikes"]:
+                if object_type == "Wireframe Door" and self.current_scene == 0x2000:
+                    door_counter += 1
+                    if door_counter == 1:  # keep cutscene for goron temple switch skip
+                        write_list.pop()
+
+            if object_type in ["Spikes"]:
                 write_list.append(Address.from_pointer(addr + 30 * 4, size=2).get_inner_write_list(0))
 
                 if self.current_scene == 0x2900 and 20000 < x < 40000:
@@ -1882,10 +1889,10 @@ class PhantomHourglassClient(DSZeldaClient):
                     elif (has_round and x < 0) or (has_triangle and x > 0):
                         lower_spikes(addr)
 
-            if identifiers.get(ident) in ["Bridge Spawner"]:
+            if object_type in ["Bridge Spawner"]:
                 write_list.append(Address.from_pointer(addr + 15 * 4, size=2).get_inner_write_list(0))
 
-            if identifiers.get(ident) in ["Torch"]:
+            if object_type in ["Torch"]:
                 write_list.append(Address.from_pointer(addr + 38 * 4 +2, size=2).get_inner_write_list(0))
                 if self.current_scene == 0x2501 and x == -10240:
                     add_detection("b1_flames", addr+8)
@@ -1893,10 +1900,10 @@ class PhantomHourglassClient(DSZeldaClient):
                     if z < -45000 and x > -60000:
                         add_detection("tof_3f_torches", addr+8)
 
-            if identifiers.get(ident) in ["Unspawned Big Chest", "Unspawned Small Chest"] and ctx.slot_data.get("chest_cutscene_skips", 0):
+            if object_type in ["Unspawned Big Chest", "Unspawned Small Chest"] and ctx.slot_data.get("chest_cutscene_skips", 0):
                 write_list.append(Address.from_pointer(addr + 28 * 4, size=2).get_inner_write_list(0))
 
-            if identifiers.get(ident) in ["Ice Spikes"]:
+            if object_type in ["Ice Spikes"]:
                 if not self.current_scene in [0xF01, 0xF03]:
                     write_list.append(Address.from_pointer(addr + 25 * 4, size=1).get_inner_write_list(0))
 
@@ -1928,7 +1935,7 @@ class PhantomHourglassClient(DSZeldaClient):
                     elif z == 47104:
                         add_action("toi_b2_e", addr + 8, 2)
 
-            if identifiers.get(ident) in ["Flames"]:
+            if object_type in ["Flames"]:
                 write_list.append(Address.from_pointer(addr + 42 * 4, size=4).get_inner_write_list(0))
 
                 if self.current_scene == 0x2501:
@@ -2006,13 +2013,13 @@ class PhantomHourglassClient(DSZeldaClient):
                     else:
                         add_action("gs_b3_w", addr + 8)
 
-            if identifiers.get(ident) in ["Lever"]:
+            if object_type in ["Lever"]:
                 if self.current_scene == 0x2502:
                     add_detection("b2_lever", addr + 8, comp=3)
                 elif self.current_scene == 0x2503:
                     add_detection("b3_lever", addr + 8, comp=3)
 
-            if identifiers.get(ident) in ["Switch"]:
+            if object_type in ["Switch"]:
                 if self.current_scene == 0x2502 and x == -55296:
                     add_detection("b2_switch", addr + 8, comp=1)
 
@@ -2031,7 +2038,7 @@ class PhantomHourglassClient(DSZeldaClient):
                     elif x == -63488:
                         add_detection("tof_2f_w", addr + 8, comp=1)
 
-            if identifiers.get(ident) in ["Pressure Pad"]:
+            if object_type in ["Pressure Pad"]:
                 if self.current_scene == 0x2902:
                     add_detection("gs_b3_w", addr + 8, comp=2)
                 if self.current_scene == 0x1f05:
@@ -2040,11 +2047,11 @@ class PhantomHourglassClient(DSZeldaClient):
                     elif z == 55296:
                         add_detection("toi_b2_e", addr + 8, comp=2)
 
-            if identifiers.get(ident) in ["Eye Switch"]:
+            if object_type in ["Eye Switch"]:
                 if self.current_scene == 0x1f02:
                     add_detection("toi_b1_w", addr + 8, comp=2)
 
-            if identifiers.get(ident) in ["Tongue Statue"]:
+            if object_type in ["Tongue Statue"]:
                 if self.current_scene == 0x1f00:
                     if (x, z) == (-14336, -55296):
                         add_detection("toi_1f_n", addr + 8, comp=3)
@@ -2054,19 +2061,19 @@ class PhantomHourglassClient(DSZeldaClient):
                     if x == 67584:
                         add_detection("toi_b1_s", addr + 8, comp=4, always_active=True)
 
-            if identifiers.get(ident) in ["Small Chest"]:
+            if object_type in ["Small Chest"]:
                 if self.current_scene == 0x250A:
                     add_detection("b7_chest", addr + 8, comp=8)
 
-            if identifiers.get(ident) in ["Candle"]:
+            if object_type in ["Candle"]:
                 if self.current_scene == 0x1c02:
                     add_detection("tof_3f_candles", addr + 8, comp=[0, 3])
 
-            if identifiers.get(ident) in ["Boss Door"]:
+            if object_type in ["Boss Door"]:
                 self.boss_door_addr = addr
                 await self.open_boss_door(ctx)
 
-            if identifiers.get(ident) in ["Pedestal"]:
+            if object_type in ["Pedestal"]:
                 if self.current_scene == 0x2900 and not ctx.slot_data["randomize_pedestal_items"]:
                     if x > 40000:
                         add_detection("gs_tri", addr + 8, comp=1, always_active=True)
@@ -2076,19 +2083,19 @@ class PhantomHourglassClient(DSZeldaClient):
                     if x == -63488:
                         add_detection("b9_flames", addr + 8, comp=1, always_active=True)
 
-            if identifiers.get(ident) in ["Force Gem Pedestal"]:
+            if object_type in ["Force Gem Pedestal"]:
                 if self.current_scene == 0x2510 and ctx.slot_data["randomize_pedestal_items"] and z==-22528:
                     write_list.append(addr.get_inner_write_list(9, 4, 2))
                     write_list.append(addr.get_inner_write_list(9, 4, 2))
 
-            if identifiers.get(ident) in ["Small Chest", "Big Chest", "Unspawned Big Chest", "Unspawned Small Chest"]:
+            if object_type in ["Small Chest", "Big Chest", "Unspawned Big Chest", "Unspawned Small Chest"]:
                 if chest_counter < len(chest_locations):
                     write_list += self.set_chest_item(ctx, chest_locations[chest_counter], addr)
                 chest_counter += 1
 
                 pass
 
-            if identifiers.get(ident) == "Unspawned Small Chest" and self.current_scene == 0x2512:
+            if object_type == "Unspawned Small Chest" and self.current_scene == 0x2512:
                 write_list.append(addr.get_inner_write_list(1, 8, 1))
 
         if self.current_scene == 0x1c00:
@@ -2157,9 +2164,22 @@ class PhantomHourglassClient(DSZeldaClient):
                 shop_scene = self.current_scene
                 if self.current_stage == 5:
                     shop_scene = 0x501 if self.masked_beedle else 0x500
-                shop_scene = SHOP_LOCATIONS.get(shop_scene, {})
-                location = shop_scene.get(k, shop_scene.get(k+str(shop_slot), ""))
-                # print(f"{k} {k+str(shop_slot)} scene {shop_scene.keys()}")
+                shop_locations = SHOP_LOCATIONS.get(shop_scene, {})
+                location = shop_locations.get(k, shop_locations.get(k+str(shop_slot), ""))
+                # print(f"{k} {k+str(shop_slot)} scene {shop_locations.keys()}")
+
+                # Beedle restock can appear in the wrong slot
+                if (shop_scene == 0x500 and shop_slot == 2
+                    and LOCATIONS_DATA["Beedle Shop Top Ship Part"].id not in ctx.checked_locations
+                    and LOCATIONS_DATA["Beedle Shop Bottom Ship Part"].id in ctx.checked_locations
+                    and (LOCATIONS_DATA["Beedle Shop Bomb Bag"].id in ctx.checked_locations) or LOCATIONS_DATA["Beedle Shop Bomb Bag"].id not in ctx.server_locations):
+                    location = "Beedle Shop Top Ship Part"
+                elif (shop_scene == 0x501 and shop_slot == 2
+                    and LOCATIONS_DATA["Masked Beedle Top Ship Part"].id not in ctx.checked_locations
+                    and LOCATIONS_DATA["Masked Beedle Bottom Ship Part"].id in ctx.checked_locations
+                    and (LOCATIONS_DATA["Masked Beedle Heart Container"].id in ctx.checked_locations) or LOCATIONS_DATA["Masked Beedle Heart Container"].id not in ctx.server_locations):
+                    location = "Beedle Shop Top Ship Part"
+
                 if not location:
                     continue
                 data = LOCATIONS_DATA[location]
@@ -2313,7 +2333,7 @@ class PhantomHourglassClient(DSZeldaClient):
         self.last_actor_scan = current_actor_table
         if not diff:
             return
-        printl(f"diff: {hex_f(diff)}")
+        # printl(f"diff: {hex_f(diff)}")
 
         # Check for dug spots
         for loc in self.dig_spots_in_scene:

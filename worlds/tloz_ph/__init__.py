@@ -291,6 +291,7 @@ class PhantomHourglassWorld(CachedRuleBuilderWorld):
                 from .tracker.TrackerUtil import get_hidden_entrances
                 self.ut_map_page_hidden_locations, self.ut_map_page_hidden_entrances = get_hidden_entrances(self)
         else:
+            print(f"masked beedle {self.options.randomize_masked_beedle.value}")
             self.options.shopsanity.value = {s.lower() for s in self.options.shopsanity.value}
             # print(f"Shopsanity {self.options.shopsanity.value}, {self.options.shopsanity.valid_keys_casefold}")
             if 'all' in self.options.shopsanity.value:
